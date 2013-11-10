@@ -4,7 +4,7 @@ cim(){
     shift
     case $command in
 	install)
-	    { . $cim_scripts_path/cim_install_impl $@ }
+	    ( . $cim_scripts_path/cim_install_impl $@ )
 	    ;;
 	use)
 	    . $cim_scripts_path/cim_use_impl
@@ -20,19 +20,19 @@ cim(){
 		    fi
 		    ;;
 		"")
-		    {
+		    (
 			. $cim_scripts_path/cim_install_impl
 			for resume in $cim_res_path/resume-*; do
 			    . $resume
 			done
-		    }
+		    )
 		    ;;
 		*)
 		    if [ -f $cim_res_path/resume-$1 ];then
-			{
+			(
 			    . $cim_scripts_path/cim_install_impl
 			    . $cim_res_path/resume-$1
-			}
+			)
 			
 		    else
 			echo "Unknown resume $1. Exit." >&2
@@ -42,14 +42,14 @@ cim(){
 	    esac
 	    ;;
 	reset)
-	    {
+	    (
 		cd $CIM_HOME &&
 		for dir in archives cores impls src sysets tmp quicklisp bin; do
 		    rm -rf $dir
 		    mkdir -p $dir
 		done
 		ln -s $cim_scripts_path/cl $cim_bin_path
-	    }
+	    )
 	    ;;
 	list)
 	    case $1 in
