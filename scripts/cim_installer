@@ -13,7 +13,7 @@ done;
 ln -s $CIM_HOME/scripts/cl $CIM_HOME/bin/cl;
 cat <<EOF > $CIM_HOME/scripts/cim_init;
 #!/bin/sh
-: \${$CIM_HOME:=\$HOME/.cim};
+: \${CIM_HOME:=$CIM_HOME};
 export CIM_HOME
 . \$HOME/.cim/scripts/cim_env
 . \$cim_scripts_path/cim_default
