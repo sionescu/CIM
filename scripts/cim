@@ -44,7 +44,11 @@ cim(){
 	reset)
 	    {
 		cd $CIM_HOME &&
-		rm -rf archives/* cores/* impls/* src/* sysets/* tmp/* quicklisp/* bin/*
+		for dir in archives cores impls src sysets tmp quicklisp bin; do
+		    rm -rf $dir
+		    mkdir -p $dir
+		done
+		ln -s $cim_scripts_path/cl $cim_bin_path
 	    }
 	    ;;
 	list)
