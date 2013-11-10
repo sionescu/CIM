@@ -15,7 +15,7 @@ cat <<EOF > $CIM_HOME/scripts/cim_init;
 #!/bin/sh
 : \${CIM_HOME:=$CIM_HOME};
 export CIM_HOME
-. \$HOME/.cim/scripts/cim_env
+. \$CIM_HOME/scripts/cim_env
 . \$cim_scripts_path/cim_default
 export PATH=\$cim_bin_path:\$PATH
 
@@ -24,7 +24,7 @@ export PATH=\$cim_bin_path:\$PATH
 EOF
 echo <<EOM;
 Add to your .*rc file
-'[ -f $HOME/.cim/scripts/cim_init ] && . $HOME/.cim/scripts/cim_init'
+'[ -s $HOME/.cim/scripts/cim_init ] && . $HOME/.cim/scripts/cim_init'
 .
 EOM
 . $CIM_HOME/scripts/cim_init;
