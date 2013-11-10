@@ -1,16 +1,18 @@
 #!/bin/sh
-: ${CIM_HOME:=$HOME/.cim}
-export CIM_HOME
-mkdir -p $CIM_HOME/archives
-curl https://github.com/KeenS/CIM/archive/master.tar.gz | gzip -cd - | tar xf - -C $CIM_HOME/tmp
-mv $CIM_HOME/tmp/CIM-master/* $CIM_HOME/
-. $CIM_HOME/scripts/cim_init
+set -e
+: ${CIM_HOME:=$HOME/.cim};
+export CIM_HOME;
+mkdir -p $CIM_HOME/archives;
+mkdir -p $CIM_HOME/tmp;
+curl -L https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C $CIM_HOME/tmp;
+mv $CIM_HOME/tmp/CIM-master/* $CIM_HOME/;
+. $CIM_HOME/scripts/cim_init;
 for dir in archives bin cores impls lib quicklisp res scripts src sysets tmp
 do
     mkdir -p $dir
-done
-ln -s $CIM_HOME/scripts/cl $CIM_HOME/bin/cl
-echo <<EOM
+done;
+ln -s $CIM_HOME/scripts/cl $CIM_HOME/bin/cl;
+echo <<EOM;
 Add to your .*rc file
 '[ -f $HOME/.cim/scripts/cim_init ] && . $HOME/.cim/scripts/cim_init'
 .

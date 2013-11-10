@@ -4,9 +4,11 @@ cim(){
     shift
     case $command in
 	install)
-	    { . $cim_scripts_path/cim_install_impl $@ };;
+	    { . $cim_scripts_path/cim_install_impl $@ }
+	    ;;
 	use)
-	    . $cim_scripts_path/cim_use_impl;;
+	    . $cim_scripts_path/cim_use_impl
+	    ;;
 	resume)
 	    case $1 in
 		rm)
@@ -40,7 +42,10 @@ cim(){
 	    esac
 	    ;;
 	reset)
-	    rm -rf $cim_archives_path/* $cim_cores_path/* $cim_impls_path/* $cim_src_path/* $cim_sysets_path/* $cim_tmp_path/* $cim_quicklisp_path/* $cim_bin_path/*
+	    {
+		cd $CIM_HOME &&
+		rm -rf archives/* cores/* impls/* src/* sysets/* tmp/* quicklisp/* bin/*
+	    }
 	    ;;
 	list)
 	    case $1 in
