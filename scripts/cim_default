@@ -1,5 +1,5 @@
 #!/bin/sh
-LISP_IMPL="SBCL"
+LISP_IMPL="sbcl"
 LISP_SYSET=""
 export LISP_IMPL
 export LISP_SYSET

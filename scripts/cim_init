@@ -1,0 +1,8 @@
+#!/bin/sh
+: ${CIM_HOME:=$HOME/.cim}
+export CIM_HOME
+. $HOME/.cim/scripts/cim_env
+. $cim_scripts_path/cim_default
+export PATH=$cim_bin_path:$PATH
+
+. $cim_scripts_path/cim

@@ -1,5 +1,70 @@
 #!/bin/sh
-. $HOME/.cim/scripts/cim_env
-. $cim_scripts_path/cim_default
-export PATH=$cim_bin_path:$PATH
+cim(){
+    command=$1
+    shift
+    case $command in
+	install)
+	    { . $cim_scripts_path/cim_install_impl $@ };;
+	use)
+	    . $cim_scripts_path/cim_use_impl;;
+	resume)
+	    case $1 in
+		rm)
+		    if [ -f $cim_res_path/resume-$1 ];then
+			rm $cim_res_path/resume-$1
+		    else
+			echo "Unknown resume $1. Exit." >&2
+			return 1
+		    fi
+		    ;;
+		"")
+		    {
+			. $cim_scripts_path/cim_install_impl
+			for resume in $cim_res_path/resume-*; do
+			    . $resume
+			done
+		    }
+		    ;;
+		*)
+		    if [ -f $cim_res_path/resume-$1 ];then
+			{
+			    . $cim_scripts_path/cim_install_impl
+			    . $cim_res_path/resume-$1
+			}
+			
+		    else
+			echo "Unknown resume $1. Exit." >&2
+			return 1
+		    fi
+		    ;;
+	    esac
+	    ;;
+	reset)
+	    rm -rf $cim_archives_path/* $cim_cores_path/* $cim_impls_path/* $cim_src_path/* $cim_sysets_path/* $cim_tmp_path/* $cim_quicklisp_path/* $cim_bin_path/*
+	    ;;
+	list)
+	    case $1 in
+		install)
+		    cat $cim_res_path/known
+		    ;;
+		resume)
+		    for resume in $cim_res_path/resume-*; do
+			echo  ${resume#*resume-}
+		    done
+		    ;;
+		use)
+		    find $cim_impls_path -maxdepth 1 -mindepth 1 -type d -exec basename "{}" ";"
+		    ;;
+		*)
+		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
+		    return 1;
+		    ;;
+	    esac
+	    ;;
 
+	*)
+	    echo "Unknown command '$command'. Exit." >&2
+	    return 1
+	    ;;
+    esac
+}

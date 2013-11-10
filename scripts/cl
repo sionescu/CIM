@@ -1,42 +1,41 @@
 #!/bin/sh
-set -x
 case $LISP_IMPL in
-    SBCL)
+    sbcl)
 	cl_command="$cim_bin_path/sbcl --noinform --no-userinit --no-sysinit"
 	cl_batch="--disable-debugger"
 	cl_eval="--eval"
 	cl_load="--load"
 	cl_quit='--quit'
 	;;
-    CLISP)
+    clisp)
 	cl_command="$cim_bin_path/clisp -norc --quiet --silent"
 	cl_batch=""
 	cl_eval="-x"
 	cl_load="-i"
 	cl_quit="$cl_eval '(quit)'"
 	;;
-    ECL)
+    ecl)
 	cl_command="$cim_bin_path/ecl -norc"
 	cl_batch=""
 	cl_eval="-eval"
 	cl_load="-load"
 	cl_quit="$cl_eval '(quit)'"
 	;;
-    CCL)
+    ccl)
 	cl_command="$cim_bin_path/ccl --no-init --quiet"
 	cl_batch="--batch"
 	cl_eval="--eval"
 	cl_load="--load"
 	cl_quit="$cl_eval '(quit)'"
 	;;
-    GCL)
+    gcl)
 	cl_command="$cim_bin_path/gcl"
 	cl_batch="-batch"
 	cl_eval="-eval"
 	cl_load="-f"
 	cl_quit="$cl_eval '(quit)'"
 	;;
-    ABCL)
+    abcl)
 	cl_command="java -jar $cim_bin_path/abcl.jar --noinform --noinit --nosystem"
 	cl_batch="--batch"
 	cl_eval="--eval"

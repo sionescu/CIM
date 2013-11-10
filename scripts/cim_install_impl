@@ -1,114 +1,103 @@
 #!/bin/sh
-set -ex
+set -e
 
-__cim_get_version_or_latest(){
-    impl=$1
-    impl_with_version=$2
-    if [ -n "${impl_with_version#$impl}"]; then
-	version=`cat $cim_res_path/${impl}_latest_version`
-    else
-	version=${without_impl#-}
-    fi
-    echo $version
+__cim_split_impl_version(){
+    impl=`echo $impl_with_version |  awk -F- '{print $1}'`
+    version=`echo $impl_with_version | awk -F- '{print $2}'`
+    echo $impl ${version:-`cat $cim_res_path/known | awk "/^$impl\\[/{match(\\$0, /[[:digit:].]+/);print substr(\\$0, RSTART, RLENGTH) }"`}
+    unset impl version
 }
 __cim_get_download_path(){
-    impl=$1
-    version=$2
-    case $impl in
+    case $1 in
 	clisp)
-	    echo http://ftp.gnu.org/pub/gnu/clisp/release/${version}/clisp-$version.tar.gz
+	    echo http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz
 	    ;;
 	gcl)
-	    echo ftp://ftp.gnu.org/pub/gnu/gcl/gcl-${version}.tar.gz
+	    echo ftp://ftp.gnu.org/pub/gnu/gcl/gcl-$2.tar.gz
 	    ;;
 	ecl)
-	    echo http://downloads.sourceforge.net/project/ecls/ecls/${version%.*}/ecl-${version}.tgz
+	    echo http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz
 	    ;;
 	*)
-	    echo "unsupproted" >&2;
-	    exit 1
+	    echo "unsupported" >&2;
+	    return 1
 	    ;;
     esac
 }
-
-
 cim_start_impl_install(){
-    impl=$1
-    version=$2
-    install_dir=$cim_impls_path/$impl-$version
-    [ -d $install_dir ] && (echo "It seems you have installed clisp-$version. Did you mean 'cim reinstall'?." >&2 ; exit 1; )
-    cim_download_impl $impl $version
+    echo "cim_start_impl_install $1 $2" > $cim_tmp_path/resume-$1-$2
+    [ -d $cim_impls_path/$impl-$version ] && echo "It seems you have installed clisp-$2. Did you mean 'cim reinstall $1-$2'?." >&2 && return 1
+    cim_download_impl $1 $2
 }
 cim_download_impl(){
-    impl=$1
-    version=$2
-    impl_archive=$cim_archives_path/$impl-$version.tar.gz
+    echo "cim_download_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    impl_archive=$cim_archives_path/$1-$2.tar.gz
     rm -rf $impl_archive
-    if curl -L `__cim_get_download_path $impl $version` -o $impl_archive  && [ -f $impl_archive ]
+    if [ -f $impl_archive ] || (curl -L `__cim_get_download_path $impl $version` -o $impl_archive  && [ -f $impl_archive ])
     then
-	cim_expand_impl $impl $version
+	unset impl_archive
+	cim_expand_impl $1 $2
     else
+	unset impl_archive
 	echo "Failed to Donwload. Exit" >&2
-    exit 1
+	return 1
+    fi
 }
 
 cim_expand_impl(){
-    impl=$1
-    version=$2
-    rm -rf  $cim_src_path/$impl-$version
-    gzip -dc $cim_archives_path/$impl-$version.tar.gz | tar xf - -C $cim_src_path
-    cim_configure_impl $impl $version
+    echo "cim_expand_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    rm -rf  $cim_src_path/$1-$2
+    gzip -dc $cim_archives_path/$1-$2.tar.gz | tar xf - -C $cim_src_path
+    [ "$1" = gcl ] && mv $cim_src_path/gcl $cim_src_path/gcl-$2
+    cim_configure_impl $1 $2
 }
 
 cim_configure_impl(){
-    impl=$1
-    version=$2
-    (cd $cim_src_path/$impl-$version && ./configure --prefix=$install_dir)
-    cim_make_impl $impl $version
+    echo "cim_configure_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    (cd $cim_src_path/$1-$2 && ./configure --prefix=$cim_impls_path/$1-$2)
+    cim_make_impl $1 $2
 }
 cim_make_impl(){
-    impl=$1
-    version=$2
-    cd $cim_src_path/$impl-$version
-    (cd $cim_src_path/$impl-$version && make)
-    cim_install_impl $impl $version
+    echo "cim_make_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    cd $cim_src_path/$1-$2
+    (cd $cim_src_path/$1-$2 && make)
+    cim_install_impl $1 $2
 }
 cim_install_impl(){
-    impl=$1
-    version=$2
-    install_dir=$cim_impls_path/$impl-$version
+    echo "cim_install_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    install_dir=$cim_impls_path/$1-$2
     mkdir -p $install_dir
-    (cd $cim_src_path/$impl-$version && make install)
-    cim_finish_install_impl $impl $version
+    (cd $cim_src_path/$1-$2 && make install)
+    cim_finish_install_impl $1 $2
 }
 cim_finish_install_impl(){
-    impl=$1
-    version=$2
-    ln -s $cim_impls_path/$impl-$version/bin/$impl $cim_bin_path/$impl-$version
-    [ -n `ls $cim_bin_path/$impl` ] && ln -s $cim_bin_path/$impl-$version $cim_bin_path/$impl
+    echo "cim_finish_install_impl $1 $2" > $cim_tmp_path/resume-$1-$2
+    ln -s $cim_impls_path/$1-$2/bin/$1 $cim_bin_path/$1-$2
+    [ -n `ls $cim_bin_path/$1*` ] && ln -s $cim_bin_path/$1-$2 $cim_bin_path/$1
+    rm $cim_tmp_path/resume-$1-$2
     echo "Install done"
     return 0
 }
 
-impl_with_version=$1
-case $impl_with_version in
-    clisp*)
-	cim_start_impl_install clisp `__cim_get_version_or_latest clisp $impl_with_version`
-	;;
-    gcl*)
-	cim_start_impl_install gcl `__cim_get_version_or_latest gcl $impl_with_version`
-	;;
-    ecl*)
-	cim_start_impl_install ecl `__cim_get_version_or_latest ecl $impl_with_version`
-	;;
-    abcl*)
-	
-	;;
-    sbcl*)
-	
-	;;
-    ccl*)
-	
-	;;
-esac
+
+if [ -n "$1" ];then
+    case $1 in
+	clisp*|gcl*|ecl*)
+	    cim_start_impl_install `__cim_split_impl_version $1`
+	    ;;
+	abcl*)
+	    
+	    ;;
+	sbcl*)
+	    
+	    ;;
+	ccl*)
+	    
+	    ;;
+	*)
+	    echo "Unknown Lisp impl $1. Exit." >&2
+	    exit 1;
+	    ;;
+    esac
+fi
 
