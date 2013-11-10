@@ -1,0 +1,35 @@
+sbcl
+wget 'http://downloads.sourceforge.net/project/sbcl/sbcl/1.1.13/sbcl-1.1.13-x86-64-linux-binary.tar.bz2'
+expand
+
+clisp
+wget 'http://ftp.gnu.org/pub/gnu/clisp/release/2.49/clisp-2.49.tar.gz'
+wget 'http://ftp.gnu.org/pub/gnu/clisp/release/2.49/clisp-2.49.tar.gz.sig'
+check
+expand
+cd that
+./configure --prefix=$clisp_home && make && make install
+
+ccl
+wget 'ftp://ftp.clozure.com/pub/release/1.9/ccl-1.9-linuxx86.tar.gz'
+expand
+cp that $ccl_home
+cd $ccl_home
+ccl eval (rebuild-ccl :full t)
+sed -i 's/CCL_DEFAULT_DIRECTORY=\/usr\/local\/src\/ccl/$ccl_home/'
+
+ecl
+wget 'http://downloads.sourceforge.net/project/ecls/ecls/13.5/ecl-13.5.1.tgz'
+expand
+cd that
+./configure --prefix=$clisp_home && make && make install
+
+gcl
+wget 'ftp://ftp.gnu.org/pub/gnu/gcl/gcl-2.6.9.tar.gz'
+expand
+cd that
+./configure --prefix=$gcl_home && make && make install
+
+abcl
+wget 'http://abcl.org/releases/1.2.1/abcl-bin-1.2.1.tar.gz'
+expand

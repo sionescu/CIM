@@ -1,0 +1,9 @@
+#!/bin/sh
+CIM_HOME=$HOME/.cim;export CIM_HOME
+cim_scripts_path=$CIM_HOME/scripts;export cim_scripts_path
+cim_bin_path=$CIM_HOME/bin;export cim_bin_path
+cim_quicklisp_path=$CIM_HOME/quicklisp;export cim_quicklisp_path
+cim_archives_path=$CIM_HOME/archives;export cim_archives_path
+cim_src_path=$CIM_HOME/src;export cim_src_path
+cim_impls_path=$CIM_HOME/impls;export cim_impls_path
+cim_res_path=$CIM_HOME/res;export cim_res_path
