@@ -8,7 +8,7 @@ curl -L https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar x
 mv $CIM_HOME/tmp/CIM-master/* $CIM_HOME/;
 for dir in archives bin cores impls lib quicklisp res scripts src sysets tmp
 do
-    mkdir -p $dir
+    mkdir -p $CIM_HOME/$dir
 done;
 ln -s $CIM_HOME/scripts/cl $CIM_HOME/bin/cl;
 cat <<EOF > $CIM_HOME/scripts/cim_init;
