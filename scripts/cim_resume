@@ -1,0 +1,25 @@
+#!/bin/sh
+cim_resume_rm(){
+    if [ -f "$CIM_HOME/res/resume-$1" ];then
+	rm "$CIM_HOME/res/resume-$1"
+    else
+	echo "Unknown resume $1. Exit." >&2
+	return 1
+    fi
+}
+
+cim_resume(){
+    (
+	. "$CIM_HOME/scripts/cim_install_impl"
+	if [ "$#" -gt 0 ];then
+	    while [ -s "$CIM_HOME/res/resume-$1" ]; do
+		. "$CIM_HOME/res/resume-$1"
+		shift
+	    done
+	else
+	    for resume in "$CIM_HOME/res/resume-"*; do
+		. "$resume"
+	    done
+	fi
+    )
+}

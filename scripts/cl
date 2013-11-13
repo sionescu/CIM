@@ -1,42 +1,42 @@
 #!/bin/sh
-case $LISP_IMPL in
+case "$LISP_IMPL" in
     sbcl)
-	cl_command="$cim_bin_path/sbcl --noinform --no-userinit --no-sysinit"
+	cl_command="$CIM_HOME/bin/sbcl --noinform --no-userinit --no-sysinit"
 	cl_batch="--disable-debugger"
 	cl_eval="--eval"
 	cl_load="--load"
 	cl_quit='--quit'
 	;;
     clisp)
-	cl_command="$cim_bin_path/clisp -norc --quiet --silent"
+	cl_command="$CIM_HOME/bin/clisp -norc --quiet --silent"
 	cl_batch=""
 	cl_eval="-x"
 	cl_load="-i"
 	cl_quit="$cl_eval '(quit)'"
 	;;
     ecl)
-	cl_command="$cim_bin_path/ecl -norc"
+	cl_command="$CIM_HOME/bin/ecl -norc"
 	cl_batch=""
 	cl_eval="-eval"
 	cl_load="-load"
 	cl_quit="$cl_eval '(quit)'"
 	;;
     ccl)
-	cl_command="$cim_bin_path/ccl --no-init --quiet"
+	cl_command="$CIM_HOME/bin/ccl --no-init --quiet"
 	cl_batch="--batch"
 	cl_eval="--eval"
 	cl_load="--load"
 	cl_quit="$cl_eval '(quit)'"
 	;;
     gcl)
-	cl_command="$cim_bin_path/gcl"
+	cl_command="$CIM_HOME/bin/gcl"
 	cl_batch="-batch"
 	cl_eval="-eval"
 	cl_load="-f"
 	cl_quit="$cl_eval '(quit)'"
 	;;
     abcl)
-	cl_command="java -jar $cim_bin_path/abcl.jar --noinform --noinit --nosystem"
+	cl_command="java -jar $CIM_HOME/bin/abcl.jar --noinform --noinit --nosystem"
 	cl_batch="--batch"
 	cl_eval="--eval"
 	cl_load="--load"
@@ -52,13 +52,13 @@ case $LISP_IMPL in
 	;;
 esac
 
-cl_debug=$cl_batch
+cl_debug="$cl_batch"
 while getopts ":adhe:FlnpL:Sv" frag;do
-    case $frag in
+    case "$frag" in
 	a) cl_autosplit=true;;
 	d) cl_debug="";;
 	h) cl_print_help; exit 0;;
-	e) cl_sexp="$OPTARG";;
+	e) cl_sexp="$cl_sexp $OPTARG";;
 	F) cl_IFS="$OPTARG";;
 	l) cl_lineend=true;;
 	n) cl_eachline=true;;
@@ -68,14 +68,14 @@ while getopts ":adhe:FlnpL:Sv" frag;do
 	v) cl_print_version; exit 0;;
     esac
 done
-shift `expr $OPTIND - 1`
+shift $(( "$OPTIND" - 1 ))
 
-cl_init_file=$HOME/.lisprc
+cl_init_file="$HOME/.lisprc"
 if [ -n "$cl_sexp" ]; then
-    echo $cl_sexps
-    $cl_command $cl_debug $cl_load $cl_init_file $cl_eval $cl_sexp $cl_quit
+    echo "$cl_sexps"
+    $cl_command "$cl_debug" "$cl_load" "$cl_init_file" "$cl_eval" "$cl_sexp" $cl_quit
 elif [ -n "$cl_file" ]; then
-    $cl_command $cl_debug $cl_load $cl_init_file $cl_load $file $cl_quit
+    $cl_command "$cl_debug" "$cl_load" "$cl_init_file" "$cl_load" "$file" "$cl_quit"
 else
-    $cl_command $cl_load $cl_init_file $cl_eval "(setf *args* (list `args_to_sexp $*`))" $cl_load $HOME/.cim/lib/repl.lisp
+    $cl_command "$cl_load" "$cl_init_file" "$cl_eval" "(setf *args* (list `args_to_sexp $*`))" "$cl_load" "$HOME/.cim/lib/repl.lisp"
 fi

@@ -1,79 +1,50 @@
 #!/bin/sh
 cim(){
-    command=$1
+    command="$1"
     shift
-    case $command in
+    case "$command" in
 	install)
-	    ( . $cim_scripts_path/cim_install_impl $@ )
-	    ;;
+	    ( . "$CIM_HOME/scripts/cim_install_impl" "$@" ) ;;
 	use)
-	    . $cim_scripts_path/cim_use_impl
-	    ;;
+	    . "$CIM_HOME/scripts/cim_use_impl" ;;
 	resume)
-	    case $1 in
-		rm)
-		    if [ -f $cim_res_path/resume-$1 ];then
-			rm $cim_res_path/resume-$1
-		    else
-			echo "Unknown resume $1. Exit." >&2
-			return 1
-		    fi
-		    ;;
-		"")
-		    (
-			. $cim_scripts_path/cim_install_impl
-			for resume in $cim_res_path/resume-*; do
-			    . $resume
-			done
-		    )
-		    ;;
+	    ( . "$CIM_HOME/scripts/cim_resume"
+		case "$1" in
+		    rm)
+			cim_resume_rm "$2" || exit 1 ;;
+		    *)
+			cim_resume "$@" ;;
+		esac ) || return 1;;
+	reset)
+	    ( . "$CIM_HOME/scripts/cim_reset" );;
+	list)
+	    case "$1" in
+		install)
+		    cat "$CIM_HOME/res/known" ;;
+		resume)
+		    echo "$CIM_HOME/res/resume-"* | sed 's/.*resume-//g';;
+		use)
+		    echo "$CIM_HOME/bin/"*;;
 		*)
-		    if [ -f $cim_res_path/resume-$1 ];then
-			(
-			    . $cim_scripts_path/cim_install_impl
-			    . $cim_res_path/resume-$1
-			)
-			
-		    else
-			echo "Unknown resume $1. Exit." >&2
-			return 1
-		    fi
-		    ;;
+		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2 && return 1;;
 	    esac
 	    ;;
-	reset)
-	    (
-		cd $CIM_HOME &&
-		for dir in archives cores impls src sysets tmp quicklisp bin; do
-		    rm -rf $dir
-		    mkdir -p $dir
-		done
-		ln -s $cim_scripts_path/cl $cim_bin_path
-	    )
-	    ;;
-	list)
-	    case $1 in
-		install)
-		    cat $cim_res_path/known
-		    ;;
-		resume)
-		    for resume in $cim_res_path/resume-*; do
-			echo  ${resume#*resume-}
-		    done
-		    ;;
-		use)
-		    find $cim_impls_path -maxdepth 1 -mindepth 1 -type d -exec basename "{}" ";"
-		    ;;
+	help)
+	    case "$1" in
+		"")
+		    cat "$CIM_HOME/res/help" ;;
 		*)
-		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
-		    return 1;
+		    if [ -s "$CIM_HOME/res/help_$1" ];then
+			cat "$CIM_HOME/res/help_$1"
+		    else
+			echo "Help for $1 did not found. Exit." >&2; return 1
+		    fi
 		    ;;
 	    esac
 	    ;;
 
 	*)
-	    echo "Unknown command '$command'. Exit." >&2
-	    return 1
-	    ;;
+	    cim help
+	    echo "[0;31mUnknown command '$command'.[0;39m" >&2; return 1;;
     esac
 }
