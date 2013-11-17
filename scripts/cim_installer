@@ -6,13 +6,15 @@ export CIM_HOME
 umask 600
 mkdir -p "$CIM_HOME/archives"
 mkdir -p "$CIM_HOME/tmp"
-if which curl > /dev/null ;then
-    download(){ curl -L "$1" }
-elif which wget > /dev/null ;then
-    download(){ wget "$1" -O - }
-elif which fetch > /dev/null;then
-    download(){ fetch "$1" -o - }
-fi
+download(){
+    if which curl > /dev/null ;then
+	curl -L "$1"
+    elif which wget > /dev/null ;then
+	wget "$1" -O - 
+    elif which fetch > /dev/null;then
+	fetch "$1" -o - 
+    fi
+}
 download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
 for dir in lib scripts res ;do
     rm -rf "$CIM_HOME/$dir"

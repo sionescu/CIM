@@ -4,7 +4,7 @@
 
 ## DESCRIPTION
 
-*CAUTION*
+__CAUTION__
 CIM is under eager development. It does not work yet.
 Please wait for release version or contribute to accelerate development.
 
