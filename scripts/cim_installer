@@ -3,16 +3,16 @@
 set -e
 : ${CIM_HOME:="$HOME/.cim"};
 export CIM_HOME
-umask 600
+umask 077
 mkdir -p "$CIM_HOME/archives"
 mkdir -p "$CIM_HOME/tmp"
 download(){
     if which curl > /dev/null ;then
 	curl -L "$1"
     elif which wget > /dev/null ;then
-	wget "$1" -O - 
+	wget  -O - "$1"
     elif which fetch > /dev/null;then
-	fetch "$1" -o - 
+	fetch -o - "$1"
     fi
 }
 download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
