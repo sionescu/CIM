@@ -114,7 +114,7 @@ cim_install_sbcl_ensure_impl(){
 	echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which clisp > /dev/null 2>&1;then
 	echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1`;then
+    elif [ -n run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ];then
 	echo "$CIM_HOME/tmp/$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif url=`__cim_get_download_path sbcl-bin`;then
 	__cim_wget "$url" - | bzip2 -dc - | tar xf - -C "$CIM_HOME/tmp/" &&
