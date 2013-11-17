@@ -25,7 +25,7 @@ cim(){
 		install)
 		    cat "$CIM_HOME/res/known" ;;
 		resume)
-		    echo "$CIM_HOME/res/resume-"* | sed 's/.*resume-//g';;
+		    echo "$CIM_HOME/res/resume-"* | sed -e 's/.*resume-//g';;
 		use)
 		    echo "$CIM_HOME/bin/"* | grep -v '[:alpha:]$';;
 		*)

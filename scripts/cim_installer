@@ -25,6 +25,7 @@ for dir in archives bin config cores impls lib quicklisp res scripts src sysets 
 do
     mkdir -p "$CIM_HOME/$dir"
 done
+rm -f "$CIM_HOME/bin/cl"
 ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin/cl"
 cat <<EOF > "$CIM_HOME/init"
 #!/bin/sh
