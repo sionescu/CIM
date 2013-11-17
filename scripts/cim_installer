@@ -19,7 +19,8 @@ download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar 
 for dir in lib scripts res ;do
     rm -rf "$CIM_HOME/$dir"
 done
-mv "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/"
+mv "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/" &&
+rm -rf "$CIM_HOME/tmp/CIM-master/"
 for dir in archives bin config cores impls lib quicklisp res scripts src sysets tmp
 do
     mkdir -p "$CIM_HOME/$dir"
@@ -40,11 +41,11 @@ Adding to your .*rc file
 '[ -s $HOME/.cim/init ] && . $HOME/.cim/init'
 EOM
 chmod u+x "$CIM_HOME/scripts/cl"
-cimrc='[ -s $HOME/.cim/init ] && . $HOME/.cim/init'
+cimrc='[ -s "$HOME/.cim/init" ] && . "$HOME/.cim/init"'
 if [ -n "$BASH_VERSION" ];then
-    echo "$cimrc" >> .bashrc
+    echo "$cimrc" >> "$HOME/.bashrc"
 fi
 if [ -n "$ZSH_VERSION" ];then
-    echo "$cimrc" >> .zshrc
+    echo "$cimrc" >> "$HOME/.zshrc"
 fi
   

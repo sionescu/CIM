@@ -46,7 +46,7 @@ case "$target" in
 	;;
 esac
 
-echo $processes > "$CIM_HOME/tmp/resume-$1-$2"
+printf "%s\n" $processes > "$CIM_HOME/tmp/resume-$1-$2"
 for proc in $processes;do
     eval $proc "$@" && sed -i "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" ||
     exit 1
