@@ -1,25 +1,37 @@
-#!/bin/sh
+#!/bin/sh -
+# This file if for execute
+
 cim_resume_rm(){
-    if [ -f "$CIM_HOME/res/resume-$1" ];then
-	rm "$CIM_HOME/res/resume-$1"
+    status=0
+    for resume in "$@";do
+	if [ -f "$CIM_HOME/res/resume-$resume" ];then
+	    rm "$CIM_HOME/res/resume-$resume"
+	else
+	    echo "Unknown resume $resume." >&2
+	    status=`expr $status + 1`
+	fi
+    done
+    exit $status
+}
+
+cim_resume_resume(){
+    . "$CIM_HOME/scripts/cim_install_impl_lib"
+    if [ "$#" -gt 0 ];then
+	while [ -s "$CIM_HOME/res/resume-$1" ]; do
+	    . "$CIM_HOME/res/resume-$1"
+	    shift
+	done
     else
-	echo "Unknown resume $1. Exit." >&2
-	return 1
+	for resume in "$CIM_HOME/res/resume-"*; do
+	    . "$resume"
+	done
     fi
 }
 
-cim_resume(){
-    (
-	. "$CIM_HOME/scripts/cim_install_impl"
-	if [ "$#" -gt 0 ];then
-	    while [ -s "$CIM_HOME/res/resume-$1" ]; do
-		. "$CIM_HOME/res/resume-$1"
-		shift
-	    done
-	else
-	    for resume in "$CIM_HOME/res/resume-"*; do
-		. "$resume"
-	    done
-	fi
-    )
-}
+command=$1
+shift
+case "$command" in
+    rm) [ -n "$1" ] && cim_resume_rm "$@";;
+    resume) cim_resume_resume "$@";;
+    *) echo "Unknown subcommand '$1'. See 'cim help resume'" >&2 && return 1;;
+esac

@@ -1,0 +1,1 @@
+ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr \[A-Z\] \[a-z\]`x86.tar.gz

@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/sh -
+# This file if for execute
+
 [ -n "$CIM_HOME" ] &&
 cd "$CIM_HOME" &&
 for dir in archives cores impls src sysets tmp quicklisp bin; do

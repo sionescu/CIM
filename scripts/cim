@@ -1,22 +1,25 @@
-#!/bin/sh
+#!/bin/sh -
+# This file if for load
+
 cim(){
     command="$1"
     shift
     case "$command" in
 	install)
-	    ( . "$CIM_HOME/scripts/cim_install_impl" "$@" ) ;;
+	    sh "$CIM_HOME/scripts/cim_install_impl" "$@" ;;
 	use)
+	    # To enable to affect ENV, file should be loaded rather than executed
 	    . "$CIM_HOME/scripts/cim_use_impl" ;;
 	resume)
-	    ( . "$CIM_HOME/scripts/cim_resume"
 		case "$1" in
 		    rm)
-			cim_resume_rm "$2" || exit 1 ;;
+			shift
+			sh "$CIM_HOME/scripts/cim_resume" "rm" "$@" ;;
 		    *)
-			cim_resume "$@" ;;
-		esac ) || return 1;;
+			sh "$CIM_HOME/scripts/cim_resume" "resume" "$@" ;;
+		esac;;
 	reset)
-	    ( . "$CIM_HOME/scripts/cim_reset" );;
+	    sh "$CIM_HOME/scripts/cim_reset";;
 	list)
 	    case "$1" in
 		install)
@@ -24,9 +27,10 @@ cim(){
 		resume)
 		    echo "$CIM_HOME/res/resume-"* | sed 's/.*resume-//g';;
 		use)
-		    echo "$CIM_HOME/bin/"*;;
+		    echo "$CIM_HOME/bin/"* | grep -v '[:alpha:]$';;
 		*)
-		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2 && return 1;;
+		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
+		    return 1;;
 	    esac
 	    ;;
 	help)
@@ -37,7 +41,8 @@ cim(){
 		    if [ -s "$CIM_HOME/res/help_$1" ];then
 			cat "$CIM_HOME/res/help_$1"
 		    else
-			echo "Help for $1 did not found. Exit." >&2; return 1
+			echo "Help for $1 did not found. Exit." >&2
+			return 1
 		    fi
 		    ;;
 	    esac
@@ -45,6 +50,7 @@ cim(){
 
 	*)
 	    cim help
-	    echo "[0;31mUnknown command '$command'.[0;39m" >&2; return 1;;
+	    echo "[0;31mUnknown command '$command'.[0;39m" >&2
+	    return 1;;
     esac
 }

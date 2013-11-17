@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/sh -
+# This file if for execute
+
 if [ -L "$CIM_HOME/bin/$1" ];then
 	LISP_IMPL=`echo "$1" | cut -d- -f 1`
 	rm -f "$CIM_HOME/bin/$LISP_IMPL"
 	ln -s "$CIM_HOME/bin/$1" "$CIM_HOME/bin/$LISP_IMPL"
 elif cim_which_impl=`which "$1"`;then
 	LISP_IMPL="$cim_which_impl"
-	unset cim_which_impl
 else
 	echo "$1 is not installed. See 'cim list use."
-	unset cim_which_impl
-	return 1
+	exit 1
 fi
+echo "LISP_IMPL=$LISP_IMPL" > "$CIM_HOME/config/current"

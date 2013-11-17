@@ -1,0 +1,133 @@
+#!/bin/sh -
+# This file if for load
+
+. "$CIM_HOME/scripts/cim_utils"
+
+__cim_get_download_path(){
+    case "$1" in
+	clisp)
+	    echo "http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz"
+	    ;;
+	gcl)
+	    echo "ftp://ftp.gnu.org/pub/gnu/gcl/gcl-$2.tar.gz"
+	    ;;
+	ecl)
+	    echo "http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz"
+	    ;;
+	sbcl)
+	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
+	    ;;
+	sbcl-bin)
+	    {
+		grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
+		{echo "SBCL binary does not support your machine." >&2;return 1}
+	    } | cut -f 3
+	    ;;
+	ccl)
+	    case "`uname -m`" in
+		x86*)
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname`x86.tar.gz"
+		    ;;
+		arm)
+		    [ "`uname`" = "Linux" ] &&
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxx86.tar.gz"
+		    ;;
+		ppc)
+		    [ "`uname`" = "Linux" ] &&
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz"
+		    ;;
+		*)
+		    echo "CCL does not support your machine." >&2
+		    return 1
+		    ;;
+	    esac
+	    ;;
+	*)
+	    echo "$1 is not supported" >&2;
+	    return 1
+	    ;;
+    esac
+}
+
+cim_install_impl_start(){
+    if [ -d "$CIM_HOME/impls/$1-$2" ];then
+	echo "It seems you have installed $1-$2. Did you mean 'cim reinstall $1-$2'?." >&2
+	return 1
+    fi
+    if [ -f "$CIM_HOME/tmp/$1-$v2.lock" ];then
+	echo "You have been already running $1-$2 installation." >&2
+	return 1
+    fi
+    trap "exit 1" HUP INT PIPE QUIT TERM
+    trap "rm -f $CIM_HOME/tmp/$1-$2.lock" EXIT
+    touch "$CIM_HOME/tmp/$1-$2.lock"
+
+}
+cim_install_impl_download(){
+    impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
+    url=`__cim_get_download_path "$1" "$2"`
+    rm -rf "$impl_archive"
+    {
+	[ -f "$impl_archive" ] ||
+	[ -n "$url" ] && __cim_wget "$url" "$impl_archive"
+    } ||
+    {
+	echo "Failed to Donwload. Exit" >&2
+	return 1
+    }
+}
+cim_install_impl_expand(){
+    rm -rf  "$CIM_HOME/src/$1-$2"
+    if [ "$1" = "sbcl" ];then
+	dist="$1-$2.tar.bz2"
+	zip="bzip2"
+    else
+	dist="$1-$2.tar.gz"
+	zip="gzip"
+    fi
+    $zip -dc "$CIM_HOME/archives/$dist" | tar xf - -C "$CIM_HOME/src"
+    [ "$1" = gcl ] && mv "$CIM_HOME/src/gcl" "$CIM_HOME/src/gcl-$2"
+    return 0
+}
+cim_install_impl_configure(){
+    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2")
+}
+cim_install_impl_make(){
+    (cd "$CIM_HOME/src/$1-$2" && make)
+}
+cim_install_impl_install(){
+    mkdir -p "$CIM_HOME/impls/$1-$2" &&
+    (cd "$CIM_HOME/src/$1-$2" && make install)
+}
+cim_install_impl_finish(){
+    ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
+    [ -s "$CIM_HOME//bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
+    rm "$CIM_HOME/tmp/resume-$1-$2"
+    echo "Install done"
+}
+cim_install_sbcl_ensure_impl(){
+    if which sbcl > /dev/null 2>&1;then
+	touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    elif which lisp > /dev/null 2>&1;then
+	echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    elif which ccl > /dev/null 2>&1;then
+	echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    elif which clisp > /dev/null 2>&1;then
+	echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    elif run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1`;then
+	echo "$CIM_HOME/tmp/$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    elif url=`__cim_get_download_path sbcl-bin`;then
+	__cim_wget "$url" - | bzip2 -dc - | tar xf - -C "$CIM_HOME/tmp/" &&
+	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+    else
+	echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
+	exit 1
+    fi
+	
+}
+cim_install_sbcl_make(){
+    (cd "$CIM_HOME/src/$1-$2" && sh make.sh --prefix="$CIM_HOME/impls/$1-$2")
+}
+cim_install_sbcl_install(){
+    (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
+}

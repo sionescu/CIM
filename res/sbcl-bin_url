@@ -1,0 +1,43 @@
+OS	Arch	URL
+Linux	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.58-x86-linux-binary.tar.bz2
+Linux	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.13-x86-64-linux-binary.tar.bz2
+Linux	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-powerpc-linux-binary.tar.bz2
+Linux	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-sparc-linux-binary.tar.bz2
+Linux	alpha	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-alpha-linux-binary.tar.bz2
+Linux	mipsbe	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-mips-linux-binary.tar.bz2
+Linux	mipsle	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-mipsel-linux-binary.tar.bz2
+Darwin	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.6-x86-darwin-binary.tar.bz2
+Darwin	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.8-x86-64-darwin-binary.tar.bz2
+Darwin	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.47-powerpc-darwin-binary.tar.bz2
+Darwin	sparc	
+Darwin	alpha	
+Darwin	mipsbe	
+Darwin	mipsle	
+Solaris	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-solaris-binary.tar.bz2
+Solaris	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-solaris-binary.tar.bz2
+Solaris	ppc	
+Solaris	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-sparc-solaris-binary.tar.bz2
+Solaris	alpha	
+Solaris	mipsbe	
+Solaris	mipsle	
+FreeBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-x86-freebsd-binary.tar.bz2
+FreeBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-64-freebsd-binary.tar.bz2
+FreeBSD	ppc	
+FreeBSD	sparc	
+FreeBSD	alpha	
+FreeBSD	mipsbe	
+FreeBSD	mipsle	
+NetBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-netbsd-binary.tar.bz2
+NetBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-64-netbsd-binary.tar.bz2
+NetBSD	ppc	
+NetBSD	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-powerpc-netbsd-binary.tar.bz2
+NetBSD	alpha	
+NetBSD	mipsbe	
+NetBSD	mipsle	
+OpenBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-openbsd50-binary.tar.bz2
+OpenBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-openbsd50-binary.tar.bz2
+OpenBSD	ppc	
+OpenBSD	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-powerpc-openbsd50-binary.tar.bz2
+OpenBSD	alpha	
+OpenBSD	mipsbe	
+OpenBSD	mipsle	

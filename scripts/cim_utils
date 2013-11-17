@@ -1,0 +1,40 @@
+#!/bin/sh -
+# This file if for load
+
+cim_black(){
+    echo "[0;30$@[0;39m"
+}
+cim_red(){
+    echo "[0;31$@[0;39m"
+}
+cim_green(){
+    echo "[0;32$@[0;39m"
+}
+cim_yellow(){
+    echo "[0;33$@[0;39m"
+}
+cim_blue(){
+    echo "[0;34$@[0;39m"
+}
+cim_magenta(){
+    echo "[0;35$@[0;39m"
+}
+cim_cyan(){
+    echo "[0;36$@[0;39m"
+}
+cim_white(){
+    echo "[0;37$@[0;39m"
+}
+
+__cim_split_impl_version(){
+    awk -f "$CIM_HOME/scripts/split_version.awk" $1 "$CIM_HOME/res/known" 
+}
+__cim_wget(){
+    if which curl > /dev/null 2>&1 ;then
+	curl -L "$1" -o "$2"
+    elif which wget > /dev/null 2>&1 ;then
+	wget "$1" -O "$2"
+    elif which fetch > /dev/null 2>&1 ;then
+	fetch "$1" -o "$2"
+    fi
+}

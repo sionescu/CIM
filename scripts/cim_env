@@ -1,6 +1,0 @@
-#!/bin/sh
-for dir in archives bin cores impls lib quicklisp res scripts src sysets tmp
-do
-    eval "cim_${dir}_path=$CIM_HOME/$dir"
-    export "cim_${dir}_path"
-done
