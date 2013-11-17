@@ -1,5 +1,5 @@
 #!/bin/sh -
-# This file if for execute
+# This file is for execute
 
 if [ -L "$CIM_HOME/bin/$1" ];then
 	LISP_IMPL=`echo "$1" | cut -d- -f 1`

@@ -1,24 +1,24 @@
 #!/bin/sh -
-# This file if for execute
-
+# This file is for execute
 set -e
 : ${CIM_HOME:="$HOME/.cim"};
-export CIM_HOME;
-mkdir -p "$CIM_HOME/archives";
-mkdir -p "$CIM_HOME/tmp";
-if which curl > /dev/null ; then
+export CIM_HOME
+umask 600
+mkdir -p "$CIM_HOME/archives"
+mkdir -p "$CIM_HOME/tmp"
+if which curl > /dev/null ;then
     download(){ curl -L "$1" }
 elif which wget > /dev/null ;then
     download(){ wget "$1" -O - }
 elif which fetch > /dev/null;then
-    download(){ fetch "$1" -o -}
+    download(){ fetch "$1" -o - }
 fi
 download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
 for dir in lib scripts res ;do
     rm -rf "$CIM_HOME/$dir"
 done
 mv "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/"
-for dir in archives bin cores impls lib quicklisp res scripts src sysets tmp
+for dir in archives bin config cores impls lib quicklisp res scripts src sysets tmp
 do
     mkdir -p "$CIM_HOME/$dir"
 done
@@ -37,6 +37,7 @@ cat <<EOM
 Adding to your .*rc file
 '[ -s $HOME/.cim/init ] && . $HOME/.cim/init'
 EOM
+chmod u+x "$CIM_HOME/scripts/cl"
 cimrc='[ -s $HOME/.cim/init ] && . $HOME/.cim/init'
 if [ -n "$BASH_VERSION" ];then
     echo "$cimrc" >> .bashrc

@@ -1,5 +1,5 @@
 #!/bin/sh -
-# This file if for execute
+# This file is for execute
 
 set -ex
 

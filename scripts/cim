@@ -1,5 +1,5 @@
 #!/bin/sh -
-# This file if for load
+# This file is for load
 
 cim(){
     command="$1"
