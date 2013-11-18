@@ -2,14 +2,17 @@
   `(handler-case (progn ,@body)
      (simple-condition (err) 
        (format *error-output* "~&~c[31m~A: ~c[39m~%" #\Esc (class-name (class-of err)) #\Esc)
+       (format *error-output* "~c[31m" #\Esc)
        (apply (function format) *error-output*
               (simple-condition-format-control   err)
               (simple-condition-format-arguments err))
+       (format *error-output* "~c[39m" #\Esc)
        (format *error-output* "~&")
        (force-output *error-output*))
      (condition (err) 
-       (format *error-output* "~&~c[31m~A: ~%  ~A~c[39m~%"
-               #\Esc (class-name (class-of err)) err #\Esc))))
+       (format *error-output* "~&~c[31m~A:~c[39m ~%  ~c[31m~A~c[39m~%"
+               #\Esc (class-name (class-of err)) #\Esc #\Esc err #\Esc)
+       (force-output *error-output*))))
 
 (defun repl ()
   (do ((+eof+ (gensym))
@@ -20,7 +23,7 @@
     (handling-errors
      (setf +++ ++   ++ +   + -   - (read *standard-input* nil +eof+))
      (when (or (eq - +eof+)
-               (member - '((quit)(exit)(continue)) :test (function equal)))
+               (member - '((quit) (exit) (bye)) :test (function equal)))
        (return-from repl))
      (format *standard-output* "~c[33m" #\Esc)
      (setf /// //   // /   / (multiple-value-list (eval -)))

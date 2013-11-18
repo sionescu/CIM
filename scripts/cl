@@ -79,5 +79,6 @@ if [ -n "$cl_sexp" ]; then
 elif [ -n "$cl_file" ]; then
     $cl_command "$cl_debug" "$cl_load" "$cl_init_file" "$cl_load" "$file" $cl_quit
 else
+    which rlwrap > /dev/null 2>&1 && cl_command="rlwrap $cl_command"
     $cl_command "$cl_load" "$cl_init_file" "$cl_eval" "(setf *args* (quote ($*)))" "$cl_load" "$HOME/.cim/lib/repl.lisp" "$cl_eval" '(repl)'  $cl_quit
 fi
