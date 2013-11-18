@@ -3,13 +3,12 @@
 
 cim(){
     command="$1"
-    shift
+    [ -n "$command" ] && shift
     case "$command" in
 	install)
 	    sh "$CIM_HOME/scripts/cim_install_impl" "$@" ;;
 	use)
-	    # To enable to affect ENV, file should be loaded rather than executed
-	    . "$CIM_HOME/scripts/cim_use_impl" ;;
+	    sh "$CIM_HOME/scripts/cim_use_impl" "$@";;
 	resume)
 		case "$1" in
 		    rm)
@@ -25,9 +24,9 @@ cim(){
 		install)
 		    cat "$CIM_HOME/res/known" ;;
 		resume)
-		    echo "$CIM_HOME/res/resume-"* | sed -e 's/.*resume-//g';;
+		    find "$CIM_HOME/tmp/" -name 'resume-*' | sed -e 's/.*resume-//g';;
 		use)
-		    echo "$CIM_HOME/bin/"* | grep -v '[[:alpha:]]$';;
+		    find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-';;
 		*)
 		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
 		    return 1;;
@@ -41,7 +40,7 @@ cim(){
 		    if [ -s "$CIM_HOME/res/help_$1" ];then
 			cat "$CIM_HOME/res/help_$1"
 		    else
-			echo "Help for $1 did not found. Exit." >&2
+			echo "Help for $1 is not prepared, sorry." >&2
 			return 1
 		    fi
 		    ;;
@@ -49,8 +48,13 @@ cim(){
 	    ;;
 
 	*)
+	    if [ -n "$command" ]; then
+		msg="[0;31mUnknown command '$command'.[0;39m"
+	    else
+		msg="[0;31mCommand not specified.[0;39m"
+	    fi
 	    cim help
-	    echo "[0;31mUnknown command '$command'.[0;39m" >&2
+	    echo $msg >&2
 	    return 1;;
     esac
 }

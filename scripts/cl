@@ -1,7 +1,7 @@
 #!/bin/sh -
 # This file is for execute
 . "$CIM_HOME/config/current"
-case "$LISP_IMPL" in
+case "$lisp_impl" in
     sbcl)
 	cl_command="$CIM_HOME/bin/sbcl --noinform --no-userinit --no-sysinit"
 	cl_batch="--disable-debugger"
