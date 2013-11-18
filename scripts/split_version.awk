@@ -9,5 +9,7 @@ BEGIN{
 		}
 	    }
 	}
+    }else{
+	print arr[1],arr[2];
     }
 }

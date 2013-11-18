@@ -94,14 +94,23 @@ cim_install_impl_expand(){
     return 0
 }
 cim_install_impl_configure(){
+    [ -n "$IN_RESUME" ] && rm -f "$CIM_HOME/src/$1-$2/src/confg.cache"
     (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2")
 }
 cim_install_impl_make(){
-    (cd "$CIM_HOME/src/$1-$2" && make)
+    if [ "$1" = "clisp" ]; then
+	(cd "$CIM_HOME/src/$1-$2/src" && make)
+    else
+	(cd "$CIM_HOME/src/$1-$2" && make)
+    fi
 }
 cim_install_impl_install(){
     mkdir -p "$CIM_HOME/impls/$1-$2" &&
-    (cd "$CIM_HOME/src/$1-$2" && make install)
+    if [ "$1" = "clisp" ]; then
+	(cd "$CIM_HOME/src/$1-$2/src" && make install)
+    else
+	(cd "$CIM_HOME/src/$1-$2" && make install)
+    fi
 }
 cim_install_impl_finish(){
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"

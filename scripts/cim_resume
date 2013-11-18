@@ -1,6 +1,6 @@
 #!/bin/sh -
 # This file is for execute
-
+set -x
 cim_resume_rm(){
     status=0
     for resume in "$@";do
@@ -16,14 +16,26 @@ cim_resume_rm(){
 
 cim_resume_resume(){
     . "$CIM_HOME/scripts/cim_install_impl_lib"
+    IN_RESUME=1
     if [ "$#" -gt 0 ];then
-	while [ -s "$CIM_HOME/res/resume-$1" ]; do
-	    . "$CIM_HOME/res/resume-$1"
+	while [ -s "$CIM_HOME/tmp/resume-$1" ]; do
+	    resume="$1"
+	    set -- `__cim_split_impl_version ${resume#resume-}`
+	    for proc in `cat "$resume"`; do
+		eval $proc "$@" && [ -s "$CIM_HOME/tmp/resume-$1-$2" ] && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" ||
+		exit 1
+	    done
+
 	    shift
 	done
     else
-	for resume in "$CIM_HOME/res/resume-"*; do
-	    . "$resume"
+	for resume in `find $CIM_HOME/tmp/ -name "resume-*"`; do
+	    base_resume=`basename "$resume"`
+	    set -- `__cim_split_impl_version "${base_resume#resume-}"`
+	    for proc in `cat "$resume"`; do
+		eval $proc "$@" && [ -s "$CIM_HOME/tmp/resume-$1-$2" ] && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" ||
+		exit 1
+	    done
 	done
     fi
 }
