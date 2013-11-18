@@ -27,7 +27,7 @@ cim(){
 		resume)
 		    echo "$CIM_HOME/res/resume-"* | sed -e 's/.*resume-//g';;
 		use)
-		    echo "$CIM_HOME/bin/"* | grep -v '[:alpha:]$';;
+		    echo "$CIM_HOME/bin/"* | grep -v '[[:alpha:]]$';;
 		*)
 		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
 		    return 1;;

@@ -27,6 +27,8 @@ do
 done
 rm -f "$CIM_HOME/bin/cl"
 ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin/cl"
+chmod u+x "$CIM_HOME/scripts/cl"
+touch ~/.lisprc
 cat <<EOF > "$CIM_HOME/init"
 #!/bin/sh
 : \${CIM_HOME:="$CIM_HOME"};
@@ -41,7 +43,6 @@ cat <<EOM
 Adding to your .*rc file
 '[ -s $HOME/.cim/init ] && . $HOME/.cim/init'
 EOM
-chmod u+x "$CIM_HOME/scripts/cl"
 cimrc='[ -s "$HOME/.cim/init" ] && . "$HOME/.cim/init"'
 if [ -n "$BASH_VERSION" ];then
     echo "$cimrc" >> "$HOME/.bashrc"

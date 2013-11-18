@@ -64,7 +64,11 @@ cim_install_impl_start(){
 
 }
 cim_install_impl_download(){
-    impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
+    if [ "$1" = "sbcl" ];then
+	impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
+    else
+	impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
+    fi
     url=`__cim_get_download_path "$1" "$2"`
     rm -rf "$impl_archive"
     {
@@ -101,7 +105,7 @@ cim_install_impl_install(){
 }
 cim_install_impl_finish(){
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
-    [ -s "$CIM_HOME//bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
+    [ -s "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
     rm "$CIM_HOME/tmp/resume-$1-$2"
     echo "Install done"
 }
@@ -126,7 +130,7 @@ cim_install_sbcl_ensure_impl(){
 	
 }
 cim_install_sbcl_make(){
-    (cd "$CIM_HOME/src/$1-$2" && sh make.sh --prefix="$CIM_HOME/impls/$1-$2")
+    (cd "$CIM_HOME/src/$1-$2" && sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2")
 }
 cim_install_sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
