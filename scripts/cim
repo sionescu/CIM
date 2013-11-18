@@ -2,12 +2,12 @@
 # This file is for load
 
 cim(){
-    command="$1"
-    [ -n "$command" ] && shift
-    case "$command" in
+    case "$1" in
 	install)
+	    shift
 	    sh "$CIM_HOME/scripts/cim_install_impl" "$@" ;;
 	use)
+	    shift	    
 	    sh "$CIM_HOME/scripts/cim_use_impl" "$@";;
 	resume)
 		case "$1" in
@@ -15,11 +15,13 @@ cim(){
 			shift
 			sh "$CIM_HOME/scripts/cim_resume" "rm" "$@" ;;
 		    *)
+			shift
 			sh "$CIM_HOME/scripts/cim_resume" "resume" "$@" ;;
 		esac;;
 	reset)
 	    sh "$CIM_HOME/scripts/cim_reset";;
 	list)
+	    shift
 	    case "$1" in
 		install)
 		    cat "$CIM_HOME/res/known" ;;
@@ -33,6 +35,7 @@ cim(){
 	    esac
 	    ;;
 	help)
+	    shift
 	    case "$1" in
 		"")
 		    cat "$CIM_HOME/res/help" ;;
@@ -46,15 +49,16 @@ cim(){
 		    ;;
 	    esac
 	    ;;
-
+	version)
+	    cat "$CIM_HOME/VERSION"
+	    ;;
 	*)
-	    if [ -n "$command" ]; then
-		msg="[0;31mUnknown command '$command'.[0;39m"
+	    if [ -n "$1" ]; then
+		echo "[0;31mUnknown command '$1'.[0;39m" >&2
 	    else
-		msg="[0;31mCommand not specified.[0;39m"
+		msg="[0;31mCommand not specified.[0;39m" >&2
 	    fi
 	    cim help
-	    echo $msg >&2
 	    return 1;;
     esac
 }
