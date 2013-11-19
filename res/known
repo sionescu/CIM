@@ -42,3 +42,12 @@ ccl-1.6
 ccl-1.7
 ccl-1.8
 ccl[-1.9]
+
+# Armed Bear Common Lisp
+  .
+  .
+abcl-1.1.0.1
+abcl-1.1.0.2
+abcl-1.1.1
+abcl-1.2.0
+abcl[-1.2.1]

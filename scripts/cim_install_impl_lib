@@ -14,6 +14,9 @@ __cim_get_download_path(){
 	ecl)
 	    echo "http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz"
 	    ;;
+	abcl)
+	    echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
+	    ;;
 	sbcl)
 	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
 	    ;;
@@ -161,10 +164,22 @@ cim_install_ccl_rebuild_full(){
 cim_install_ccl_install(){
     cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
-	-exec sed -i "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"\$CIM_HOME/impls/$1-$2\";" '{}' ';'
+	-exec sed -i "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     if uname -m | grep 64;then
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/bin/$1-$2"
     else
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/bin/$1-$2"
     fi    
+}
+
+cim_install_abcl_install(){
+    cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
+    mkdir -p  "$CIM_HOME/impls/$1-$2/bin"
+    cat<<EOF > "$CIM_HOME/impls/$1-$2/bin/abcl"
+#!/bin/sh
+java -classpath $CIM_HOME/impls/$1-$2/abcl-contrib.jar \\
+ -server -Xrs \\
+ -jar $CIM_HOME/impls/$1-$2/abcl.jar "\$@"
+EOF
+    chmod u+x "$CIM_HOME/impls/$1-$2/bin/abcl"
 }

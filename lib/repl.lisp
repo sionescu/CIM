@@ -25,7 +25,7 @@
     (handling-errors
      (setf +++ ++   ++ +   + -   - (read *standard-input* nil +eof+))
      (when (or (eq - +eof+)
-               (member - '((quit) (exit) (bye)) :test (function equal)))
+               (member - '((quit) quit (exit) exit (bye)) :test (function equal)))
        (return-from repl))
      (format *standard-output* "[33m")
      (setf /// //   // /   / (multiple-value-list (eval -)))
@@ -35,5 +35,6 @@
      (format *query-io* "~&[32m~{~#[; No value~%~:;;=> ~@{~S~%~^;   ~}~]~:}[39m" / )
      (force-output *query-io*))))
 (repl)
-#-sbcl (cl-user::quit)
+#-(or sbcl allegro) (cl-user::quit)
 #+sbcl (sb-ext::exit)
+#+allegro (cl-user::exit)

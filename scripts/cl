@@ -65,26 +65,35 @@ case "$lisp_impl" in
 	;;
     gcl)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/gcl" -batch -load "$cl_init_file" -eval "$cl_sexp"
+	    exec "$CIM_HOME/bin/gcl" -batch -load "$cl_init_file" -eval "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$cl_file" 
+	    exec "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$cl_file" -- "$@"
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl"
+	    exec "$rlwrap" "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl" -- "$@"
 	fi
 	;;
     abcl)
 	if [ -n "$cl_sexp_p" ]; then
-	    echo none 
+	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --eval "$cl_sexp"
 	elif [ -n "$cl_file" ]; then
-	    echo none
+	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --load "$cl_file"
 	else
-	    echo none
+	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --load "$lib_repl"
 	fi
 	cl_command="java -jar $CIM_HOME/bin/abcl.jar --noinform --noinit --nosystem"
 	cl_batch="--batch"
 	cl_eval="--eval"
 	cl_load="--load"
 	cl_quit="$cl_eval '(quit)'"
+	;;
+    alisp)
+	if [ -n "$cl_sexp_p" ]; then
+	    exec alisp --qq -L "$cl_init_file" -e "$cl_sexp" --kill
+	elif [ -n "$cl_file" ]; then
+	    exec alisp --qq -L "$cl_init_file" -L "$cl_file" --kill
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/alisp" --qq -L "$cl_init_file" -L "$lib_repl" --kill
+	fi
 	;;
     "")
 	echo "\$LISP_IMPL is not set. Have you loaded ~/.cim/scripts/cim ?" >&2

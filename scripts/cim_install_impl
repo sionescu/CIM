@@ -33,6 +33,14 @@ cim_install_ccl_install
 cim_install_impl_finish
 "
 
+cim_install_abcl_full="
+cim_install_impl_start
+cim_install_impl_download
+cim_install_impl_expand
+cim_install_abcl_install
+cim_install_impl_finish
+"
+
 target=$1
 shift
 set --  `__cim_split_impl_version "$target"` "$@"
@@ -41,7 +49,7 @@ case "$target" in
 	processes="$cim_install_full"
 	;;
     abcl*)
-	
+	processes="$cim_install_abcl_full"
 	;;
     sbcl*)
 	processes="$cim_install_sbcl_full"
