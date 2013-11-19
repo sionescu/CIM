@@ -1,19 +1,17 @@
 #!/bin/sh -
 # This file is for execute
-set -x
-if [ -L "$CIM_HOME/bin/$1" ] &&
-    find -L "$CIM_HOME/bin/" -name "$1" -path "$CIM_HOME/impls/"
+sh "$CIM_HOME/scripts/cim_aware_system_lisp"
+
+if [ -L "$CIM_HOME/bin/$1" ] && {
+	find -L "$CIM_HOME/bin/" -name "$1" -path "$CIM_HOME/impls/" ||
+	echo "$1" | grep -e '-system$'
+    }
 then
     . "$CIM_HOME/scripts/cim_utils"
     lisp_impl=`echo "$1" | cut -d- -f 1`
     lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
     rm -f "$CIM_HOME/bin/$lisp_impl"
     ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$lisp_impl"
-elif lisp_full_name=`which "$1"`;then
-    lisp_impl=`basename "$lisp_full_name"`
-    rm -f "$CIM_HOME/bin/$lisp_impl"
-    ln -s "$lisp_full_name" "$CIM_HOME/bin/${lisp_impl}-system"
-    ln -s "$CIM_HOME/bin/${lisp_impl}-system" "$CIM_HOME/bin/$lisp_impl"
 else
     echo "$1 is not installed. See 'cim list use."
     exit 1

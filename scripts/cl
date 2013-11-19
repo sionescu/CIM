@@ -3,7 +3,9 @@
 . "$CIM_HOME/config/current"
 cl_init_file="$HOME/.lisprc"
 lib_repl="$CIM_HOME/lib/repl.lisp"
-rlwrap=`which rlwrap`
+if rlwrap=`which rlwrap`;then
+    rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m -q \" -r "
+fi
 while getopts ":adhe:FlnpL:Sv" frag;do
     case "$frag" in
 	a) cl_autosplit=true;;
@@ -32,7 +34,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$cl_file"
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$lib_repl"
 	fi
 	;;
     clisp)
@@ -41,7 +43,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$cl_file"
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$lib_repl"
 	fi
 	;;
     ecl)
@@ -51,7 +53,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell  "$cl_file"
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell "$lib_repl"
 	fi
 	;;
     ccl)
@@ -60,7 +62,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cl_init_file" --load "$cl_file" --eval '(quit)'
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/ccl"  --no-init --quiet --batch --load "$cl_init_file" --load "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/ccl"  --no-init --quiet --batch --load "$cl_init_file" --load "$lib_repl"
 	fi
 	;;
     gcl)
@@ -69,7 +71,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$cl_file" -- "$@"
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl" -- "$@"
+	    exec $rlwrap "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl" -- "$@"
 	fi
 	;;
     abcl)
@@ -92,7 +94,7 @@ case "$lisp_impl" in
 	elif [ -n "$cl_file" ]; then
 	    exec alisp --qq -L "$cl_init_file" -L "$cl_file" --kill
 	else
-	    exec "$rlwrap" "$CIM_HOME/bin/alisp" --qq -L "$cl_init_file" -L "$lib_repl" --kill
+	    exec $rlwrap "$CIM_HOME/bin/alisp" --qq -L "$cl_init_file" -L "$lib_repl" --kill
 	fi
 	;;
     "")

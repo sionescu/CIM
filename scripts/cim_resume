@@ -1,6 +1,6 @@
 #!/bin/sh -
 # This file is for execute
-set -x
+
 cim_resume_rm(){
     status=0
     for resume in "$@";do

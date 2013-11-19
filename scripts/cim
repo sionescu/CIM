@@ -9,6 +9,20 @@ cim(){
 	use)
 	    shift	    
 	    sh "$CIM_HOME/scripts/cim_use_impl" "$@";;
+	uninstall)
+	    shift	    
+	    sh "$CIM_HOME/scripts/cim_uninstall" "$@";;
+	clean)
+	    shift	    
+	    sh "$CIM_HOME/scripts/cim_clean" "$@";;
+	distclean)
+	    shift	    
+	    sh "$CIM_HOME/scripts/cim_distclean" "$@";;
+	purge)
+	    shift
+	    cim clean "$@"
+	    cim uninstall "$@"	
+	    ;;
 	resume)
 		case "$1" in
 		    rm)
@@ -28,7 +42,8 @@ cim(){
 		resume)
 		    find "$CIM_HOME/tmp/" -name 'resume-*' | sed -e 's/.*resume-//g';;
 		use)
-		    find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-';;
+		    sh "$CIM_HOME/scripts/cim_aware_system_lisp"
+		    find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-' | sort;;
 		*)
 		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
 		    return 1;;
