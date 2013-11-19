@@ -5,7 +5,7 @@
 ## DESCRIPTION
 
 __CAUTION__
-CIM is under eager development. It does not work yet.
+CIM is under eager development. Most of features does not work yet.
 Please wait for release version or contribute to accelerate development.
 
 CIM aims to be a tool which allows you to easily install, manage,

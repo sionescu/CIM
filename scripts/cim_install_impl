@@ -24,6 +24,15 @@ cim_install_sbcl_install
 cim_install_impl_finish
 "
 
+cim_install_ccl_full="
+cim_install_impl_start
+cim_install_impl_download
+cim_install_impl_expand
+cim_install_ccl_rebuild_full
+cim_install_ccl_install
+cim_install_impl_finish
+"
+
 target=$1
 shift
 set --  `__cim_split_impl_version "$target"` "$@"
@@ -38,7 +47,7 @@ case "$target" in
 	processes="$cim_install_sbcl_full"
 	;;
     ccl*)
-	    
+	processes="$cim_install_ccl_full"
 	;;
     *)
 	echo "Unknown Lisp impl $1. Exit." >&2

@@ -26,7 +26,7 @@ __cim_get_download_path(){
 	ccl)
 	    case "`uname -m`" in
 		x86*)
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname`x86.tar.gz"
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz"
 		    ;;
 		arm)
 		    [ "`uname`" = "Linux" ] &&
@@ -90,12 +90,15 @@ cim_install_impl_expand(){
 	zip="gzip"
     fi
     $zip -dc "$CIM_HOME/archives/$dist" | tar xf - -C "$CIM_HOME/src"
-    [ "$1" = gcl ] && mv "$CIM_HOME/src/gcl" "$CIM_HOME/src/gcl-$2"
+    if [ "$1" = gcl ] || [ "$1" = ccl ];then
+	mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
+    fi
     return 0
 }
 cim_install_impl_configure(){
     [ -n "$IN_RESUME" ] && rm -f "$CIM_HOME/src/$1-$2/src/confg.cache"
-    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2")
+    [ "$1" = "gcl" ] && flags="$flags --enable-ansi"
+    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2" $flags)
 }
 cim_install_impl_make(){
     if [ "$1" = "clisp" ]; then
@@ -113,7 +116,8 @@ cim_install_impl_install(){
     fi
 }
 cim_install_impl_finish(){
-    ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
+    rm -f  "$CIM_HOME/bin/$1-$2"
+    [ ! "$1" = "ccl" ] && ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
     [ -s "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
     rm "$CIM_HOME/tmp/resume-$1-$2"
     echo "Install done"
@@ -143,4 +147,24 @@ cim_install_sbcl_make(){
 }
 cim_install_sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
+}
+
+cim_install_ccl_rebuild_full(){
+    logic="!"
+    if uname -m | grep 64;then
+	logic=
+    fi
+    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -executable "!" -type d $logic -name '*64'` ||
+    return 1
+    "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
+}
+cim_install_ccl_install(){
+    cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
+    find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
+	-exec sed -i "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"\$CIM_HOME/impls/$1-$2\";" '{}' ';'
+    if uname -m | grep 64;then
+	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/bin/$1-$2"
+    else
+	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/bin/$1-$2"
+    fi    
 }

@@ -34,6 +34,10 @@ cat <<EOF > "$CIM_HOME/init"
 : \${CIM_HOME:="$CIM_HOME"};
 export CIM_HOME
 PATH="\$CIM_HOME/bin:\$PATH";export PATH
+if [ -s "\$CIM_HOME/config/default" ];then
+    rm -f "\$CIM_HOME/config/current"
+    cp "\$CIM_HOME/config/default" "\$CIM_HOME/config/current"
+fi
 
 . "\$CIM_HOME/scripts/cim"
 

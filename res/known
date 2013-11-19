@@ -1,4 +1,4 @@
-# CLISP
+# GNU CLISP
   .
   .
 clisp-2.45
@@ -7,7 +7,7 @@ clisp-2.47
 clisp-2.48
 clisp[-2.49]
 
-# GCL
+# GNU Common Lisp
   .
   .
 gcl-2.6.5
@@ -16,7 +16,7 @@ gcl-2.6.7
 gcl-2.6.8
 gcl[-2.6.9]
 
-# ECL
+# Embeddable Common Lisp
   .
   .
 ecl-11.1.1
@@ -25,9 +25,20 @@ ecl-12.7.1
 ecl-12.12.1
 ecl[-13.5.1]
 
-# SBCL
+# Steel Bank Common Lisp
+  .
+  .
 sbcl-1.1.9
 sbcl-1.1.10
 sbcl-1.1.11
 sbcl-1.1.12
 sbcl[-1.1.13]
+
+# Clozure CL
+  .
+  .
+ccl-1.5
+ccl-1.6
+ccl-1.7
+ccl-1.8
+ccl[-1.9]

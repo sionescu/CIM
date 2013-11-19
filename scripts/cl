@@ -1,43 +1,85 @@
 #!/bin/sh -
 # This file is for execute
 . "$CIM_HOME/config/current"
+cl_init_file="$HOME/.lisprc"
+lib_repl="$CIM_HOME/lib/repl.lisp"
+rlwrap=`which rlwrap`
+while getopts ":adhe:FlnpL:Sv" frag;do
+    case "$frag" in
+	a) cl_autosplit=true;;
+	d) cl_debug=true;;
+	h) cl_print_help; exit 0;;
+	e) cl_sexp="$cl_sexp $OPTARG";cl_sexp_p=true;;
+	F) cl_IFS="$OPTARG";;
+	l) cl_lineend=true;;
+	n) cl_eachline=true;;
+	p) cl_printline=true;;
+	L) cl_load_systems="$OPTARG";;
+	S) cl_script_path=true;;
+	v) cl_print_version; exit 0;;
+    esac
+done
+cl_sexp="(progn $cl_sexp (values))"
+shift $(( $OPTIND - 1 ))
+if [ -z "$cl_sexp_p" ] && [ -f "$1" ]; then
+    cl_file="$1"
+    shift
+fi
 case "$lisp_impl" in
     sbcl)
-	cl_command="$CIM_HOME/bin/sbcl --noinform --no-userinit --no-sysinit"
-	cl_batch="--disable-debugger"
-	cl_eval="--eval"
-	cl_load="--load"
-	cl_quit='--quit'
+	if [ -n "$cl_sexp_p" ]; then
+	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --non-interactive --userinit "$cl_init_file" --eval "$cl_sexp"
+	elif [ -n "$cl_file" ]; then
+	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$cl_file"
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$lib_repl"
+	fi
 	;;
     clisp)
-	cl_command="$CIM_HOME/bin/clisp -norc --quiet --silent"
-	cl_batch=""
-	cl_eval="-x"
-	cl_load="-i"
-	cl_quit="$cl_eval '(quit)'"
+	if [ -n "$cl_sexp_p" ]; then
+	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" -x "$cl_sexp"
+	elif [ -n "$cl_file" ]; then
+	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$cl_file"
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$lib_repl"
+	fi
 	;;
     ecl)
-	cl_command="$CIM_HOME/bin/ecl -norc"
-	cl_batch=""
-	cl_eval="-eval"
-	cl_load="-load"
-	cl_quit="$cl_eval '(quit)'"
+
+	if [ -n "$cl_sexp_p" ]; then
+	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -eval "$cl_sexp" -eval "(quit)"
+	elif [ -n "$cl_file" ]; then
+	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell  "$cl_file"
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell "$lib_repl"
+	fi
 	;;
     ccl)
-	cl_command="$CIM_HOME/bin/ccl --no-init --quiet"
-	cl_batch="--batch"
-	cl_eval="--eval"
-	cl_load="--load"
-	cl_quit="$cl_eval '(quit)'"
+	if [ -n "$cl_sexp_p" ]; then
+	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cl_init_file" --eval "$cl_sexp" --eval '(quit)' 
+	elif [ -n "$cl_file" ]; then
+	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cl_init_file" --load "$cl_file" --eval '(quit)'
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/ccl"  --no-init --quiet --batch --load "$cl_init_file" --load "$lib_repl"
+	fi
 	;;
     gcl)
-	cl_command="$CIM_HOME/bin/gcl"
-	cl_batch="-batch"
-	cl_eval="-eval"
-	cl_load="-f"
-	cl_quit="$cl_eval '(quit)'"
+	if [ -n "$cl_sexp_p" ]; then
+	    exec "$CIM_HOME/bin/gcl" -batch -load "$cl_init_file" -eval "$cl_sexp"
+	elif [ -n "$cl_file" ]; then
+	    exec "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$cl_file" 
+	else
+	    exec "$rlwrap" "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl"
+	fi
 	;;
     abcl)
+	if [ -n "$cl_sexp_p" ]; then
+	    echo none 
+	elif [ -n "$cl_file" ]; then
+	    echo none
+	else
+	    echo none
+	fi
 	cl_command="java -jar $CIM_HOME/bin/abcl.jar --noinform --noinit --nosystem"
 	cl_batch="--batch"
 	cl_eval="--eval"
@@ -54,31 +96,3 @@ case "$lisp_impl" in
 	;;
 esac
 
-cl_debug="$cl_batch"
-while getopts ":adhe:FlnpL:Sv" frag;do
-    case "$frag" in
-	a) cl_autosplit=true;;
-	d) cl_debug="";;
-	h) cl_print_help; exit 0;;
-	e) cl_sexp="$cl_sexp $OPTARG";;
-	F) cl_IFS="$OPTARG";;
-	l) cl_lineend=true;;
-	n) cl_eachline=true;;
-	p) cl_printline=true;;
-	L) cl_load_systems="$OPTARG";;
-	S) cl_script_path=true;;
-	v) cl_print_version; exit 0;;
-    esac
-done
-shift $(( $OPTIND - 1 ))
-
-cl_init_file="$HOME/.lisprc"
-if [ -n "$cl_sexp" ]; then
-    echo "$cl_sexps"
-    $cl_command "$cl_debug" "$cl_load" "$cl_init_file" "$cl_eval" "(progn $cl_sexp )" $cl_quit
-elif [ -n "$cl_file" ]; then
-    $cl_command "$cl_debug" "$cl_load" "$cl_init_file" "$cl_load" "$file" $cl_quit
-else
-    which rlwrap > /dev/null 2>&1 && cl_command="rlwrap $cl_command"
-    $cl_command "$cl_load" "$cl_init_file" "$cl_load" "$HOME/.cim/lib/repl.lisp"
-fi
