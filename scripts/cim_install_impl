@@ -1,7 +1,7 @@
 #!/bin/sh -
 # This file is for execute
 
-set -xe
+set -e
 
 . "$CIM_HOME/scripts/cim_install_impl_lib"
 

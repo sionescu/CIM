@@ -121,7 +121,7 @@ cim_install_impl_expand(){
 }
 cim_install_impl_configure(){
     [ -n "$IN_RESUME" ] && rm -f "$CIM_HOME/src/$1-$2/src/confg.cache"
-    [ "$1" = "gcl" ] && flags="$flags --enable-ansi --disable-readline --mandir=$CIM_HOME/share/man"
+    [ "$1" = "gcl" ] && flags="$flags --enable-ansi --mandir=$CIM_HOME/share/man"
     [ "$1" = "ecl" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     [ "$1" = "clisp" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     
@@ -180,7 +180,7 @@ cim_install_sbcl_ensure_impl(){
 	
 }
 cim_install_sbcl_make(){
-    (cd "$CIM_HOME/src/$1-$2" && sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2")
+    (cd "$CIM_HOME/src/$1-$2" && sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2 --fancy")
 }
 cim_install_sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)

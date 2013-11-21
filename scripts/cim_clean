@@ -6,7 +6,7 @@
 while [ $# -gt 0 ];do
     if [ "$1" = "all" ] ;then
 	mkdir -p "$CIM_HOME/src/"
-	set -- `ls "$CIM_HOME/src/"`
+	set -- `ls "$CIM_HOME/src/" "$CIM_HOME/archives/" | uniq`
 	continue
     fi
     rm -rf "$CIM_HOME/archives/$1"

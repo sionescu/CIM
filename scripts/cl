@@ -1,6 +1,7 @@
 #!/bin/sh -
 # This file is for execute
 . "$CIM_HOME/config/current"
+cim_ext_file="$CIM_HOME/lib/cim-ext.lisp"
 cl_init_file="$HOME/.lisprc"
 lib_repl="$CIM_HOME/lib/repl.lisp"
 if rlwrap=`which rlwrap`;then
@@ -30,79 +31,74 @@ fi
 case "$lisp_impl" in
     sbcl)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --non-interactive --userinit "$cl_init_file" --eval "$cl_sexp"
+	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --non-interactive --userinit "$cim_ext_file" --load "$cl_init_file" --eval "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$cl_file"
+	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit  "$cim_ext_file" --load "$cl_init_file" --script "$cl_file" -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit "$cl_init_file" --script "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --load "$cim_ext_file" --load "$cl_init_file" --script "$lib_repl" -- "$@"
 	fi
 	;;
     clisp)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" -x "$cl_sexp"
+	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cim_ext_file" -i "$cl_init_file" -x "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$cl_file"
+	    exec "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cim_ext_file" -i "$cl_init_file" "$cl_file" -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cl_init_file" "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/clisp" -norc --quiet --silent -on-error exit -i "$cim_ext_file" -i "$cl_init_file" "$lib_repl" -- "$@"
 	fi
 	;;
     ecl)
 
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -eval "$cl_sexp" -eval "(quit)"
+	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cim_ext_file" -load "$cl_init_file" -eval "$cl_sexp" -eval "(quit)" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell  "$cl_file"
+	    exec "$CIM_HOME/bin/ecl" -norc -q -load "$cim_ext_file" -load "$cl_init_file" -shell  "$cl_file" -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/ecl" -norc -q -load "$cl_init_file" -shell "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/ecl" -norc -q -load "$cim_ext_file" -load "$cl_init_file" -shell "$lib_repl" -- "$@"
 	fi
 	;;
     ccl)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cl_init_file" --eval "$cl_sexp" --eval '(quit)' 
+	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cim_ext_file" --load "$cl_init_file" --eval "$cl_sexp" --eval '(quit)' -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cl_init_file" --load "$cl_file" --eval '(quit)'
+	    exec "$CIM_HOME/bin/ccl" --no-init --quiet --batch --load "$cim_ext_file" --load "$cl_init_file" --load "$cl_file" --eval '(quit)' -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/ccl"  --no-init --quiet --batch --load "$cl_init_file" --load "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/ccl"  --no-init --quiet --batch --load "$cim_ext_file" --load "$cl_init_file" --load "$lib_repl" -- "$@"
 	fi
 	;;
     gcl)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/gcl" -batch -load "$cl_init_file" -eval "$cl_sexp" -- "$@"
+	    exec "$CIM_HOME/bin/gcl" -batch -load "$cim_ext_file" -load "$cl_init_file" -eval "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$cl_file" -- "$@"
+	    exec "$CIM_HOME/bin/gcl" -load "$cim_ext_file" -load "$cl_init_file" -f "$cl_file" -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/gcl" -load "$cl_init_file" -f "$lib_repl" -- "$@"
+	    exec $rlwrap "$CIM_HOME/bin/gcl" -load "$cim_ext_file" -load "$cl_init_file" -f "$lib_repl" -- "$@"
 	fi
 	;;
     abcl)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --eval "$cl_sexp"
+	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cim_ext_file" --load "$cl_init_file" --batch --eval "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --load "$cl_file"
+	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cim_ext_file" --load "$cl_init_file" --batch --load "$cl_file" -- "$@"
 	else
-	    exec "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cl_init_file" --batch --load "$lib_repl"
+	    exec $rlwrap "$CIM_HOME/bin/abcl" --noinform --noinit --system --load "$cim_ext_file" --load "$cl_init_file" --batch --load "$lib_repl" -- "$@"
 	fi
-	cl_command="java -jar $CIM_HOME/bin/abcl.jar --noinform --noinit --nosystem"
-	cl_batch="--batch"
-	cl_eval="--eval"
-	cl_load="--load"
-	cl_quit="$cl_eval '(quit)'"
 	;;
     alisp)
 	if [ -n "$cl_sexp_p" ]; then
-	    exec alisp --qq -L "$cl_init_file" -e "$cl_sexp" --kill
+	    exec alisp --qq -L "$cim_ext_file" -L "$cl_init_file" -e "$cl_sexp" --kill -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec alisp --qq -L "$cl_init_file" -L "$cl_file" --kill
+	    exec alisp --qq -L "$cim_ext_file" -L "$cl_init_file" -L "$cl_file" --kill -- "$@"
 	else
-	    exec $rlwrap "$CIM_HOME/bin/alisp" --qq -L "$cl_init_file" -L "$lib_repl" --kill
+	    exec $rlwrap "$CIM_HOME/bin/alisp" --qq -L "$cim_ext_file" -L "$cl_init_file" -L "$lib_repl" --kill -- "$@"
 	fi
 	;;
     "")
-	echo "\$LISP_IMPL is not set. Have you loaded ~/.cim/scripts/cim ?" >&2
+	echo "\$lisp is not set. Have you loaded ~/.cim/scripts/cim ?" >&2
 	exit 1
 	;;
     *)
-	echo "Unknown lisp implementation $LISP_IMPL. Exit." >&2
+	echo "Unknown lisp implementation $lisp_impl. Exit." >&2
 	exit 1
 	;;
 esac
