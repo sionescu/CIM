@@ -21,13 +21,16 @@ for dir in lib scripts res ;do
 done
 mv "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/" &&
 rm -rf "$CIM_HOME/tmp/CIM-master/"
-for dir in archives bin config cores impls lib quicklisp res scripts src sysets tmp
+for dir in archives bin config cores impls lib res scripts src sysets tmp
 do
     mkdir -p "$CIM_HOME/$dir"
 done
 rm -f "$CIM_HOME/bin/cl"
 ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin/cl"
+rm -f "$CIM_HOME/bin/ql"
+ln -s "$CIM_HOME/scripts/ql" "$CIM_HOME/bin/ql"
 chmod u+x "$CIM_HOME/scripts/cl"
+chmod u+x "$CIM_HOME/scripts/ql"
 touch ~/.lisprc
 cat <<EOF > "$CIM_HOME/init"
 #!/bin/sh

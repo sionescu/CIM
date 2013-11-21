@@ -44,6 +44,18 @@ cim(){
 		use)
 		    sh "$CIM_HOME/scripts/cim_aware_system_lisp"
 		    find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-' | sort;;
+		uninstall)
+		    find "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort
+		    ;;
+		clean)
+		    find "$CIM_HOME/src/" "$CIM_HOME/archives/" -mindepth 1 -maxdepth 1 -type d  -exec basename '{}' ';' | sort --unique
+		    ;;
+		distclean)
+		    find "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort
+		    ;;
+		purge)
+		    find "$CIM_HOME/src/" "$CIM_HOME/archives/" "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort --unique
+		    ;;
 		*)
 		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
 		    return 1;;
@@ -58,7 +70,7 @@ cim(){
 		    if [ -s "$CIM_HOME/res/help_$1" ];then
 			cat "$CIM_HOME/res/help_$1"
 		    else
-			echo "Help for $1 is not prepared, sorry." >&2
+			echo "Help for '$1' is not prepared, sorry." >&2
 			return 1
 		    fi
 		    ;;

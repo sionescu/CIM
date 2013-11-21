@@ -13,7 +13,8 @@ cim_install_impl_configure
 cim_install_impl_make
 cim_install_impl_doc
 cim_install_impl_install
-cim_install_impl_finish
+cim_install_impl_link
+cim_install_impl_install_ql_if_need
 "
 cim_install_sbcl_full="
 cim_install_impl_start
@@ -23,7 +24,8 @@ cim_install_sbcl_ensure_impl
 cim_install_sbcl_make
 cim_install_impl_make_doc
 cim_install_sbcl_install
-cim_install_impl_finish
+cim_install_impl_link
+cim_install_impl_install_ql_if_need
 "
 
 cim_install_ccl_full="
@@ -32,7 +34,8 @@ cim_install_impl_download
 cim_install_impl_expand
 cim_install_ccl_rebuild_full
 cim_install_ccl_install
-cim_install_impl_finish
+cim_install_impl_link
+cim_install_impl_install_ql_if_need
 "
 
 cim_install_abcl_full="
@@ -40,7 +43,8 @@ cim_install_impl_start
 cim_install_impl_download
 cim_install_impl_expand
 cim_install_abcl_install
-cim_install_impl_finish
+cim_install_impl_link
+cim_install_impl_install_ql_if_need
 "
 
 cim_install_alisp_full="
@@ -48,7 +52,8 @@ cim_install_impl_start
 cim_install_impl_download
 cim_install_impl_expand
 cim_install_alisp_install
-cim_install_impl_finish
+cim_install_impl_link
+cim_install_impl_install_ql_if_need
 "
 
 target="$1"
@@ -78,5 +83,7 @@ esac
     
 printf "%s\n" $processes > "$CIM_HOME/tmp/resume-$1-$2"
 for proc in $processes;do
-    eval $proc "$@" && [ -e "$CIM_HOME/tmp/resume-$1-$2" ] && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2"
+    eval $proc "$@" && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2"
 done
+rm -f "$CIM_HOME/tmp/resume-$1-$2"
+echo "Install done"

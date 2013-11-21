@@ -23,7 +23,9 @@ __cim_get_download_path(){
 	sbcl-bin)
 	    {
 		grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
-		{echo "SBCL binary does not support your machine." >&2;return 1}
+		{
+		    echo "SBCL binary does not support your machine." >&2;return 1
+		}
 	    } | cut -f 3
 	    ;;
 	ccl)
@@ -138,8 +140,7 @@ cim_install_impl_make(){
 cim_install_impl_doc(){
     mkdir -p "$CIM_HOME/share/man"
     if [ "$1" = "sbcl" ] ;then
-	mkdir -p "$CIM_HOME/share/man/man1"
-	cp "$CIM_HOME/src/$1-$2/doc/$1.1" "$CIM_HOME/share/man/man1"
+	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
     fi
 }
 
@@ -151,13 +152,22 @@ cim_install_impl_install(){
 	(cd "$CIM_HOME/src/$1-$2" && make install)
     fi
 }
-cim_install_impl_finish(){
+cim_install_impl_link(){
     rm -f  "$CIM_HOME/bin/$1-$2"
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
     [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
-    rm "$CIM_HOME/tmp/resume-$1-$2"
-    echo "Install done"
 }
+cim_install_impl_install_ql_if_need(){
+    if [ ! -d "$CIM_HOME/quicklisp/" ];then
+	rm -f "$CIM_HOME/quicklisp"
+	rm -f "$CIM_HOME/tmp/quicklisp.lisp"
+	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/tmp/quicklisp.lisp"
+	echo "(quicklisp-quickstart:install :path #p\"$CIM_HOME/quicklisp/\")" >> "$CIM_HOME/tmp/quicklisp.lisp"
+	echo "(ql:add-to-init-file #p\"$HOME/.lisprc\"" >> "$CIM_HOME/tmp/quicklisp.lisp"
+	cl -Q "$CIM_HOME/tmp/quicklisp.lisp"
+    fi
+}
+
 cim_install_sbcl_ensure_impl(){
     if which sbcl > /dev/null 2>&1;then
 	touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
@@ -180,7 +190,8 @@ cim_install_sbcl_ensure_impl(){
 	
 }
 cim_install_sbcl_make(){
-    (cd "$CIM_HOME/src/$1-$2" && sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2 --fancy")
+    (cd "$CIM_HOME/src/$1-$2" &&
+	sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2 --fancy")
 }
 cim_install_sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)

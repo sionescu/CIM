@@ -7,7 +7,7 @@ lib_repl="$CIM_HOME/lib/repl.lisp"
 if rlwrap=`which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m -q \" -r "
 fi
-while getopts ":adhe:FlnpL:Sv" frag;do
+while getopts ":adhe:FlnpL:SvQ" frag;do
     case "$frag" in
 	a) cl_autosplit=true;;
 	d) cl_debug=true;;
@@ -17,9 +17,10 @@ while getopts ":adhe:FlnpL:Sv" frag;do
 	l) cl_lineend=true;;
 	n) cl_eachline=true;;
 	p) cl_printline=true;;
-	L) cl_load_systems="$OPTARG";;
+	L) cl_sexp="$cl_sexp (load \"$OPTARG\")";;
 	S) cl_script_path=true;;
 	v) cl_print_version; exit 0;;
+	Q) cl_init_file="$CIM_HOME/res/noinit";;
     esac
 done
 cl_sexp="(progn $cl_sexp (values))"
@@ -33,7 +34,7 @@ case "$lisp_impl" in
 	if [ -n "$cl_sexp_p" ]; then
 	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --non-interactive --userinit "$cim_ext_file" --load "$cl_init_file" --eval "$cl_sexp" -- "$@"
 	elif [ -n "$cl_file" ]; then
-	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --userinit  "$cim_ext_file" --load "$cl_init_file" --script "$cl_file" -- "$@"
+	    exec "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --no-userinit --userinit  "$cim_ext_file" --load "$cl_init_file" --script "$cl_file" -- "$@"
 	else
 	    exec $rlwrap "$CIM_HOME/bin/sbcl" --noinform --no-sysinit --load "$cim_ext_file" --load "$cl_init_file" --script "$lib_repl" -- "$@"
 	fi

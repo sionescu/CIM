@@ -3,8 +3,9 @@
 
 [ -n "$CIM_HOME" ] &&
 cd "$CIM_HOME" &&
-for dir in archives cores impls src sysets tmp quicklisp bin; do
+for dir in archives cores impls src sysets tmp bin; do
     rm -rf "$dir"
     mkdir -p "$dir"
 done
-ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin"
+ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin/"
+ln -s "$CIM_HOME/scripts/ql" "$CIM_HOME/bin/"
