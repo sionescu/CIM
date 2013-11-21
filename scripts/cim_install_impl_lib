@@ -46,6 +46,21 @@ __cim_get_download_path(){
 	    esac
 	    ;;
 	alisp)
+	    if expr match `uname -m` 'x86*' > /dev/null 2>&1 ; then
+		vname=`echo "$2" | tr -d \.`
+		case `uname` in
+		    Linux)
+			echo "http://www.franz.com/ftp/pub/acl${vname}express/linux86/acl${vname}express-linux-x86.bz2"
+			;;
+		    Darwin)
+			echo "http://www.franz.com/ftp/pub/acl${vname}express/macosx86/acl${vname}express-macosx-x86.dmg"
+			;;
+		    FreeBSD)
+			echo "http://www.franz.com/ftp/pub/acl${vname}express/freebsd/acl${vname}express-freebsd-x86.bz2"
+			;;
+		esac
+	    fi
+	    return 1
 	    ;;
 	*)
 	    echo "$1 is not supported" >&2;
@@ -70,26 +85,27 @@ cim_install_impl_start(){
 
 }
 cim_install_impl_download(){
-    if [ "$1" = "sbcl" ];then
+    if [ "$1" = "sbcl" ] || [ "$1" = "alisp" ];then
 	impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
     else
 	impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
     fi
     url=`__cim_get_download_path "$1" "$2"`
     mkdir -p "$CIM_HOME/archives/"
-    rm -rf "$impl_archive"
     {
 	[ -f "$impl_archive" ] ||
-	[ -n "$url" ] && __cim_wget "$url" "$impl_archive"
+	{
+	    [ -n "$url" ] && __cim_wget "$url" "$impl_archive"
+	}
     } ||
     {
 	echo "Failed to Donwload. Exit" >&2
-	return 1
+	exit 1
     }
 }
 cim_install_impl_expand(){
     rm -rf  "$CIM_HOME/src/$1-$2"
-    if [ "$1" = "sbcl" ];then
+    if [ "$1" = "sbcl" ] || [ "$1" = "alisp" ];then
 	dist="$1-$2.tar.bz2"
 	zip="bzip2"
     else
@@ -97,7 +113,7 @@ cim_install_impl_expand(){
 	zip="gzip"
     fi
     mkdir -p "$CIM_HOME/src"
-    $zip -dc "$CIM_HOME/archives/$dist" | tar xf - -C "$CIM_HOME/src"
+    $zip -dc "$CIM_HOME/archives/$dist" | tar -xf - -C "$CIM_HOME/src"
     if [ "$1" = gcl ] || [ "$1" = ccl ];then
 	mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
     fi
@@ -154,8 +170,9 @@ cim_install_sbcl_ensure_impl(){
     elif [ -n run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ];then
 	echo "$CIM_HOME/tmp/$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif url=`__cim_get_download_path sbcl-bin`;then
-	__cim_wget "$url" - | bzip2 -dc - | tar xf - -C "$CIM_HOME/tmp/" &&
-	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+	__cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
+	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh` --disable-debugger --no-userinit --no-sysinit" |
+	head -n 1 > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
 	echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
 	exit 1
@@ -200,4 +217,11 @@ java -classpath $CIM_HOME/impls/$1-$2/abcl-contrib.jar \\
  -jar $CIM_HOME/impls/$1-$2/abcl.jar "\$@"
 EOF
     chmod u+x "$CIM_HOME/impls/$1-$2/bin/abcl"
+}
+
+cim_install_alisp_install(){
+    vname=`echo "$2" | tr -d \.`
+    mkdir -p "$CIM_HOME/impls/"
+    cp -R "$CIM_HOME/src/acl${vname}express" "$CIM_HOME/impls/$1-$2"
+    ln -s "$CIM_HOME/impls/$1-$2/alisp" "$CIM_HOME/impls/$1-$2/bin/alisp"
 }

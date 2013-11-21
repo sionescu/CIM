@@ -1,0 +1,30 @@
+#!/bin/sh
+# This file is for execute
+
+. "$CIM_HOME/scripts/cim_utils"
+
+while [ $# -gt 0 ];do
+    if [ "$1" = "all" ] ;then
+	mkdir -p "$CIM_HOME/impls/"
+	set -- `ls "$CIM_HOME/impls/"`
+	continue
+    fi
+    if [ -d "$CIM_HOME/impls/$1" ];then
+	case "$1" in
+	    ecl*|gcl*)
+		(cd "$CIM_HOME/src/$impl" && make clean)
+		;;
+	    clisp*)
+		(cd "$CIM_HOME/src/$impl/src" && make clean)
+		;;
+	    ccl*|abcl*)
+		;;
+	    sbcl)
+		(cd "$CIM_HOME/src/$impl" && sh clean.sh)
+		;;
+	esac
+    else
+	 "Src of $impl was not found." >&2
+    fi
+    shift
+done

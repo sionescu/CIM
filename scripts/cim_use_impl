@@ -4,7 +4,7 @@ sh "$CIM_HOME/scripts/cim_aware_system_lisp"
 
 if [ -L "$CIM_HOME/bin/$1" ] && {
 	find -L "$CIM_HOME/bin/" -name "$1" -path "$CIM_HOME/impls/" ||
-	echo "$1" | grep -e '-system$'
+	expr match "$1" '*-system'
     }
 then
     . "$CIM_HOME/scripts/cim_utils"

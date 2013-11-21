@@ -1,0 +1,15 @@
+#!/bin/sh
+# This file is for execute
+
+. "$CIM_HOME/scripts/cim_utils"
+
+while [ $# -gt 0 ];do
+    if [ "$1" = "all" ] ;then
+	mkdir -p "$CIM_HOME/impls/"
+	set -- `ls "$CIM_HOME/impls/"`
+	continue
+    fi
+    rm -rf "$CIM_HOME/impls/$1"
+    rm -f  "$CIM_HOME/bin/$1"
+    shift
+done

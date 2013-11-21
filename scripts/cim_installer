@@ -15,7 +15,7 @@ download(){
 	fetch -o - "$1"
     fi
 }
-download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
+download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar -xf - -C "$CIM_HOME/tmp"
 for dir in lib scripts res ;do
     rm -rf "$CIM_HOME/$dir"
 done

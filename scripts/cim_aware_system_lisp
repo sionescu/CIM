@@ -1,0 +1,8 @@
+#!/bin/sh
+# This file is for execute
+for lisp_impl in clisp gcl ecl ccl lisp alisp abcl sbcl;do
+    rm -f "$CIM_HOME/bin/$lisp_impl-system"
+    if PATH="/bin:/usr/bin:/usr/local/bin" lisp_full_name=`which "$lisp_impl"` ;then
+	ln -s "$lisp_full_name" "$CIM_HOME/bin/$lisp_impl-system"
+    fi
+done
