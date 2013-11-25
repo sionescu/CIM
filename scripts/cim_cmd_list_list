@@ -1,0 +1,2 @@
+#!/bin/sh -
+find "$CIM_HOME/scripts/" -name 'cim_list*' -exec basename '{}' ';' | sed 's/cim_list//;s/_/ /g' | sort

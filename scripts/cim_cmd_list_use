@@ -1,0 +1,3 @@
+#!/bin/sh
+sh "$CIM_HOME/scripts/cim_aware_system_lisp"
+find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-' | sort

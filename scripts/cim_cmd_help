@@ -1,0 +1,13 @@
+#!/bin/sh -
+case "$1" in
+    "")
+	cat "$CIM_HOME/res/help" ;;
+    *)
+	if [ -s "$CIM_HOME/res/help_$1" ];then
+	    cat "$CIM_HOME/res/help_$1"
+	else
+	    echo "Help for '$1' is not prepared, sorry." >&2
+	    return 1
+	fi
+	;;
+esac

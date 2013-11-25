@@ -1,6 +1,5 @@
 #!/bin/sh -
 # This file is for execute
-
 [ -n "$CIM_HOME" ] &&
 cd "$CIM_HOME" &&
 for dir in archives cores impls src sysets tmp bin; do
@@ -9,3 +8,4 @@ for dir in archives cores impls src sysets tmp bin; do
 done
 ln -s "$CIM_HOME/scripts/cl" "$CIM_HOME/bin/"
 ln -s "$CIM_HOME/scripts/ql" "$CIM_HOME/bin/"
+ln -s "$CIM_HOME/scripts/cim" "$CIM_HOME/bin/"

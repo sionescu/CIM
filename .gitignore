@@ -1,0 +1,11 @@
+/archives/*
+/bin/*
+/config/*
+/cores/*
+/impls/*
+/quicklisp/*
+/share/*
+/src/*
+/systes/*
+/tmp/*
+memo

@@ -1,91 +1,13 @@
 #!/bin/sh -
-# This file is for load
-
-cim(){
-    case "$1" in
-	install)
-	    shift
-	    sh "$CIM_HOME/scripts/cim_install_impl" "$@" ;;
-	use)
-	    shift	    
-	    sh "$CIM_HOME/scripts/cim_use_impl" "$@";;
-	uninstall)
-	    shift	    
-	    sh "$CIM_HOME/scripts/cim_uninstall" "$@";;
-	clean)
-	    shift	    
-	    sh "$CIM_HOME/scripts/cim_clean" "$@";;
-	distclean)
-	    shift	    
-	    sh "$CIM_HOME/scripts/cim_distclean" "$@";;
-	purge)
-	    shift
-	    cim clean "$@"
-	    cim uninstall "$@"	
-	    ;;
-	resume)
-		case "$1" in
-		    rm)
-			shift
-			sh "$CIM_HOME/scripts/cim_resume" "rm" "$@" ;;
-		    *)
-			shift
-			sh "$CIM_HOME/scripts/cim_resume" "resume" "$@" ;;
-		esac;;
-	reset)
-	    sh "$CIM_HOME/scripts/cim_reset";;
-	list)
-	    shift
-	    case "$1" in
-		install)
-		    cat "$CIM_HOME/res/known" ;;
-		resume)
-		    find "$CIM_HOME/tmp/" -name 'resume-*' | sed -e 's/.*resume-//g';;
-		use)
-		    sh "$CIM_HOME/scripts/cim_aware_system_lisp"
-		    find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep  '-' | sort;;
-		uninstall)
-		    find "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort
-		    ;;
-		clean)
-		    find "$CIM_HOME/src/" "$CIM_HOME/archives/" -mindepth 1 -maxdepth 1 -type d  -exec basename '{}' ';' | sort --unique
-		    ;;
-		distclean)
-		    find "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort
-		    ;;
-		purge)
-		    find "$CIM_HOME/src/" "$CIM_HOME/archives/" "$CIM_HOME/impls/" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';' | sort --unique
-		    ;;
-		*)
-		    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
-		    return 1;;
-	    esac
-	    ;;
-	help)
-	    shift
-	    case "$1" in
-		"")
-		    cat "$CIM_HOME/res/help" ;;
-		*)
-		    if [ -s "$CIM_HOME/res/help_$1" ];then
-			cat "$CIM_HOME/res/help_$1"
-		    else
-			echo "Help for '$1' is not prepared, sorry." >&2
-			return 1
-		    fi
-		    ;;
-	    esac
-	    ;;
-	version)
-	    cat "$CIM_HOME/VERSION"
-	    ;;
-	*)
-	    if [ -n "$1" ]; then
-		echo "[0;31mUnknown command '$1'.[0;39m" >&2
-	    else
-		msg="[0;31mCommand not specified.[0;39m" >&2
-	    fi
-	    cim help
-	    return 1;;
-    esac
-}
+# This file is for execute
+if [ $# -gt 0 ];then
+    command="$1"
+    shift
+    if [ -s "$CIM_HOME/scripts/cim_cmd_$command" ];then
+	sh "$CIM_HOME/scripts/cim_cmd_$command" "$@"
+    else
+	sh "$CIM_HOME/scripts/cim_cmd_unknown" "$@"
+    fi
+else
+    sh "$CIM_HOME/scripts/cim_cmd_help"
+fi

@@ -1,0 +1,8 @@
+#!/bin/sh -
+if [ -n "$1" ]; then
+    echo "[0;31mUnknown command '$1'.[0;39m" >&2
+else
+    echo "[0;31mCommand not specified.[0;39m" >&2
+fi
+cim help
+exit 1;;

@@ -1,12 +1,10 @@
-#!/bin/sh
+#!/bin/sh -
 # This file is for execute
-
 . "$CIM_HOME/scripts/cim_utils"
 
 while [ $# -gt 0 ];do
     if [ "$1" = "all" ] ;then
-	mkdir -p "$CIM_HOME/src/"
-	set -- `ls "$CIM_HOME/src/" "$CIM_HOME/archives/" | uniq`
+	set -- `cim list clean | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
     rm -rf "$CIM_HOME/archives/$1"

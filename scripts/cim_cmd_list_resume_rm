@@ -1,0 +1,2 @@
+#!/bin/sh
+find "$CIM_HOME/tmp/" -name 'resume-*' | sed -e 's/.*resume-//g';;

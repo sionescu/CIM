@@ -1,5 +1,5 @@
 ;; ECL ignores the first line, so dose not write here any code.
-
+(in-package :cim)
 (defun get-current-package-name ()
   (or (car (package-nicknames *package*))
       (package-name *package*)))
@@ -115,7 +115,7 @@
   (do ((+eof+ (gensym))
        (+eol+ (gensym))
        (read-done-p nil nil)
-       (-) (--) (---) (+) (++) (+++)
+       (-) (--) (+) (++) (+++)
        (/) (//) (///) (*) (**) (***))
       (nil)
     (block iter

@@ -1,59 +1,58 @@
 #!/bin/sh -
 # This file is for execute
-
 set -e
 
-. "$CIM_HOME/scripts/cim_install_impl_lib"
+. "$CIM_HOME/scripts/cim_lib_install"
 
 cim_install_full="
-cim_install_impl_start
-cim_install_impl_download
-cim_install_impl_expand
-cim_install_impl_configure
-cim_install_impl_make
-cim_install_impl_doc
-cim_install_impl_install
-cim_install_impl_link
-cim_install_impl_install_ql_if_need
+__start
+__download
+__expand
+__configure
+__make
+__doc
+__install
+__link
+__install_ql_if_need
 "
 cim_install_sbcl_full="
-cim_install_impl_start
-cim_install_impl_download
-cim_install_impl_expand
+__start
+__download
+__expand
 cim_install_sbcl_ensure_impl
 cim_install_sbcl_make
-cim_install_impl_make_doc
+__make_doc
 cim_install_sbcl_install
-cim_install_impl_link
-cim_install_impl_install_ql_if_need
+__link
+__install_ql_if_need
 "
 
 cim_install_ccl_full="
-cim_install_impl_start
-cim_install_impl_download
-cim_install_impl_expand
+__start
+__download
+__expand
 cim_install_ccl_rebuild_full
 cim_install_ccl_install
-cim_install_impl_link
-cim_install_impl_install_ql_if_need
+__link
+__install_ql_if_need
 "
 
 cim_install_abcl_full="
-cim_install_impl_start
-cim_install_impl_download
-cim_install_impl_expand
+__start
+__download
+__expand
 cim_install_abcl_install
-cim_install_impl_link
-cim_install_impl_install_ql_if_need
+__link
+__install_ql_if_need
 "
 
 cim_install_alisp_full="
-cim_install_impl_start
-cim_install_impl_download
-cim_install_impl_expand
+__start
+__download
+__expand
 cim_install_alisp_install
-cim_install_impl_link
-cim_install_impl_install_ql_if_need
+__link
+__install_ql_if_need
 "
 
 target="$1"

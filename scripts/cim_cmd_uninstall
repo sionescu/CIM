@@ -1,17 +1,15 @@
 #!/bin/sh
 # This file is for execute
-
 . "$CIM_HOME/scripts/cim_utils"
 
 while [ $# -gt 0 ];do
     if [ "$1" = "all" ] ;then
-	mkdir -p "$CIM_HOME/impls/"
-	set -- `ls "$CIM_HOME/impls/"`
+	set -- `cim list uninstall | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
     rm -rf "$CIM_HOME/impls/$1"
     rm -f  "$CIM_HOME/bin/$1"
-    impl=`echo "$1" | cut -d- -f 1`
+    impl=${1%-*}
     if [ 1 -eq `ls "$CIM_HOME/bin/" | grep "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ];then
         rm -f  "$CIM_HOME/bin/$impl"
     fi

@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+    rm) sh "$CIM_HOME/scripts/cim_list_resume_rm";;
+    *) find "$CIM_HOME/tmp/" -name 'resume-*' | sed -e 's/.*resume-//g';;
+esac

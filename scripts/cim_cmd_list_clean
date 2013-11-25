@@ -1,0 +1,2 @@
+#!/bin/sh -
+find "$CIM_HOME/src/" "$CIM_HOME/archives/" -mindepth 1 -maxdepth 1 -type d  -exec basename '{}' ';' | sort --unique

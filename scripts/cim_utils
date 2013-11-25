@@ -27,7 +27,7 @@ cim_white(){
 }
 
 __cim_split_impl_version(){
-    awk -f "$CIM_HOME/scripts/split_version.awk" $1 "$CIM_HOME/res/known" 
+    awk -f "$CIM_HOME/scripts/split_version.awk" "$1" "$CIM_HOME/res/known" 
 }
 __cim_wget(){
     if which curl > /dev/null 2>&1 ;then

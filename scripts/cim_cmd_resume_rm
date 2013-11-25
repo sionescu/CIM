@@ -1,0 +1,20 @@
+#!/bin/sh -
+status=0
+if [ $# -gt 0 ];then
+    for resume in "$@";do
+	if [ "$resume" = "all" ]; then
+	    set -- `cim list resume rm | grep -v '\(Subcommand\|^#\)'`
+	    continue
+	fi
+	if [ -f "$CIM_HOME/res/resume-$resume" ];then
+	    rm "$CIM_HOME/res/resume-$resume"
+	else
+	    echo "Unknown resume $resume." >&2
+	    status=`expr $status + 1`
+	fi
+    done
+else
+    echo "Please specify what to rm. To get the list, use 'cim list resume rm'." >&2
+    exit 1
+fi
+exit $status

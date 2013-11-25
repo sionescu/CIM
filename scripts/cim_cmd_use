@@ -8,7 +8,7 @@ if [ -L "$CIM_HOME/bin/$1" ] && {
     }
 then
     . "$CIM_HOME/scripts/cim_utils"
-    lisp_impl=`echo "$1" | cut -d- -f 1`
+    lisp_impl=${1%-*}
     lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
     rm -f "$CIM_HOME/bin/$lisp_impl"
     ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$lisp_impl"
@@ -16,4 +16,4 @@ else
     echo "$1 is not installed. See 'cim list use."
     exit 1
 fi
-echo "lisp_impl=$lisp_impl" > "$CIM_HOME/config/current"
+echo "lisp_impl=$lisp_impl" > "$CIM_HOME/config/current.$CIM_ID"
