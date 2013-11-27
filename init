@@ -3,5 +3,5 @@ if [ -s "$CIM_HOME/config/default" ];then
     cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
 fi
 find "$CIM_HOME/config/" -name 'current.*' -print | sed 's/.*current\.//' | while read id; do
-     ps ax | grep "^\\s*$id" && rm "$CIM_HOME/config/current.$id"
+     ps ax | grep "^\\s*$id" > /dev/null 2>&1 || rm "$CIM_HOME/config/current.$id"
 done

@@ -156,8 +156,4 @@
        (force-output)
        (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
        (force-output *error-output*)))))
-
 (repl)
-#-(or sbcl allegro) (cl-user::quit)
-#+sbcl (sb-ext::exit)
-#+allegro (cl-user::exit)
