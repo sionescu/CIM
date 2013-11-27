@@ -25,12 +25,12 @@ done
 for executable in cl ql cim
 do
     rm -f "$CIM_HOME/bin/$executable"
-    ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/cl"
+    ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 if [ ! -s "$HOME/.lisprc" ];then
-    sed -i "s/\$CIM_HOME/$CIM_HOME/g" "$CIM_HOME/lib/.lisprc.default"
-    cp "$CIM_HOME/lib/.lisprc.default" "$HOME/.lisprc"
+    sed -i "s/\$CIM_HOME/$CIM_HOME/g" "$CIM_HOME/lib/init.lisp"
+    cp "$CIM_HOME/lib/init.lisp" "$CIM_HOME/init.lisp"
 fi
 if expr match $SHELL '*csh' > /dev/null 2>&1 ;then
     cat <<EOM

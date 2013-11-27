@@ -1,23 +1,13 @@
 #!/bin/sh
 
-wrap_all(){
-    before="$1"
-    after="$2"
-    shift 2
-    while [ $# -gt 0 ] ; do
-	sexp="${before}$1${after}"
-	shift
-    done
-    echo "$sexp"
-}
 command=$1
 shift
 case $command in
     install)
-	"$CIM_HOME/bin/cl" -e "`wrap_all '(ql:quickload :' ')' $@`"
+	cl "$CIM_HOME/scripts/ql_install" "$@"
 	;;
     uninstall)
-	"$CIM_HOME/bin/cl" -e "`wrap_all '(ql:uninstall-dist \"' '\")' $@`"
+	cl "$CIM_HOME/scripts/ql_uninstall" "$@"
 	;;
     upgrade)
 	if [ -n "$1" ];then
@@ -26,14 +16,14 @@ case $command in
 	    "$CIM_HOME/bin/cl" -e '(ql:update-all-dists)'
 	fi
 	;;
-    system-apropos)
-	"$CIM_HOME/bin/cl" -e "(ql:system-apropos \"$1\")"
-	;;
     search)
-	"$CIM_HOME/bin/ql" system-apropos "$@"
+	cl "$CIM_HOME/scripts/ql_search" "$@"
 	;;
-    install)
-	"$CIM_HOME/bin/ql" quickload "$@"
+    system-apropos)
+	ql search "$@"
+	;;
+    quickload)
+	ql install "$@"
 	;;
 	*)
 	echo "Unknown command $command. Exit." >&2

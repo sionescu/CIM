@@ -1,0 +1,3 @@
+#!/usr/bin/env cl --
+(dolist (sys *argv*)
+  (ql:quickload (intern sys :keyword)))

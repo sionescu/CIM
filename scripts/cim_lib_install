@@ -157,8 +157,8 @@ __install_ql_if_need(){
 	rm -f "$CIM_HOME/tmp/quicklisp.lisp"
 	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/tmp/quicklisp.lisp"
 	echo "(quicklisp-quickstart:install :path #p\"$CIM_HOME/quicklisp/\")" >> "$CIM_HOME/tmp/quicklisp.lisp"
-	echo "(ql:add-to-init-file #p\"$HOME/.lisprc\"" >> "$CIM_HOME/tmp/quicklisp.lisp"
-	cl -Q "$CIM_HOME/tmp/quicklisp.lisp"
+#	echo "(ql:add-to-init-file #p\"$CIM_HOME/init.lisp\")" >> "$CIM_HOME/tmp/quicklisp.lisp"
+	cl "$CIM_HOME/tmp/quicklisp.lisp"
     fi
 }
 

@@ -38,8 +38,8 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
 (defvar no-init nil)
 (defvar version nil)
 (defvar sexps ())
-(defvar sexpgiven nil)
 (defvar replgiven nil)
+(defvar sexpgiven nil)
 
 (defun remove-shebang (in)
   (let* ((first-char (read-char in))
@@ -50,6 +50,20 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
       (t (unread-char second-char in)
 	 (unread-char first-char in)))
     in))
+
+(defun my-getenv (name &optional default)
+  #+CMU
+  (let ((x (assoc name ext:*environment-list*
+		  :test #'string=)))
+    (if x (cdr x) default))
+  #-CMU
+  (or
+   #+Allegro (sys:getenv name)
+   #+CLISP (ext:getenv name)
+   #+ECL (si:getenv name)
+   #+SBCL (sb-unix::posix-getenv name)
+   #+LISPWORKS (lispworks:environment-variable name)
+   default))
 
 (defun open-files (files)
   (apply #'make-concatenated-stream
@@ -138,17 +152,20 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
   (let ((in (remove-shebang (open programfile :if-does-not-exist :error))))
     (load in)
     (values)))
+
 (and *argv* (parse-options))
 (cond
   (version (format t "~A~%" +VERSION+))
   (help    (format t "~A~%" *help*))
-  (t (cond
-       (sexpgiven (dolist (sexp sexps) (eval sexp)))
-       (replgiven (load "/home/kim/.cim/lib/repl.lisp"))
-       (*argv* (script (pop *argv*)))
-       (t (loop (handler-case
-		    (eval (read))
-		  (condition () (return 1))))))))
+  (t
+   (unless no-init (load "/home/kim/.cim/init.lisp"))
+   (dolist (sexp sexps) (eval sexp))
+   (cond
+     (replgiven (load "/home/kim/.cim/lib/repl.lisp"))
+     ((and (not sexpgiven) *argv*) (script (pop *argv*)))
+     ((not *argv*) (loop (handler-case
+		   (eval (read))
+		 (condition () (return 1))))))))
 #-(or sbcl allegro) (cl-user::quit)
 #+sbcl (sb-ext::exit)
 #+allegro (cl-user::exit)
