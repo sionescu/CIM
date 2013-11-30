@@ -20,7 +20,7 @@
  (red     "[31m" "[39m")
  (green   "[32m" "[39m")
  (yellow  "[33m" "[39m")
- ; blue is not used
+ (blue    "[34m" "[39m")
  (magenta "[35m" "[39m")
  (cyan    "[36m" "[39m")
  (bright  "[1m"  "[0m")
@@ -82,7 +82,12 @@
 	     (- (length (filter-escapes *prompt-before*)) 2)
 	     :initial-element #\-) 'string)))
 (defvar *right-prompt*
-  '(format nil "~A" *default-pathname-defaults*))
+  '(let* ((home (my-getenv "HOME"))
+	  (home-len (length home))
+	  (dir (format nil "~A" *default-pathname-defaults*))
+	  (dir (if (string= (subseq dir 0 home-len) home) (concatenate 'string "~" (subseq dir home-len)) dir))
+	  (impl (my-getenv "LISP_IMPL")))
+    (format nil "~a ~a" (blue "(" impl ")")  (cyan dir))))
 
 (defun print-prompt (stream &optional continuep)
   (let* ((left (eval (if continuep *continue-prompt* *left-prompt*)))

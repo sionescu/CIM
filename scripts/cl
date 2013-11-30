@@ -1,38 +1,42 @@
 #!/bin/sh -
 # This file is for execute
-. "$CIM_HOME/config/current.$CIM_ID"
+if [ -z "$LISP_IMPL" ];then
+    . "$CIM_HOME/config/current.$CIM_ID"
+    export LISP_IMPL
+fi
 load_file="$CIM_HOME/lib/script.lisp"
 if rlwrap=`which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m -q \" -r "
 fi
-case "$lisp_impl" in
+
+case "$LISP_IMPL" in
     sbcl*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" --noinform --no-sysinit --no-userinit --non-interactive --load "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --noinform --no-sysinit --no-userinit --non-interactive --load "$load_file" -- "$@"
 	;;
     clisp*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" -norc --quiet --silent -on-error exit -i "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" -norc --quiet --silent -on-error exit -i "$load_file" -- "$@"
 	;;
     ecl*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" -norc -q -shell "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" -norc -q -shell "$load_file" -- "$@"
 	;;
     ccl*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" --no-init --quiet --batch --load "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --no-init --quiet --batch --load "$load_file" -- "$@"
 	;;
     gcl*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" -f "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" -f "$load_file" -- "$@"
 	;;
     abcl*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" --noinform --noinit --system --batch --load "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --noinform --noinit --system --batch --load "$load_file" -- "$@"
 	;;
     alisp*)
-	exec $rlwrap "$CIM_HOME/bin/$lisp_impl" --qq -L "$load_file" --kill -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --qq -L "$load_file" --kill -- "$@"
 	;;
     "")
-	echo "\$lisp is not set. Have you loaded ~/.cim/scripts/cim ?" >&2
+	echo "\$LISP_IMPL is not set. Have you loaded ~/.cim/scripts/cim ?" >&2
 	exit 1
 	;;
     *)
-	echo "Unknown lisp implementation $lisp_impl. Exit." >&2
+	echo "Unknown lisp implementation $LISP_IMPL. Exit." >&2
 	exit 1
 	;;
 esac

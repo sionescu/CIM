@@ -41,12 +41,11 @@ fi'
 EOM
     case $SHELL in
 	*/csh)  cat >> "$HOME/.cshrc";;
-	*/tcsh) cat >> "$HOME/.zshrc";;
-	*/sh)  cat >> "$HOME/.profile";;
+	*/tcsh) cat >> "$HOME/.tcshrc";;
     esac  <<EOF
 if (-r "$CIM_HOME/init.csh" ) then
    source "$CIM_HOME/init.csh"
-fi
+endif
 EOF
 else
     cat <<EOM
