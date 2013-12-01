@@ -153,6 +153,10 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
     (load in)
     (values)))
 
+(if (equal *default-pathname-defaults* #p"")
+    (setf *default-pathname-defaults*
+	  (pathname (my-getenv "PWD"))))
+
 (and *argv* (parse-options))
 (cond
   (version (format t "~A~%" +VERSION+))
@@ -164,8 +168,8 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
      (replgiven (load "/home/kim/.cim/lib/repl.lisp"))
      ((and (not sexpgiven) *argv*) (script (pop *argv*)))
      ((not *argv*) (loop (handler-case
-		   (eval (read))
-		 (condition () (return 1))))))))
+			     (eval (read))
+			   (condition () (return 1))))))))
 #-(or sbcl allegro) (cl-user::quit)
 #+sbcl (sb-ext::exit)
 #+allegro (cl-user::exit)
