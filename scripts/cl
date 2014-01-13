@@ -4,8 +4,20 @@ if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
 fi
+if tput=`which tput` > /dev/null 2>&1;then
+    COLUMNS=`$tput cols`
+    export COLUMNS
+fi
+use_rl=false
+for ARG;do
+   { [ "$ARG" = "--repl" ] || [ "$ARG" = "-r" ]; } && use_rl=true
+done
+for ARG;do
+    [ "$ARG" = "--no-rl" ] && use_rl=false
+done
+
 load_file="$CIM_HOME/lib/script.lisp"
-if rlwrap=`which rlwrap`;then
+if [ "$use_rl" = true ] && rlwrap=`which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m -q \" -r "
 fi
 
