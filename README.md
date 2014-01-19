@@ -19,14 +19,14 @@ Most of commands are designed refering to rvm. Syset is the counterpart of gemse
 
 ### Installing Lisp Impl(s)
 
-```sh
+```
 $ cim install sbcl
 $ cim install clisp abcl-1.2.1
 ```
 
 ### Selecting A Lisp impl
 
-```sh
+```
 $ cim use ccl
 $ cim use ccl --default
 ```
@@ -34,11 +34,11 @@ $ cim use ccl --default
 ### Running REPL
 
 ```
-$ cl
+$ cl --repl
 CL-USER>
 ```
 
-I hope to enable readline in REPL.
+if `rlwrap` is installed, `cl` use it.
 
 ### Executing Lisp file
 
@@ -52,25 +52,22 @@ $ chmod +x hello.lisp
 $ ./hello.lisp
 Hello, CIM
 $ cl -h     # most of options are import of ruby's.
-Usage: cl [OPTIONS]  [--] *argv*
-            # ($ ..) macros may be separated from CIM. See also [https://gist.github.com/KeenS/7059301]
-  -a          autosplit mode with -n or -p (splits ($ _) into ($ F))
-  -C  =DIR    set *default-pathname-defaults* DIR, before executing your
-                 script
-  -d          set debugging flags (push :debug into *features*)
-  -e  =SCRIPT one line of script. Several -e's allowed. Omit
-                 [programfile]
-  -F  =PATTERN  split pattern for autosplit (-a)
-  -i  =EXT    edit *argv* files in place and make backup with extension
-                 .EXT
-  -I  =DIRS   push DIRS asdf:*central-registry* directories separated by
-                 ":"
-  -l          enable line ending processing
-  -n          assume '(loop while (setf ($ _) (readline)) do ...)'
-                 around your script
-  -p          assume loop like -n but print line also like sed
-  -S          look for the script using PATH environment variable
-  -h, --help  Prints this summary
+Usage: cl [switchs] [--] [programfile] [argumensts]
+ -C DIR			set *default-pathname-defaults* DIR, before executing your script
+ -d, --debug		set debugging flags (push :debug into *features*)
+ -e, --eval SEXP	one line of script. Several -e's allowed. Omit [programfile]
+ -f, --load file	load the file
+ -h, --help		print this help
+ -i[extxntion]		edit *argv* files in place and make backup with the extension .EXT
+ -l library		quickload the library
+ -L library 		quickload and use-package the library
+ -r, --repl		run repl
+ -q, --no-init		do not load ~/.lisprc
+     --no-rl		do not use rlwrap
+     --no-right		do not display right prompt. This is effective only --repl is specified
+     --no-color         do not use color. This is effective only --repl is specified
+ -v, --version		print the version
+if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads scripts from the standard input and then eval them.
 ```
 	
 ### Executing sexp
@@ -85,8 +82,8 @@ Hello from command line
 ```sh
 $ ql install alexandria # alias of quickload
 $ ql search xml         # alias of system-apropos
-$ ql update
-$ ql upgrade
+$ ql update             # alias of update-all-dists
+$ ql update integral    # update system `integral`
 $ ql update-client
 $ ql list remote
 
@@ -94,13 +91,11 @@ $ ql list remote
 
 $ ql list local
 alexandria
+$ ql deps --path ./quicklisp myapp.asd
+$ ql list local --path ./quicklisp
 
-$ ql syset use foo
-Using syset "foo"
-$ ql list local
-none
+<myapp dependencies>
 
-$ ql deps myapp.asd --path ./quicklisp
 ```
 
 ## License
