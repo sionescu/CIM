@@ -1,22 +1,23 @@
-;; ECL ignores the first line, so dose not write here any code.
+;; ECL ignores the first line, so dose not write any code here.
 (in-package :cim)
 (defun get-current-package-name ()
   (or (car (package-nicknames *package*))
       (package-name *package*)))
 
-(defmacro make-wrapper (name before after)
+(defmacro make-color (name before after)
   (let ((str (gensym "strings")))
     `(defmacro ,name (&rest ,str)
-       `(concatenate 'string ,,before ,@,str ,,after))))
+       `(concatenate 'string
+		     (if no-color "" ,,before) ,@,str (if no-color "" ,,after)))))
 
-(defmacro make-wrappers ((name before after) &rest clauses)
+(defmacro make-colors ((name before after) &rest clauses)
   `(progn
-     ,@(cons `(make-wrapper ,name ,before ,after)
+     ,@(cons `(make-color ,name ,before ,after)
 	     (when (not (null clauses))
 	       (loop for (n b a) in clauses
-		  collect (list 'make-wrapper n b a))))))
+		  collect (list 'make-color n b a))))))
 
-(make-wrappers
+(make-colors
  (red     "[31m" "[39m")
  (green   "[32m" "[39m")
  (yellow  "[33m" "[39m")
@@ -82,27 +83,22 @@
 	     (- (length (filter-escapes *prompt-before*)) 2)
 	     :initial-element #\-) 'string)))
 (defvar *right-prompt*
-  '(let* ((home (my-getenv "HOME"))
-	  (home-len (length home))
-	  (dir (format nil "~A" *default-pathname-defaults*))
-	  (dir (if (string= (subseq dir 0 home-len) home) (concatenate 'string "~" (subseq dir home-len)) dir))
-	  (impl (my-getenv "LISP_IMPL")))
+  '(let* ((dir (namestring *default-pathname-defaults*))
+	  (impl (getenv "LISP_IMPL")))
+    (let ((it (string<  (getenv "HOME") dir)))
+      (when it (setf dir (concatenate 'string "~" (subseq dir it (1- (length dir)))))))
     (format nil "~a ~a" (blue "(" impl ")")  (cyan dir))))
 
 (defun print-prompt (stream &optional continuep)
   (let* ((left (eval (if continuep *continue-prompt* *left-prompt*)))
-	 (right (eval *right-prompt*))
-	 (col 170 #+nil(parse-integer (my-getenv "COLUMNS"))))
+	 (col (or (parse-integer (or (getenv "COLUMNS") "") :junk-allowed t) 75)))
+    (unless no-right
+      (let ((right (eval *right-prompt*)))
+	(format stream "[~DC" (- col (length (filter-escapes right))))
+       (write-string right stream)
+       (format stream "[~DD" col)))
     (setf *prompt-before* left)
     (write-string left stream)
-    (format stream "[~DC"
-	    (if continuep
-		(- col (+ (length (filter-escapes left))
-				(length (filter-escapes right))))	
-		(- col (+ (length (filter-escapes left))
-			  (length (filter-escapes right))))))
-    (write-string right stream)
-    (format stream "[~DD" (- col (length (filter-escapes left))))
     (force-output stream)))
 
 (defun repl ()

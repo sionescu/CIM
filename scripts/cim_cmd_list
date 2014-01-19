@@ -2,7 +2,7 @@
 if [ -s "$CIM_HOME/scripts/cim_cmd_list_$1" ];then
     sh "$CIM_HOME/scripts/cim_cmd_list_$1"
 elif [ "$1" = "" ];then
-    sh "$CIM_HOME/scripts/cim_cmd_list"
+    sh "$CIM_HOME/scripts/cim_cmd_list_list"
 else
     echo "Unknown subcommand '$1'. See 'cim help list'" >&2
     return 1

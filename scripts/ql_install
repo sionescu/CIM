@@ -1,3 +1,13 @@
-#!/usr/bin/env cl --
-(dolist (sys *argv*)
-  (ql:quickload (intern sys :keyword)))
+#!/usr/bin/env cl --no-init --
+
+
+(let ((path (user-homedir-pathname)))
+ (parse-options cim:*argv*
+		(("--path") "Where quicklisp is."
+		 ((arg) (setf path arg))))
+ (if (probe-file (merge-pathnames (concatenate 'string path "/setup.lisp")))
+     (print ok)))
+
+#+nil
+(dolist (sys cim:*argv*)
+  (ql:quickload (intern sys)))
