@@ -1,0 +1,15 @@
+CIM -- Common Lisp Implementation Manager
+
+Commands currently available
+install <impl[-version]>	   ;; Install the impl.
+uninstall <impl[-version]>	   ;; Unnstall the impl.
+use <impl[-version]>		   ;; Use specified impl as `cl' command's backend.
+list <command>			   ;; List available target of <command>
+clean <impl>|all		   ;; Clean downloaded archive and src of the impl.
+distclean <impl>|all		   ;; Clean built dists.
+purge <impl>  			   ;; Just clean and uninstall the impl.
+resume [rm] [resume..]		   ;; Resume suspended installation(s) or give it up.
+version				   ;; Show the version
+help [command]			   ;; Show help for [command]. If no commands are specified, show this help.
+
+If you want detailed help, type `cim help <command>'.

@@ -1,0 +1,5 @@
+#!/usr/bin/env cl --
+(in-package :cim)
+(if (string= (car *argv*) "remote")
+    (ql:system-list)
+    (ql:))

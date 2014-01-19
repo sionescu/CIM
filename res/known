@@ -24,7 +24,7 @@ sbcl-1.1.10
 sbcl-1.1.11
 sbcl-1.1.12
 sbcl-1.1.13
-sbcl-[1.1.14]
+sbcl[-1.1.14]
 
 # Clozure CL
 ccl-1.5

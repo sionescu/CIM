@@ -4,26 +4,28 @@ command=$1
 shift
 case $command in
     install)
-	cl "$CIM_HOME/scripts/ql_install" "$@"
+	cl --no-init -- "$CIM_HOME/scripts/ql_cmd_install" "$@"
 	;;
     uninstall)
-	cl "$CIM_HOME/scripts/ql_uninstall" "$@"
+	cl "$CIM_HOME/scripts/ql_cmd_uninstall" "$@"
 	;;
-    upgrade)
-	if [ -n "$1" ];then
-	    "$CIM_HOME/bin/cl" -e "`wrap_all '(ql:update-dist :' ')' $@`"
-	else
-	    "$CIM_HOME/bin/cl" -e '(ql:update-all-dists)'
-	fi
+    update)
+	cl "$CIM_HOME/scripts/ql_cmd_update" "$@"
+	;;
+    list)
+	cl "$CIM_HOME/scripts/ql_cmd_list" "$@"
 	;;
     search)
-	cl "$CIM_HOME/scripts/ql_search" "$@"
+	cl "$CIM_HOME/scripts/ql_cmd_search" "$@"
 	;;
     system-apropos)
 	ql search "$@"
 	;;
     quickload)
 	ql install "$@"
+	;;
+    help)
+	cl "$CIM_HOME/scripts/ql_cmd_help" "$@"
 	;;
 	*)
 	echo "Unknown command $command. Exit." >&2

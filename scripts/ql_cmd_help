@@ -1,10 +1,10 @@
 #!/bin/sh -
 case "$1" in
     "")
-	cat "$CIM_HOME/res/cim_help" ;;
+	cat "$CIM_HOME/res/ql_help" ;;
     *)
-	if [ -s "$CIM_HOME/res/cim_help_$1" ];then
-	    cat "$CIM_HOME/res/cim_help_$1"
+	if [ -s "$CIM_HOME/res/ql_help_$1" ];then
+	    cat "$CIM_HOME/res/ql_help_$1"
 	else
 	    echo "Help for '$1' is not prepared, sorry." >&2
 	    return 1

@@ -3,7 +3,8 @@
   (:use :cl)
   (:export :*argv*
 	   :repl
-	   :getenv))
+	   :getenv
+	   :parse-options))
 (in-package :cim)
 (defvar *argv*
   #+allegro  (cdr (system:command-line-arguments))
@@ -47,16 +48,6 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
 (defvar replgiven nil)
 (defvar sexpgiven nil)
 
-(defun remove-shebang (in)
-  (let* ((first-char (read-char in))
-	 (second-char (read-char in)))
-    (cond
-      ((and (char= first-char #\#) (char= second-char #\!))
-       (read-line in))
-      (t (unread-char second-char in)
-	 (unread-char first-char in)))
-    in))
-
 (defun getenv (name &optional default)
   #+CMU
   (let ((x (assoc name ext:*environment-list*
@@ -71,11 +62,13 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
    #+LISPWORKS (lispworks:environment-variable name)
    default))
 
+#+nil
 (defun open-files (files)
   (apply #'make-concatenated-stream
    (mapcar (lambda (file) (open file :if-does-not-exist :error))
 	   files)))
 
+#+nil
 (defun without-ext (stream)
   (let ((stream (if (typep stream 'concatenated-stream)
 		    (car (concatenated-stream-streams stream))
@@ -87,45 +80,15 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
 (defun ql_home (path)
   (concatenate 'string (getenv "HOME") path))
 
-(load (cim_home "/lib/option-parser.lisp") )
-
-(parse-options *argv*
-	       (("-C") "set *default-pathname-defaults* DIR, before executing your script"
-		((dir)
-		 (let ((dir (if (char= #\/ (elt dir 1 ))
-				(pathname dir)
-				(merge-pathnames (pathname dir)))))
-		   (push `(setf *default-pathname-defaults* ,dir) sexps))))
-	       (("-d" "--debug") "set debugging flags (push :debug into *features*)"
-		(() (push '(push :debug *features*) sexps)))
-	       (("-e" "--eval") "one line of script. Several -e's allowed. Omit [programfile]"
-		((sexp)
-		 (push `(eval (read (make-string-input-stream ,sexp))) sexps)
-		 (setf sexpgiven t)))
-	       (("-f" "--load") "load the file"
-		((file)))
-	       (("i") "edit *argv* files in place and make backup with the extension .EXT"
-		((ext) (setf extension ext)))
-	       (("-l") "quickload the library"
-		((library) (push `(#+nil ql:quickload ,(intern library :keyword)) sexps)))
-	       (("-L") "quickload and use-package the library"
-		((library)
-		 (let ((sys (intern library :keyword)))
-		   (push `(#+nil ql:quickload ,sys) sexps)
-		   (push `(use-package  ,sys) sexps))))
-	       (("-r" "--repl") "run repl"
-		(() (setf replgiven t)))
-	       (("-q" "--no-init") "do not load ~/.lisprc"
-		(() (setf no-init t)))
-	       (("--no-rl") "do not use rlwrap"
-		(()))
-	       (("--no-right") "do not display right prompt. This is effective only --repl is specified"
-		(() (setf no-right t)))
-	       (("--no-color") "do not use color. This is effective only --repl is specified"
-		(() (setf no-color t)))
-	       (("-v" "--version") "print the version"
-		(() (setf version t))))
-
+(defun remove-shebang (in)
+  (let* ((first-char (read-char in))
+	 (second-char (read-char in)))
+    (cond
+      ((and (char= first-char #\#) (char= second-char #\!))
+       (read-line in))
+      (t (unread-char second-char in)
+	 (unread-char first-char in)))
+    in))
 
 (defun script (programfile)
   "Execute a file as script ignoring shebang."
@@ -133,10 +96,52 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
     (load in)
     (values)))
 
+(load (cim_home "/lib/option-parser.lisp") )
+
+
+(setf *argv*
+      (parse-options *argv*
+		     (("-C") "set *default-pathname-defaults* DIR, before executing your script"
+		      ((dir)
+		       (let ((dir (if (char= #\/ (elt dir 1 ))
+				      (pathname dir)
+				      (merge-pathnames (pathname dir)))))
+			 (push `(setf *default-pathname-defaults* ,dir) sexps))))
+		     (("-d" "--debug") "set debugging flags (push :debug into *features*)"
+		      (() (push '(push :debug *features*) sexps)))
+		     (("-e" "--eval") "one line of script. Several -e's allowed. Omit [programfile]"
+		      ((sexp)
+		       (push `(eval (read (make-string-input-stream ,sexp))) sexps)
+		       (setf sexpgiven t)))
+		     (("-f" "--load") "load the file"
+		      ((file) (load file)))
+		     (("i") "edit *argv* files in place and make backup with the extension .EXT"
+		      ((ext) (setf extension ext)))
+		     (("-l") "quickload the library"
+		      ((library) (push `(#+nil ql:quickload ,(intern library :keyword)) sexps)))
+		     (("-L") "quickload and use-package the library"
+		      ((library)
+		       (let ((sys (intern library :keyword)))
+			 (push `(#+nil ql:quickload ,sys) sexps)
+			 (push `(use-package  ,sys) sexps))))
+		     (("-r" "--repl") "run repl"
+		      (() (setf replgiven t)))
+		     (("-q" "--no-init") "do not load ~/.lisprc"
+		      (() (setf no-init t)))
+		     (("--no-rl") "do not use rlwrap"
+		      (()))
+		     (("--no-right") "do not display right prompt. This is effective only --repl is specified"
+		      (() (setf no-right t)))
+		     (("--no-color") "do not use color. This is effective only --repl is specified"
+		      (() (setf no-color t)))
+		     (("-h" "--help") "print this help"
+		      (() (setf help t)))
+		     (("-v" "--version") "print the version"
+		      (() (setf version t)))))
+
 (if (equal *default-pathname-defaults* #p"")
     (setf *default-pathname-defaults*
 	  (pathname (getenv "PWD"))))
-
 (cond
   (version (format t "~A~%" +VERSION+))
   (help    (format t "~A~%" *help*))
@@ -145,7 +150,7 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
    (dolist (sexp (nreverse sexps)) (eval sexp))
    (cond
      (replgiven (load (cim_home "/lib/repl.lisp")))
-     ((and (not sexpgiven) *argv*) (script (pop *argv*)))
+     ((and (not sexpgiven) *argv*)  (script (pop *argv*)))
      ((not *argv*) (loop (handler-case
 			     (eval (read))
 			   (condition () (return 1))))))))
