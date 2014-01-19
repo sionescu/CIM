@@ -6,15 +6,11 @@ if [ "$1" = "default" ];then
     set - "$LISP_IMPL"
 fi
 set -x
-if [ -L "$CIM_HOME/bin/$1" ] &&  {
-     ! find -L "$CIM_HOME/bin/"  -name "$1" -path "$CIM_HOME/impls/" > /dev/null 2>&1 ||
-     expr match "$1" '.*-system' > /dev/null 2>&1 
-}
-then
-    . "$CIM_HOME/scripts/cim_utils"
-    LISP_IMPL=${1%-*}
-    lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
+. "$CIM_HOME/scripts/cim_utils"
+LISP_IMPL=${1%-*}
+lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
     
+if [ -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     rm -f "$CIM_HOME/bin/$LISP_IMPL"
     ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$LISP_IMPL"
     if [ "$2" = "--default" ];then

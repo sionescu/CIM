@@ -13,17 +13,19 @@ __make
 __doc
 __install
 __link
+__config_cim
 __install_ql_if_need
 "
 cim_install_sbcl_full="
 __start
 __download
 __expand
-cim_install_sbcl_ensure_impl
-cim_install_sbcl_make
+__sbcl_ensure_impl
+__sbcl_make
 __make_doc
-cim_install_sbcl_install
+__sbcl_install
 __link
+__config_cim
 __install_ql_if_need
 "
 
@@ -31,9 +33,10 @@ cim_install_ccl_full="
 __start
 __download
 __expand
-cim_install_ccl_rebuild_full
-cim_install_ccl_install
+__ccl_rebuild_full
+___ccl_install
 __link
+__config_cim
 __install_ql_if_need
 "
 
@@ -41,8 +44,9 @@ cim_install_abcl_full="
 __start
 __download
 __expand
-cim_install_abcl_install
+__abcl_install
 __link
+__config_cim
 __install_ql_if_need
 "
 
@@ -50,8 +54,9 @@ cim_install_alisp_full="
 __start
 __download
 __expand
-cim_install_alisp_install
+__alisp_install
 __link
+__config_cim
 __install_ql_if_need
 "
 

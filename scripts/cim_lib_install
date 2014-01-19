@@ -82,8 +82,8 @@ __start(){
     trap "rm -f $CIM_HOME/tmp/$1-$2.lock" EXIT
     mkdir -p "$CIM_HOME/tmp/"
     touch "$CIM_HOME/tmp/$1-$2.lock"
-
 }
+
 __download(){
     if [ "$1" = "sbcl" ] || [ "$1" = "alisp" ];then
 	impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
@@ -151,18 +151,23 @@ __link(){
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
     [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
 }
+__config_cim(){
+    [ -s "$CIM_HOME/config/default" ] ||
+    echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
+    [ -s "$CIM_HOME/config/current.$CIM_ID" ] ||
+    cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
+    
+}
 __install_ql_if_need(){
     if [ ! -d "$CIM_HOME/quicklisp/" ];then
 	rm -f "$CIM_HOME/quicklisp"
-	rm -f "$CIM_HOME/tmp/quicklisp.lisp"
-	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/tmp/quicklisp.lisp"
-	echo "(quicklisp-quickstart:install :path #p\"$CIM_HOME/quicklisp/\")" >> "$CIM_HOME/tmp/quicklisp.lisp"
-#	echo "(ql:add-to-init-file #p\"$CIM_HOME/init.lisp\")" >> "$CIM_HOME/tmp/quicklisp.lisp"
-	cl "$CIM_HOME/tmp/quicklisp.lisp"
+	rm -f "$CIM_HOME/lib/quicklisp.lisp"
+	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
+	LISP_IMPL="$1-$2" ql install --path "$CIM_HOME/quicklisp/"
     fi
 }
 
-cim_install_sbcl_ensure_impl(){
+__sbcl_ensure_impl(){
     if which sbcl > /dev/null 2>&1;then
 	touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which lisp > /dev/null 2>&1;then
@@ -183,15 +188,15 @@ cim_install_sbcl_ensure_impl(){
     fi
 	
 }
-cim_install_sbcl_make(){
+__sbcl_make(){
     (cd "$CIM_HOME/src/$1-$2" &&
 	sh make.sh `cat .cim_available_impl` --prefix="$CIM_HOME/impls/$1-$2 --fancy")
 }
-cim_install_sbcl_install(){
+__sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
 }
 
-cim_install_ccl_rebuild_full(){
+__ccl_rebuild_full(){
     logic="!"
     if uname -m | grep 64;then
 	logic=
@@ -200,7 +205,7 @@ cim_install_ccl_rebuild_full(){
     return 1
     "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
 }
-cim_install_ccl_install(){
+__ccl_install(){
     cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
 	-exec sed -i "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
@@ -212,7 +217,7 @@ cim_install_ccl_install(){
     fi    
 }
 
-cim_install_abcl_install(){
+__abcl_install(){
     cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
     mkdir -p  "$CIM_HOME/impls/$1-$2/bin"
     cat<<EOF > "$CIM_HOME/impls/$1-$2/bin/abcl"
@@ -224,9 +229,10 @@ EOF
     chmod u+x "$CIM_HOME/impls/$1-$2/bin/abcl"
 }
 
-cim_install_alisp_install(){
+__alisp_install(){
     vname=`echo "$2" | tr -d \.`
     mkdir -p "$CIM_HOME/impls/"
     cp -R "$CIM_HOME/src/acl${vname}express" "$CIM_HOME/impls/$1-$2"
     ln -s "$CIM_HOME/impls/$1-$2/alisp" "$CIM_HOME/impls/$1-$2/bin/alisp"
 }
+

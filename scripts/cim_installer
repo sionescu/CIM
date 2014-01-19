@@ -7,31 +7,29 @@ umask 077
 mkdir -p "$CIM_HOME/archives"
 mkdir -p "$CIM_HOME/tmp"
 download(){
-    if which curl > /dev/null ;then
+    if which curl > /dev/null 2>&1;then
 	curl -L "$1"
-    elif which wget > /dev/null ;then
+    elif which wget > /dev/null 2>&1 ;then
 	wget  -O - "$1"
-    elif which fetch > /dev/null;then
+    elif which fetch > /dev/null 2>&1;then
 	fetch -o - "$1"
     fi
 }
+
 download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar -xf - -C "$CIM_HOME/tmp"
 mv -f "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/" &&
 rm -rf "$CIM_HOME/tmp/CIM-master/"
-for dir in bin config cores impls src sysets
+for dir in bin config impls src
 do
     mkdir -p "$CIM_HOME/$dir"
 done
+
 for executable in cl ql cim
 do
     rm -f "$CIM_HOME/bin/$executable"
     ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
-if [ ! -s "$CIM_HOME/lib/init.lisp" ];then
-    sed -i -e "s/\$CIM_HOME/$CIM_HOME/g" "$CIM_HOME/lib/init.lisp"
-    cp "$CIM_HOME/lib/init.lisp" "$CIM_HOME/init.lisp"
-fi
 if expr match $SHELL '*csh' > /dev/null 2>&1 ;then
     cat <<EOM
 Adding to your .`basename $SHELL`rc file

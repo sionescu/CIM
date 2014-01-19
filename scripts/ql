@@ -18,6 +18,9 @@ case $command in
     search)
 	cl "$CIM_HOME/scripts/ql_cmd_search" "$@"
 	;;
+    deps)
+	cl "$CIM_HOME/scripts/ql_cmd_deps" "$@"
+	;;
     system-apropos)
 	ql search "$@"
 	;;

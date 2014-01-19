@@ -8,12 +8,17 @@
 (in-package :cim)
 (defvar *argv*
   #+allegro  (cdr (system:command-line-arguments))
-  #+sbcl (do  ((list sb-ext:*posix-argv* (cdr sb-ext:*posix-argv*)))
-	      ((string= (car list) "--") (return (cdr list))))
+  #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
+		(list var var))
+	       ((string= (car list) "--") (return (cdr list))))
   #+clisp ext:*args*
-  #+ecl (si:command-args)
+  #+ecl (do*  ((var (si:command-args) (cdr list))
+	       (list var var))
+	      ((string= (car list) "--") (return (cdr list))))
   #+abcl extensions:*command-line-argument-list*
-  #+gcl (si::command-args)
+  #+gcl (do*  ((var si::*command-args* (cdr list))
+	       (list var var))
+	      ((string= (car list) "--") (return (cdr list))))
   #+cmu ext:*command-line-words*
   #+ccl ccl:*unprocessed-command-line-argument-list*
   #+lispworks system:*line-arguments-list*)
@@ -38,6 +43,7 @@
  -v, --version		print the version
 if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads scripts from the standard input and then eval them.
 ")
+(setf *load-verbose* nil)
 (defvar help nil)
 (defvar extension nil)
 (defvar no-init nil)
@@ -58,8 +64,10 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
    #+Allegro (sys:getenv name)
    #+CLISP (ext:getenv name)
    #+ECL (si:getenv name)
+   #+GCL (si::getenv name)
    #+SBCL (sb-unix::posix-getenv name)
    #+LISPWORKS (lispworks:environment-variable name)
+   #+ABCL (java:jstatic "getenv" "java.lang.System" name)
    default))
 
 #+nil
@@ -78,25 +86,26 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
 (defun cim_home (path)
   (concatenate 'string (getenv "CIM_HOME") path))
 (defun ql_home (path)
-  (concatenate 'string (getenv "HOME") path))
+  (concatenate 'string (cim_home "/quicklisp") path))
 
 (defun remove-shebang (in)
-  (let* ((first-char (read-char in))
-	 (second-char (read-char in)))
+  (let ((line (read-line in nil "#!")))
     (cond
-      ((and (char= first-char #\#) (char= second-char #\!))
-       (read-line in))
-      (t (unread-char second-char in)
-	 (unread-char first-char in)))
-    in))
+      ((and (> (length line) 1) (string= line "#!" :end1 2))
+       in)
+      (t
+       (make-concatenated-stream (make-string-input-stream line) in)))))
 
 (defun script (programfile)
   "Execute a file as script ignoring shebang."
   (let ((in (remove-shebang (open programfile :if-does-not-exist :error))))
-    (load in)
+    (load in :verbose nil :print nil)
     (values)))
-
-(load (cim_home "/lib/option-parser.lisp") )
+(defun exit ()
+  #-(or sbcl allegro) (cl-user::quit)
+  #+sbcl (sb-ext::exit)
+  #+allegro (cl-user::exit))
+(load (cim_home "/lib/option-parser.lisp")  :verbose nil :print nil)
 
 
 (setf *argv*
@@ -146,14 +155,12 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
   (version (format t "~A~%" +VERSION+))
   (help    (format t "~A~%" *help*))
   (t
-   (unless no-init (load (cim_home "/init.lisp")))
+   (unless no-init (load (cim_home "/init.lisp") :verbose nil :print nil))
    (dolist (sexp (nreverse sexps)) (eval sexp))
    (cond
-     (replgiven (load (cim_home "/lib/repl.lisp")))
-     ((and (not sexpgiven) *argv*)  (script (pop *argv*)))
+     (replgiven (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
+     ((and (not sexpgiven) *argv*)  (let ((*load-print* nil)) (script (pop *argv*))))
      ((not *argv*) (loop (handler-case
 			     (eval (read))
 			   (condition () (return 1))))))))
-#-(or sbcl allegro) (cl-user::quit)
-#+sbcl (sb-ext::exit)
-#+allegro (cl-user::exit)
+(exit)

@@ -47,6 +47,7 @@
 	  (if (null list)
 	      (return (coerce (nreverse result) 'string)))))))
 
+#+nil
 (defun handle-simple-condition (err)
   (format *error-output* " *~A*~%~A~%"
 	  (red (bright (format nil "~A" (class-name (class-of err)))))
@@ -67,7 +68,7 @@
 (defmacro handling-errors (&body body)
   `(handler-case
        (progn ,@body)
-     (SIMPLE-CONDITION (e)
+     #+nil(SIMPLE-CONDITION (e)
        (handle-simple-condition e))
      (CONDITION (e)
        (handle-condition e))))
@@ -102,48 +103,48 @@
     (force-output stream)))
 
 (defun repl ()
-  (do ((+eof+ (gensym))
-       (+eol+ (gensym))
-       (read-done-p nil nil)
-       (-) (--) (+) (++) (+++)
-       (/) (//) (///) (*) (**) (***))
-      (nil)
-    (block iter
-      (incf *history*)
-      (print-prompt *query-io*)
-      ;; read part
-      (handling-errors
-       ;; repeat until sexp complete
-       (do ((input) (form))
-	   (read-done-p)
-	 (setf input (read-line *standard-input* nil +eof+))
-	 (when (equal input "")
-	   (return-from iter))
-	 (when (eq input +eof+) (return-from repl))
-	 (setf form (concatenate 'string form " " input))
-	 (handler-case
-	     ;; repeat over the input sexps
-	     (do* ((in (make-string-input-stream form))
-		   (sexp (read in nil +eol+) (read in nil +eol+))
-		   (count 0) (sexps))
-		  ((eql sexp +eol+)
-		   (setf read-done-p t)
-		   (setf -- (if (= count 1) (car sexps) (cons 'values (nreverse sexps)))))
-	       (push sexp sexps)
-	       (incf count))
-	   (END-OF-FILE ()
-	     (print-prompt *error-output* t))))
-       (setf +++ ++   ++ +   + - - --)
-       ;; eval and print part
-       (when (member - '((quit) quit (exit) exit (bye)) :test (function equal))
-	 (return-from repl))
-       (format *error-output* "~A"
-	       (yellow
-		(with-output-to-string (s)
-		  (let ((*standard-output* s))
-		    (setf /// //   // /   / (multiple-value-list (eval -)))))))
-       (setf *** **   ** *   * (first /))
-       (force-output)
-       (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
-       (force-output *error-output*)))))
+    (do ((+eof+ (gensym))
+	 (+eol+ (gensym))
+	 (read-done-p nil nil)
+	 (-) (--) (+) (++) (+++)
+	 (/) (//) (///) (*) (**) (***))
+	(nil)
+      (block iter
+	(incf *history*)
+	(print-prompt *query-io*)
+	;; read part
+	(handling-errors
+	 ;; repeat until sexp complete
+	 (do ((input) (form))
+	     (read-done-p)
+	   (setf input (read-line *standard-input* nil +eof+))
+	   (when (equal input "")
+	     (return-from iter))
+	   (when (eq input +eof+) (return-from repl))
+	   (setf form (concatenate 'string form " " input))
+	   (handler-case
+	       ;; repeat over the input sexps
+	       (do* ((in (make-string-input-stream form))
+		     (sexp (read in nil +eol+) (read in nil +eol+))
+		     (count 0) (sexps))
+		    ((eql sexp +eol+)
+		     (setf read-done-p t)
+		     (setf -- (if (= count 1) (car sexps) (cons 'values (nreverse sexps)))))
+		 (push sexp sexps)
+		 (incf count))
+	     (END-OF-FILE ()
+	       (print-prompt *error-output* t))))
+	 (setf +++ ++   ++ +   + - - --)
+	 ;; eval and print part
+	 (when (member - '((quit) quit (exit) exit (bye)) :test (function equal))
+	   (return-from repl))
+	 (format *error-output* "~A"
+		 (yellow
+		  (with-output-to-string (s)
+		    (let ((*standard-output* s))
+		      (setf /// //   // /   / (multiple-value-list (eval -)))))))
+	 (setf *** **   ** *   * (first /))
+	 (force-output)
+	 (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
+	 (force-output *error-output*)))))
 (repl)

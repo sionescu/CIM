@@ -35,10 +35,10 @@ case "$LISP_IMPL" in
 	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --no-init --quiet --batch --load "$load_file" -- "$@"
 	;;
     gcl*)
-	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" -f "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" -batch -load "$load_file" -- "$@"
 	;;
     abcl*)
-	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --noinform --noinit --system --batch --load "$load_file" -- "$@"
+	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --noinform --noinit --nosystem --batch --load "$load_file" -- "$@"
 	;;
     alisp*)
 	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --qq -L "$load_file" --kill -- "$@"

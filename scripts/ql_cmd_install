@@ -1,31 +1,5 @@
 #!/usr/bin/env cl --no-init --
 (in-package :cim)
-(defvar quicklisp-path ".quicklisp-path")
-(defvar setup "")
-(defvar path (or (when (probe-file (merge-pathnames quicklisp-path))
-		   (with-open-file (in (merge-pathnames quicklisp-path))
-		     (read-line in)))
-		 (user-homedir-pathname)))
-(setf *argv*
- (parse-options *argv*
-		(("--path") "Where quicklisp is."
-		 ((arg)
-		  (setf path arg)
-		  (with-open-file (out quicklisp-path
-				       :direction :output
-				       :if-exists :supersede
-				       :if-does-not-exist :create)
-		    (write-string path out))))))
-(unless (char= #\/ (aref path (1- (length path))))
-  (setf path (concatenate 'string path "/")))
-(setf setup (merge-pathnames #p"setup.lisp" (print (merge-pathnames path))))
-(if (probe-file setup) 
-    (load setup)
-    (progn
-      (load (cim_home "/lib/quicklisp.lisp"))
-      (funcall (intern "INSTALL" :quicklisp-quickstart) :path path)))
-(unless (probe-file setup))
-
-
-(dolist (sys *argv*)
-  (ql:quickload (intern sys)))
+(if (car *argv*)
+    (dolist (sys *argv*)
+      (ql:quickload (intern sys))))
