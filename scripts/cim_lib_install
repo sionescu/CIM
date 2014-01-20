@@ -190,7 +190,7 @@ __sbcl_ensure_impl(){
 }
 __sbcl_make(){
     (cd "$CIM_HOME/src/$1-$2" &&
-	sh make.sh --xc-host="`cat .cim_available_impl`"" --prefix="$CIM_HOME/impls/$1-$2 --fancy")
+	sh make.sh --xc-host="`cat .cim_available_impl`" --prefix="$CIM_HOME/impls/$1-$2 --fancy")
 }
 __sbcl_install(){
     (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
