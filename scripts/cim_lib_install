@@ -121,29 +121,29 @@ __configure(){
     [ "$1" = "ecl" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     [ "$1" = "clisp" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     
-    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2" $flags)
+    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2" $flags) || return 1
 }
 __make(){
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make)
+	(cd "$CIM_HOME/src/$1-$2/src" && make) || return 1
     else
-	(cd "$CIM_HOME/src/$1-$2" && make)
+	(cd "$CIM_HOME/src/$1-$2" && make) || return 1
     fi
 }
 
 __doc(){
     mkdir -p "$CIM_HOME/share/man"
     if [ "$1" = "sbcl" ] ;then
-	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
+	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make) || return 1
     fi
 }
 
 __install(){
     mkdir -p "$CIM_HOME/impls/$1-$2" &&
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make install)
+	(cd "$CIM_HOME/src/$1-$2/src" && make install) || return 1
     else
-	(cd "$CIM_HOME/src/$1-$2" && make install)
+	(cd "$CIM_HOME/src/$1-$2" && make install) || return 1
     fi
 }
 __link(){
@@ -163,7 +163,7 @@ __install_ql_if_need(){
 	rm -f "$CIM_HOME/quicklisp"
 	rm -f "$CIM_HOME/lib/quicklisp.lisp"
 	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
-	LISP_IMPL="$1-$2" ql install --path "$CIM_HOME/quicklisp/"
+	LISP_IMPL="$1-$2" ql install --path "$CIM_HOME/quicklisp/" || return 1
     fi
 }
 
