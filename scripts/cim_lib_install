@@ -121,7 +121,7 @@ __configure(){
     [ "$1" = "ecl" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     [ "$1" = "clisp" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     
-    (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2" $flags) || return 1
+    (cd "$CIM_HOME/src/$1-$2" && ./configure $flags --prefix="$CIM_HOME/impls/$1-$2") || return 1
     return $?
 }
 __make(){

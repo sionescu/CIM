@@ -37,24 +37,23 @@ Adding to your .`basename $SHELL`rc file
    source "$CIM_HOME/init.csh"
 fi'
 EOM
-    case $SHELL in
-	*/csh)  cat >> "$HOME/.cshrc";;
-	*/tcsh) cat >> "$HOME/.tcshrc";;
-    esac  <<EOF
-if (-r "$CIM_HOME/init.csh" ) then
+    rc='if (-r "$CIM_HOME/init.csh" ) then
    source "$CIM_HOME/init.csh"
 endif
-EOF
+'
+    case $SHELL in
+	*/csh)  grep "$rc" "$HOME/.cshrc" || cat "$rc" >> "$HOME/.cshrc";;
+	*/tcsh) grep "$rc" "$HOME/.tcshrc" || cat "$rc" >> "$HOME/.tcshrc";;
+    esac
 else
     cat <<EOM
 Adding to your .`basename $SHELL`rc file
 '[ -s $HOME/.cim/init.sh ] && . $HOME/.cim/init.sh'
 EOM
+    rc='[ -s "$HOME/.cim/init.sh" ] && . "$HOME/.cim/init.sh"'
     case $SHELL in
-	*/bash) cat >> "$HOME/.bashrc";;
-	*/zsh)  cat >> "$HOME/.zshrc";;
-	*/sh)   cat >> "$HOME/.profile";;
-    esac  <<EOF
-[ -s "$HOME/.cim/init.sh" ] && . "$HOME/.cim/init.sh"
-EOF
+	*/bash) grep "$rc" "$HOME/.bashrc" || cat "$rc" >> "$HOME/.bashrc";;
+	*/zsh)  grep "$rc" "$HOME/.zshrc" || cat "$rc" >> "$HOME/.zshrc";;
+	*/sh)   grep "$rc" "$HOME/.profile" || cat "$rc" >> "$HOME/.profile";;
+    esac
 fi

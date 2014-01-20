@@ -7,9 +7,11 @@ while [ $# -gt 0 ];do
 	set -- `cim list uninstall | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
-    rm -rf "$CIM_HOME/impls/$1"
-    rm -f  "$CIM_HOME/bin/$1"
-    impl=${1%-*}
+    . "$CIM_HOME/scripts/cim_utils"
+    target=`__cim_split_impl_version "$target" $1 | tr \  -`
+    rm -rf "$CIM_HOME/impls/$target"
+    rm -f  "$CIM_HOME/bin/$target"
+    impl=${target%-*}
     if [ 1 -eq `ls "$CIM_HOME/bin/" | grep "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ];then
         rm -f  "$CIM_HOME/bin/$impl"
     fi

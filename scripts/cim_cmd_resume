@@ -6,18 +6,21 @@ case "$1" in
 	;;
     *)
 	. "$CIM_HOME/scripts/cim_lib_install"
-	IN_RESUME=1
+	IN_RESUME=1;export IN_RESUME
 	while [ $# -gt 0 ];do
 	    if [ "$1" = "all" ];then
 		set -- `cim list resume | grep -v '\(Subcommand\|^#\)'`
 		continue
 	    else
-		if [ -s "$CIM_HOME/tmp/resume-$1" ]; then
-		    resume="$CIM_HOME/tmp/resume-$1"
-		    set -- `__cim_split_impl_version $1`
+		. "$CIM_HOME/scripts/cim_utils"
+		target=`__cim_split_impl_version "$target" $1 | tr \  -`
+		if [ -s "$CIM_HOME/tmp/resume-$target" ]; then
+		    resume="$CIM_HOME/tmp/resume-$target"
+		    impl=${target%*-}
+		    version=${target#-*}
 		    for proc in `cat "$resume"`; do
-			eval $proc "$@" && [ -s "$CIM_HOME/tmp/resume-$1-$2" ] && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" ||
-			exit 1
+			eval $proc "$impl" "$version" && [ -s "$resume" ] && sed -i -e "/$proc/d" "$resume" ||
+			break
 		    done
 
 		    shift
