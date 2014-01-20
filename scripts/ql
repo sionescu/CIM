@@ -19,7 +19,7 @@ case $command in
 	cl "$CIM_HOME/scripts/ql_cmd_search" "$@"
 	;;
     deps)
-	cl "$CIM_HOME/scripts/ql_cmd_deps" "$@"
+	cl --no-init -- "$CIM_HOME/scripts/ql_cmd_deps" "$@"
 	;;
     system-apropos)
 	ql search "$@"

@@ -1,5 +1,10 @@
 #!/usr/bin/env cl --
 (in-package :cim)
-(if (string= (car *argv*) "remote")
-    (ql:system-list)
-    (ql:))
+(cond
+  ((string= (car *argv*) "remote")
+   (loop :for dist :in (ql:system-list) :do
+      (format t "~20A~%" (ql-dist:name dist))))
+  ((string= (car *argv*) "local")
+   (loop :for dist :in (remove-if-not #'ql-dist:installedp (ql:system-list)) :do
+      (format t "~20A~%" (ql-dist:name dist)))))
+

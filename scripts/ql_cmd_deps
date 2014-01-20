@@ -19,14 +19,17 @@
 	  (exit)))
 (unless (char= #\/ (aref path (1- (length path))))
   (setf path (concatenate 'string path "/")))
-(setf setup (merge-pathnames #p"setup.lisp" (merge-pathnames path)))
+(setf path (merge-pathnames path (pathname (concatenate  'string (getenv "PWD") "/"))))
+(setf setup (merge-pathnames #p"setup.lisp" path))
+
 (if (probe-file setup) 
     (load setup)
     (progn
       (load (cim_home "/lib/quicklisp.lisp"))
       (funcall (intern "INSTALL" :quicklisp-quickstart) :path path)))
 
-
 (if (car *argv*)
-    (ql:quickload (intern (car *argv*)))
+    (progn
+      (push (pathname (concatenate  'string (getenv "PWD") "/")) asdf:*central-registry*)
+      (ql:quickload (intern (car *argv*))))
     (error "You neet specify the system"))

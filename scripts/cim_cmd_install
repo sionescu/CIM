@@ -22,7 +22,7 @@ __download
 __expand
 __sbcl_ensure_impl
 __sbcl_make
-__make_doc
+__doc
 __sbcl_install
 __link
 __config_cim
