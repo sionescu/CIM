@@ -62,7 +62,8 @@ __install_ql_if_need
 
 target="$1"
 shift
-set -e --  `__cim_split_impl_version "$target"` "$@"
+set -e
+set  --  `__cim_split_impl_version "$target"` "$@"
 case "$target" in
     clisp*|gcl*|ecl*)
 	processes="$cim_install_full"
@@ -87,7 +88,11 @@ esac
     
 printf "%s\n" $processes > "$CIM_HOME/tmp/resume-$1-$2"
 for proc in $processes;do
-    { eval $proc "$@" && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2";} || exit 1
+    {
+	eval $proc "$@" && 
+	sed -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" > "$CIM_HOME/tmp/resume-$1-$2.tmp" &&
+	mv "$CIM_HOME/tmp/resume-$1-$2.tmp" "$CIM_HOME/tmp/resume-$1-$2"
+    } || exit 1
 done
 rm -f "$CIM_HOME/tmp/resume-$1-$2"
 echo "Install done"

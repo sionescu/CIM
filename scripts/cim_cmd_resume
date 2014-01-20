@@ -19,8 +19,12 @@ case "$1" in
 		    impl=${target%*-}
 		    version=${target#-*}
 		    for proc in `cat "$resume"`; do
-			eval $proc "$impl" "$version" && [ -s "$resume" ] && sed -i -e "/$proc/d" "$resume" ||
-			break
+			{
+			    eval $proc "$impl" "$version" &&
+			    [ -s "$resume" ] &&
+			    sed -e "/$proc/d" "$resume" > "$resume.tmp" &&
+			    mv "$resume.tmp" "$resume"
+			} || exit 1
 		    done
 
 		    shift

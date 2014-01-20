@@ -213,7 +213,7 @@ __ccl_rebuild_full(){
 __ccl_install(){
     cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
-	-exec sed -i "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
+	-exec sed -i ".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     mkdir -p "$CIM_HOME/impls/$1-$2/bin"
     if uname -m | grep 64;then
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"
