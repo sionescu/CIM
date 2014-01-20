@@ -1,0 +1,5 @@
+#!/bin/sh
+# This file is for execute
+
+cim uninstall "$@"
+cim install "@"

@@ -13,8 +13,8 @@ case "$1" in
 		continue
 	    else
 		if [ -s "$CIM_HOME/tmp/resume-$1" ]; then
-		    resume="$1"
-		    set -- `__cim_split_impl_version ${resume#resume-}`
+		    resume="$CIM_HOME/tmp/resume-$1"
+		    set -- `__cim_split_impl_version $1`
 		    for proc in `cat "$resume"`; do
 			eval $proc "$@" && [ -s "$CIM_HOME/tmp/resume-$1-$2" ] && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2" ||
 			exit 1
@@ -23,6 +23,7 @@ case "$1" in
 		    shift
 		else
 		    echo "Cannot resume $1. Cannot find resume file." >&2
+		    exit 1
 		fi
 	    fi
 	done

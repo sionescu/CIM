@@ -122,41 +122,46 @@ __configure(){
     [ "$1" = "clisp" ] && flags="$flags --mandir=$CIM_HOME/share/man"
     
     (cd "$CIM_HOME/src/$1-$2" && ./configure --prefix="$CIM_HOME/impls/$1-$2" $flags) || return 1
+    return $?
 }
 __make(){
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make) || return 1
+	(cd "$CIM_HOME/src/$1-$2/src" && make)
     else
-	(cd "$CIM_HOME/src/$1-$2" && make) || return 1
+	(cd "$CIM_HOME/src/$1-$2" && make)
     fi
+    return $?
 }
 
 __doc(){
     mkdir -p "$CIM_HOME/share/man"
     if [ "$1" = "sbcl" ] ;then
-	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make) || return 1
+	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
     fi
+    return $?
 }
 
 __install(){
     mkdir -p "$CIM_HOME/impls/$1-$2" &&
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make install) || return 1
+	(cd "$CIM_HOME/src/$1-$2/src" && make install)
     else
-	(cd "$CIM_HOME/src/$1-$2" && make install) || return 1
+	(cd "$CIM_HOME/src/$1-$2" && make install)
     fi
+    return $?
 }
 __link(){
     rm -f  "$CIM_HOME/bin/$1-$2"
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
     [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
+    return $?
 }
 __config_cim(){
     [ -s "$CIM_HOME/config/default" ] ||
     echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
     [ -s "$CIM_HOME/config/current.$CIM_ID" ] ||
     cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
-    
+    return $?    
 }
 __install_ql_if_need(){
     if [ ! -d "$CIM_HOME/quicklisp/" ];then

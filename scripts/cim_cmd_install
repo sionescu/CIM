@@ -87,7 +87,7 @@ esac
     
 printf "%s\n" $processes > "$CIM_HOME/tmp/resume-$1-$2"
 for proc in $processes;do
-    eval $proc "$@" && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2"
+    { eval $proc "$@" && sed -i -e "/$proc/d" "$CIM_HOME/tmp/resume-$1-$2";} || exit 1
 done
 rm -f "$CIM_HOME/tmp/resume-$1-$2"
 echo "Install done"
