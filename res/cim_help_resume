@@ -1,0 +1,17 @@
+Usage:
+
+	cim resume [rm] <impl[-version]> | all
+
+Description:
+
+Resume interrupted installation of <impl>. If <version> is not given, the latest version is used.
+If 'rm' is given, remove <impl> from 'resume' list.
+If target is 'all', do on all the available target.
+
+Examples:
+
+	# resume the installation of clisp with configure flags
+	flags='--with-libsigsegv-path=/usr/local' cim resume clisp
+
+	# remove all the available target.
+	cim resume rm all

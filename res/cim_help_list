@@ -3,16 +3,16 @@ Usage:
 	cim list <subcommand>
 
 Description:
+
 List available target for subcommand.
-If no subcommands are given, list available target for 'list'
 
 Examples:
 
 	# list available lisp implementation to install
 	cim list install
 
-	# equivalent to 'cim list list'
-	cim list
+	# show available target for list
+	cim list list
 
 	# targets for subsubcommands are also available
 	cim list resume rm

@@ -1,0 +1,19 @@
+Usage:
+
+	cim uninstall <impl[-version]> | all
+ 
+Description:
+
+Uninstall the given lisp implementaion(s). It does't remove donwloaded archives and extracted sources.
+If version is not specified, install the latest version.
+If target is 'all', do on all the available targets.
+
+Examples:
+
+	# uninstall sbcl-1.1.14
+	cim uninstall sbcl-1.1.14
+	
+	# uninstall all installed lisp impls
+	cim uninstall all
+
+To show available lisp implementations, type 'cim list uninstall'.

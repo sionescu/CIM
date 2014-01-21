@@ -3,14 +3,21 @@ Usage:
 	cim use <impl[-version]> [--default]
 
 Description:
-Use <impl> as background for 'cl' command. If version is not given, use latest version.
 
+Use <impl> as background for 'cl' command. It also affects bare lisp command.
+If version is not given, use latest version.
 If --default is given, use the specified implementation at initial state.
 
 Examples:
 
 	# use the latest sbcl
 	cim use sbcl
+	sbcl --version
+	-> SBCL 1.1.14
+	# use old sbcl
+	cim use sbcl-1.1.10
+	sbcl --version
+	-> SBCL 1.1.10
 
 	# use ccl-1.9 and set it default
 	cim use ccl-1.9 --default

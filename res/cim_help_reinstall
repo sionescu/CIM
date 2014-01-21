@@ -1,0 +1,19 @@
+Usage:
+
+	cim reinstall <impl[-version]> | all
+ 
+Description:
+
+Force install already installed implementaion(s). Downloaded archives are resued if available
+If version is not specified, install the latest version.
+If target is 'all', do on all the available targets.
+
+Examples:
+
+	# reinstall sbcl-1.1.14
+	cim reinstall sbcl-1.1.14
+	
+	# reinstall all installed lisp impls
+	cim reinstall all
+
+To show available lisp implementations, type 'cim list reinstall'.

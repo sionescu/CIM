@@ -1,8 +1,9 @@
 Usage:
 
-	cim purge <impl[-version]>
+	cim purge <impl[-version]> | all
 
 Description:
+
 Uninstall and clean up downloaded files of the given lisp implementation.
 This command is equivalent to 'clean' and 'uninstall'.
 
