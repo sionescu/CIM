@@ -1,0 +1,16 @@
+Usage: cl [switchs] [--] [programfile] [argumensts]
+ -C DIR			set *default-pathname-defaults* DIR, before executing your script
+ -d, --debug		set debugging flags (push :debug into *features*)
+ -e, --eval SEXP	one line of script. Several -e's allowed. Omit [programfile]
+ -f, --load file	load the file
+ -h, --help		print this help
+ -i[extxntion]		edit *argv* files in place and make backup with the extension .EXT
+ -l library		quickload the library
+ -L library 		quickload and use-package the library
+ -r, --repl		run repl
+ -q, --no-init		do not load ~/.lisprc
+     --no-rl		do not use rlwrap
+     --no-right		do not display right prompt. This is effective only --repl is specified
+     --no-color         do not use color. This is effective only --repl is specified
+ -v, --version		print the version
+if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads scripts from the standard input and then eval them.

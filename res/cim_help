@@ -2,7 +2,8 @@ CIM -- Common Lisp Implementation Manager
 
 Commands currently available
 install <impl[-version]>	   ;; Install the impl.
-uninstall <impl[-version]>	   ;; Unnstall the impl.
+uninstall <impl[-version]>	   ;; Uninstall the impl.
+reinstall <impl[-version]>	   ;; Reinstall the impl.
 use <impl[-version]>		   ;; Use specified impl as `cl' command's backend.
 list <command>			   ;; List available target of <command>
 clean <impl>|all		   ;; Clean downloaded archive and src of the impl.

@@ -1,0 +1,14 @@
+Usage:
+
+	cim purge <impl[-version]>
+
+Description:
+Uninstall and clean up downloaded files of the given lisp implementation.
+This command is equivalent to 'clean' and 'uninstall'.
+
+Examples:
+
+	# purge the latest sbcl
+	cim purge sbcl
+
+To show available target for 'purge', type 'cim list purge'
