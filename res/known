@@ -6,11 +6,11 @@ clisp-2.48
 clisp[-2.49]
 
 # GNU Common Lisp
-gcl-2.6.5
 gcl-2.6.6
 gcl-2.6.7
 gcl-2.6.8
-gcl[-2.6.9]
+gcl-2.6.9
+gcl[-2.6.10]
 
 # Embeddable Common Lisp
 ecl-11.1.1

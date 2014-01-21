@@ -29,15 +29,15 @@ FreeBSD	mipsbe
 FreeBSD	mipsle	
 NetBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-netbsd-binary.tar.bz2
 NetBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-64-netbsd-binary.tar.bz2
-NetBSD	ppc	
-NetBSD	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-powerpc-netbsd-binary.tar.bz2
+NetBSD	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-powerpc-netbsd-binary.tar.bz2
+NetBSD	sparc
 NetBSD	alpha	
 NetBSD	mipsbe	
 NetBSD	mipsle	
-OpenBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-openbsd50-binary.tar.bz2
-OpenBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-openbsd50-binary.tar.bz2
-OpenBSD	ppc	
-OpenBSD	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-powerpc-openbsd50-binary.tar.bz2
+OpenBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-x86-openbsd50-binary.tar.bz2
+OpenBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-x86-64-openbsd50-binary.tar.bz2
+OpenBSD	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-powerpc-openbsd50-binary.tar.bz
+OpenBSD	sparc
 OpenBSD	alpha	
 OpenBSD	mipsbe	
 OpenBSD	mipsle	

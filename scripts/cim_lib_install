@@ -29,21 +29,22 @@ __get_download_path(){
 	ccl)
 	    case "`uname -m`" in
 		x86*)
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz"
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz" &&
+		    return 0
 		    ;;
 		arm)
 		    [ "`uname`" = "Linux" ] &&
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxx86.tar.gz"
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxx86.tar.gz" &&
+		    return 0
 		    ;;
 		ppc)
 		    [ "`uname`" = "Linux" ] &&
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz"
-		    ;;
-		*)
-		    echo "CCL does not support your machine." >&2
-		    return 1
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz" &&
+		    return 0
 		    ;;
 	    esac
+	    echo "CCL does not support your machine." >&2
+	    return 1
 	    ;;
 	alisp)
 	    if expr match `uname -m` 'x86*' > /dev/null 2>&1 ; then
@@ -60,6 +61,7 @@ __get_download_path(){
 			;;
 		esac
 	    fi
+	    echo "ALISP does not support your machine." >&2
 	    return 1
 	    ;;
 	*)
