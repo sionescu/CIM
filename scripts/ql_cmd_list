@@ -4,7 +4,7 @@
   ((string= (car *argv*) "remote")
    (loop :for dist :in (ql:system-list) :do
       (format t "~20A~%" (ql-dist:name dist))))
-  ((string= (car *argv*) "local")
+  ((or (string= (car *argv*) "local") (null (car *argv*)))
    (loop :for dist :in (remove-if-not #'ql-dist:installedp (ql:system-list)) :do
       (format t "~20A~%" (ql-dist:name dist)))))
 

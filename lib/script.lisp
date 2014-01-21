@@ -1,6 +1,7 @@
 ;;
+
 (defpackage cim
-  (:use :cl)
+  (:use :CL)
   (:export :*argv*
 	   :repl
 	   :getenv

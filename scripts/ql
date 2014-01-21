@@ -4,7 +4,7 @@ command=$1
 shift
 case $command in
     install)
-	cl --no-init -- "$CIM_HOME/scripts/ql_cmd_install" "$@"
+	cl "$CIM_HOME/scripts/ql_cmd_install" "$@"
 	;;
     uninstall)
 	cl "$CIM_HOME/scripts/ql_cmd_uninstall" "$@"
