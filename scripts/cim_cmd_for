@@ -1,0 +1,26 @@
+#!/bin/sh -
+# This file is for execute
+
+impls=""
+while [ "$1" != "do" ];do
+    if cim list use | grep "$1" > /dev/null 2>&1;then
+	impls="$impls $1"
+    else
+	echo "$1 is not installed." >&2
+	exit 1
+    fi
+    if [ "$#" -gt 0 ];then
+	shift
+    else
+	echo "Missing 'do'." >&2
+	exit 1
+    fi
+done
+shift
+. "$CIM_HOME/scripts/cim_utils"
+for impl in $impls;do
+    cim_green ">>>$impl $@"
+    LISP_IMPL="$impl" cl "$@"
+    cim_green "<<<"
+done
+
