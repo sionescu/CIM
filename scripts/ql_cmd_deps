@@ -8,15 +8,16 @@
 		 (format nil "~a" (user-homedir-pathname))))
 (setf *argv*
       (or (parse-options *argv*
-			 (("--path") "Where quicklisp is."
-			  ((arg)
-			   (setf path arg)
-			   (with-open-file (out quicklisp-path
-						:direction :output
-						:if-exists :supersede
-						:if-does-not-exist :create)
-			     (write-string path out)))))
+			 (("--path") (arg)
+			  "Where quicklisp is."
+			  (setf path arg)
+			  (with-open-file (out quicklisp-path
+					       :direction :output
+					       :if-exists :supersede
+					       :if-does-not-exist :create)
+			    (write-string path out))))
 	  (exit)))
+(unless *argv* (return))
 (unless (char= #\/ (aref path (1- (length path))))
   (setf path (concatenate 'string path "/")))
 (setf path (merge-pathnames path (pathname (concatenate  'string (getenv "PWD") "/"))))

@@ -6,7 +6,7 @@ if [ $# -gt 0 ];then
     if [ -s "$CIM_HOME/scripts/cim_cmd_$command" ];then
 	sh "$CIM_HOME/scripts/cim_cmd_$command" "$@"
     else
-	sh "$CIM_HOME/scripts/cim_cmd_unknown" "$@"
+	sh "$CIM_HOME/scripts/cim_cmd_unknown" "$command"
     fi
 else
     sh "$CIM_HOME/scripts/cim_cmd_help"
