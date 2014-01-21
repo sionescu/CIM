@@ -2,8 +2,9 @@
 if [ -s "$CIM_HOME/scripts/cim_cmd_list_$1" ];then
     sh "$CIM_HOME/scripts/cim_cmd_list_$1"
 elif [ "$1" = "" ];then
-    sh "$CIM_HOME/scripts/cim_cmd_list_list"
+    echo "Please specify command." >&2
+    return 1    
 else
-    echo "Unknown subcommand '$1'. See 'cim help list'" >&2
+    echo "Unknown subcommand '$1'. See 'cim help list'." >&2
     return 1
 fi

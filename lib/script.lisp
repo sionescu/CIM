@@ -69,16 +69,16 @@
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
-(defun script (in)
-  "Execute a file as script ignoring shebang."
-  (let ((in (remove-shebang in)))
-    (load in :verbose nil :print nil)))
-
 (defun exit ()
   #-(or sbcl allegro) (cl-user::quit)
   #+sbcl (sb-ext::exit)
   #+allegro (cl-user::exit))
 
+(defun ensure-quicklisp ()
+  #-quicklisp
+  (let ((quicklisp-init (ql_home "/setup.lisp")))
+    (when (probe-file quicklisp-init)
+      (load quicklisp-init :verbose nil))))
 
 (load (cim_home "/lib/option-parser.lisp")  :verbose nil :print nil)
 (setf *argv*
@@ -104,19 +104,13 @@
 		     (("-l") (library)
 		      "quickload the library"
 		      (push `(progn
-			       #-quicklisp
-			       (let ((quicklisp-init (ql_home "/setup.lisp")))
-				 (when (probe-file quicklisp-init)
-				   (load quicklisp-init :verbose nil)))
+			       (ensure-quicklisp)
 			       (funcall (intern "QUICKLOAD" :ql) ,(intern (format nil "~:@(~A~)" library) :keyword))) sexps))
 		     (("-L") (library)
 		      "quickload and use-package the library"
 		      (let ((sys (intern (format nil "~:@(~A~)" library) :keyword)))
 			(push `(progn
-				 #-quicklisp
-				 (let ((quicklisp-init (ql_home "/setup.lisp")))
-				   (when (probe-file quicklisp-init)
-				     (load quicklisp-init :verbose nil)))
+				 (ensure-quicklisp)
 				 (funcall (intern "QUICKLOAD" :ql) ,sys)
 				 (use-package  ,sys))
 			      sexps)))
@@ -127,7 +121,7 @@
 		      "do not load ~/.lisprc"
 		      (setf (opt :no-init) t))
 		     (("--no-rl") ()
-		      "do not use rlwrap"
+		      "do not use rlwrap. This is effective only --repl is specified"
 		      ())
 		     (("--no-right") ()
 		      "do not display right prompt. This is effective only --repl is specified"
@@ -161,10 +155,10 @@
 		   (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
 		  (*argv*
 		   (let ((*load-print* nil))
-		     (script (if (opt :sexp)
-				 (make-string-input-stream
-				  (format nil "~%~A" (opt :sexp)))
-				 (open (pop *argv*) :if-does-not-exist :error)))))
+		     (load (if (opt :sexp)
+			       (make-string-input-stream (opt :sexp))
+			       (remove-shebang (open (pop *argv*) :if-does-not-exist :error)))
+			   :verbose nil :print nil)))
 		  ((not *argv*)
 		   (loop (handler-case
 			     (eval (read))

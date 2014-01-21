@@ -1,0 +1,22 @@
+#!/bin/sh -
+. "$CIM_HOME/config/current.$CIM_ID"
+current="$LISP_IMPL"
+. "$CIM_HOME/config/default"
+default="$LISP_IMPL"
+. "$CIM_HOME/scripts/cim_aware_system_lisp"
+cat <<EOF
+CIM_ID   = $CIM_ID
+CIM_HOME = $CIM_HOME
+
+current lisp = $current
+default lisp = $default
+
+EOF
+for impl in `ls "$CIM_HOME/bin/" | grep -v -e '-' | grep -v -w -e 'ql' -e 'cl' -e 'cim'`;do
+    detail=`ls -l "$CIM_HOME/bin/$impl"`
+    printf "%-5s = %s\n" "$impl" `basename ${detail#*->}`
+done
+echo 
+for impl in `find $CIM_HOME/bin/ -name '*-system' -exec basename '{}' ';'`;do
+    printf "%-12s = %s\n" "$impl" `PATH=/bin:/usr/bin:/usr/local/bin which ${impl%-system}`
+done
