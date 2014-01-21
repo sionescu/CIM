@@ -8,7 +8,7 @@
   (let ((str (gensym "strings")))
     `(defmacro ,name (&rest ,str)
        `(concatenate 'string
-		     (if no-color "" ,,before) ,@,str (if no-color "" ,,after)))))
+		     (if (opt :no-color) "" ,,before) ,@,str (if (opt :no-color) "" ,,after)))))
 
 (defmacro make-colors ((name before after) &rest clauses)
   `(progn
@@ -47,15 +47,6 @@
 	  (if (null list)
 	      (return (coerce (nreverse result) 'string)))))))
 
-#+nil
-(defun handle-simple-condition (err)
-  (format *error-output* " *~A*~%~A~%"
-	  (red (bright (format nil "~A" (class-name (class-of err)))))
-	  (red (bright (apply (function format) nil
-			      (simple-condition-format-control err)
-			      (simple-condition-format-arguments err)))))
-  (force-output *error-output*))
-
 (defun handle-condition (err)
   (format *error-output*
 	  (str " *~A*~%~A~%")
@@ -68,8 +59,6 @@
 (defmacro handling-errors (&body body)
   `(handler-case
        (progn ,@body)
-     #+nil(SIMPLE-CONDITION (e)
-       (handle-simple-condition e))
      (CONDITION (e)
        (handle-condition e))))
 
@@ -86,18 +75,19 @@
 (defvar *right-prompt*
   '(let* ((dir (namestring *default-pathname-defaults*))
 	  (impl (getenv "LISP_IMPL")))
-    (let ((it (string<  (getenv "HOME") dir)))
-      (when it (setf dir (concatenate 'string "~" (subseq dir it (1- (length dir)))))))
+    (let* ((it (string<  (getenv "HOME") dir))
+	   (subdirp (= it (length (getenv "HOME")))))
+      (when subdirp (setf dir (concatenate 'string "~" (subseq dir it (1- (length dir)))))))
     (format nil "~a ~a" (blue "(" impl ")")  (cyan dir))))
 
 (defun print-prompt (stream &optional continuep)
   (let* ((left (eval (if continuep *continue-prompt* *left-prompt*)))
 	 (col (or (parse-integer (or (getenv "COLUMNS") "") :junk-allowed t) 75)))
-    (unless no-right
+    (unless (opt :no-right)
       (let ((right (eval *right-prompt*)))
 	(format stream "[~DC" (- col (length (filter-escapes right))))
-       (write-string right stream)
-       (format stream "[~DD" col)))
+	(write-string right stream)
+	(format stream "[~DD" col)))
     (setf *prompt-before* left)
     (write-string left stream)
     (force-output stream)))

@@ -23,37 +23,6 @@
   #+ccl ccl:*unprocessed-command-line-argument-list*
   #+lispworks system:*line-arguments-list*)
 
-(defvar *argf* *standard-input*)
-(defconstant +VERSION+ "0.0.1")
-(defvar *help*
-"Usage: cl [switchs] [--] [programfile] [argumensts]
- -C DIR			set *default-pathname-defaults* DIR, before executing your script
- -d, --debug		set debugging flags (push :debug into *features*)
- -e, --eval SEXP	one line of script. Several -e's allowed. Omit [programfile]
- -f, --load file	load the file
- -h, --help		print this help
- -i[extxntion]		edit *argv* files in place and make backup with the extension .EXT
- -l library		quickload the library
- -L library 		quickload and use-package the library
- -r, --repl		run repl
- -q, --no-init		do not load ~/.lisprc
-     --no-rl		do not use rlwrap
-     --no-right		do not display right prompt. This is effective only --repl is specified
-     --no-color         do not use color. This is effective only --repl is specified
- -v, --version		print the version
-if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads scripts from the standard input and then eval them.
-")
-(setf *load-verbose* nil)
-(defvar help nil)
-(defvar extension nil)
-(defvar no-init nil)
-(defvar no-right nil)
-(defvar no-color nil)
-(defvar version nil)
-(defvar sexps ())
-(defvar replgiven nil)
-(defvar sexpgiven nil)
-
 (defun getenv (name &optional default)
   #+CMU
   (let ((x (assoc name ext:*environment-list*
@@ -70,23 +39,27 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
    #+ABCL (java:jstatic "getenv" "java.lang.System" name)
    default))
 
-#+nil
-(defun open-files (files)
-  (apply #'make-concatenated-stream
-   (mapcar (lambda (file) (open file :if-does-not-exist :error))
-	   files)))
-
-#+nil
-(defun without-ext (stream)
-  (let ((stream (if (typep stream 'concatenated-stream)
-		    (car (concatenated-stream-streams stream))
-		    stream)))
-    (make-pathname :name (pathname-name stream) :directory (pathname-directory stream))))
-
 (defun cim_home (path)
   (concatenate 'string (getenv "CIM_HOME") path))
 (defun ql_home (path)
   (concatenate 'string (cim_home "/quicklisp") path))
+
+(defvar *help*)
+(defvar *options* (make-hash-table))
+(defvar sexps ())
+(setf *load-verbose* nil)
+
+(let ((v))
+  (defun version ()
+    (or v
+	(setf v
+	      (with-open-file (in (cim_home "/VERSION"))
+		(read-line in))))))
+
+(defun opt (key)
+  (gethash key *options*))
+(defun (setf opt) (obj key)
+  (setf (gethash key *options*) obj))
 
 (defun remove-shebang (in)
   (let ((line (read-line in nil "#!")))
@@ -96,71 +69,116 @@ if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads script
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
-(defun script (programfile)
+(defun script (in)
   "Execute a file as script ignoring shebang."
-  (let ((in (remove-shebang (open programfile :if-does-not-exist :error))))
-    (load in :verbose nil :print nil)
-    (values)))
+  (let ((in (remove-shebang in)))
+    (load in :verbose nil :print nil)))
+
 (defun exit ()
   #-(or sbcl allegro) (cl-user::quit)
   #+sbcl (sb-ext::exit)
   #+allegro (cl-user::exit))
+
+
 (load (cim_home "/lib/option-parser.lisp")  :verbose nil :print nil)
-
-
 (setf *argv*
       (parse-options *argv*
-		     (("-C") "set *default-pathname-defaults* DIR, before executing your script"
-		      ((dir)
-		       (let ((dir (if (char= #\/ (elt dir 1 ))
-				      (pathname dir)
-				      (merge-pathnames (pathname dir)))))
-			 (push `(setf *default-pathname-defaults* ,dir) sexps))))
-		     (("-d" "--debug") "set debugging flags (push :debug into *features*)"
-		      (() (push '(push :debug *features*) sexps)))
-		     (("-e" "--eval") "one line of script. Several -e's allowed. Omit [programfile]"
-		      ((sexp)
-		       (push `(eval (read (make-string-input-stream ,sexp))) sexps)
-		       (setf sexpgiven t)))
-		     (("-f" "--load") "load the file"
-		      ((file) (load file)))
-		     (("i") "edit *argv* files in place and make backup with the extension .EXT"
-		      ((ext) (setf extension ext)))
-		     (("-l") "quickload the library"
-		      ((library) (push `(#+nil ql:quickload ,(intern library :keyword)) sexps)))
-		     (("-L") "quickload and use-package the library"
-		      ((library)
-		       (let ((sys (intern library :keyword)))
-			 (push `(#+nil ql:quickload ,sys) sexps)
-			 (push `(use-package  ,sys) sexps))))
-		     (("-r" "--repl") "run repl"
-		      (() (setf replgiven t)))
-		     (("-q" "--no-init") "do not load ~/.lisprc"
-		      (() (setf no-init t)))
-		     (("--no-rl") "do not use rlwrap"
-		      (()))
-		     (("--no-right") "do not display right prompt. This is effective only --repl is specified"
-		      (() (setf no-right t)))
-		     (("--no-color") "do not use color. This is effective only --repl is specified"
-		      (() (setf no-color t)))
-		     (("-h" "--help") "print this help"
-		      (() (setf help t)))
-		     (("-v" "--version") "print the version"
-		      (() (setf version t)))))
+		     (("-C") (dir)
+		      "set *default-pathname-defaults* DIR."
+		      (let ((dir (if (char= #\/ (elt dir 1 ))
+				     (pathname dir)
+				     (merge-pathnames (pathname dir)))))
+			(push `(setf *default-pathname-defaults* ,dir) sexps)))
+		     (("-d" "--debug") ()
+		      "set debugging flags (push :debug into *features*)"
+		      (push '(push :debug *features*) sexps))
+		     (("-e" "--eval") (sexp)
+		      "one line of script. Several -e's allowed. Omit [programfile]"
+		      (setf (opt :sexp) (concatenate 'string (opt :sexp) sexp)))
+		     (("-f" "--load") (file)
+		      "load the file"
+		      (push `(load ,file) sexps))
+		     (("-i") (ext)
+		      "edit *argv* files in place and make backup with the extension .EXT"
+		      (push `(setf (opt :extension) ,ext) sexps))
+		     (("-l") (library)
+		      "quickload the library"
+		      (push `(progn
+			       #-quicklisp
+			       (let ((quicklisp-init (ql_home "/setup.lisp")))
+				 (when (probe-file quicklisp-init)
+				   (load quicklisp-init :verbose nil)))
+			       (funcall (intern "QUICKLOAD" :ql) ,(intern (format nil "~:@(~A~)" library) :keyword))) sexps))
+		     (("-L") (library)
+		      "quickload and use-package the library"
+		      (let ((sys (intern (format nil "~:@(~A~)" library) :keyword)))
+			(push `(progn
+				 #-quicklisp
+				 (let ((quicklisp-init (ql_home "/setup.lisp")))
+				   (when (probe-file quicklisp-init)
+				     (load quicklisp-init :verbose nil)))
+				 (funcall (intern "QUICKLOAD" :ql) ,sys)
+				 (use-package  ,sys))
+			      sexps)))
+		     (("-r" "--repl") ()
+		      "run repl"
+		      (setf (opt :repl) t))
+		     (("-q" "--no-init") ()
+		      "do not load ~/.lisprc"
+		      (setf (opt :no-init) t))
+		     (("--no-rl") ()
+		      "do not use rlwrap"
+		      ())
+		     (("--no-right") ()
+		      "do not display right prompt. This is effective only --repl is specified"
+		      (setf (opt :no-right) t))
+		     (("--no-color") ()
+		      "do not use color. This is effective only --repl is specified"
+		      (setf (opt :no-color) t))
+		     (("-h" "--help") ()
+		      "print this help"
+		      (setf *help* generated-help)
+		      (setf (opt :help) t))
+		     (("-v" "--version") ()
+		      "print the version" (setf (opt :version) t))))
 
 (if (equal *default-pathname-defaults* #p"")
     (setf *default-pathname-defaults*
 	  (pathname (getenv "PWD"))))
 (cond
-  (version (format t "~A~%" +VERSION+))
-  (help    (format t "~A~%" *help*))
+  ((opt :version)
+   (format t "~A~%" (version)))
+  ((opt :help)
+   (format t "~A~2%" "Usage: cl [switchs] [--] [programfile] [argumensts]")
+   (format t "~A~%" *help*)
+   (format t "~A~%" "If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them."))
   (t
-   (unless no-init (load (cim_home "/init.lisp") :verbose nil :print nil))
+   (unless (opt :no-init) (load (cim_home "/init.lisp") :verbose nil :print nil))
    (dolist (sexp (nreverse sexps)) (eval sexp))
-   (cond
-     (replgiven (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
-     ((and (not sexpgiven) *argv*)  (let ((*load-print* nil)) (script (pop *argv*))))
-     ((not *argv*) (loop (handler-case
+   (macrolet ((main ()
+		'(cond
+		  ((opt :repl)
+		   (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
+		  (*argv*
+		   (let ((*load-print* nil))
+		     (script (if (opt :sexp)
+				 (make-string-input-stream
+				  (format nil "~%~A" (opt :sexp)))
+				 (open (pop *argv*) :if-does-not-exist :error)))))
+		  ((not *argv*)
+		   (loop (handler-case
 			     (eval (read))
 			   (condition () (return 1))))))))
+     (if (opt :extension)
+	 (let ((files (if (and (not (opt :sexp)) *argv*)
+			  (cdr *argv*)
+			  *argv*)))
+	   (dolist (file files)
+	     (setf *standard-input* (open file :if-does-not-exist :error))
+	     (if (zerop (length (opt :extension)))
+		 (delete-file file)
+		 (rename-file file (concatenate 'string file (opt :extension))))
+	     (setf *standard-output* (open file :direction :output :if-exists :supersede))
+	     (main)))
+	 (main)))))
 (exit)
