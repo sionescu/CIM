@@ -1,0 +1,11 @@
+Usage:
+
+	ql uninstall <system>...
+
+Description:
+
+Uninstall given system(s).
+
+Example:
+
+	ql uninstall caveman clack

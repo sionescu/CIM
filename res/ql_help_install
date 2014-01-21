@@ -1,0 +1,12 @@
+Usage:
+
+	ql install <system>...
+
+Description:
+
+Install given system(s) to $CIM_HOME/quicklisp.
+
+Example:
+
+	# install clack
+	ql install clack

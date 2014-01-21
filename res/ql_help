@@ -1,0 +1,10 @@
+ql -- Command line interface for quicklisp
+
+Commands currently available
+deps <system>			;; Install dependencies of <system>.
+help [command]			;; Show help.
+install[quickload] <system>...	;; Install given system.
+list {remote | local}		;; List available/installed systems.
+search[propos] <keyword>	;; Search quicklisp.
+uninstall <system>      	;; Uninstall system.
+update [system]         	;; Update dist info and installed systems.

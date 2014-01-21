@@ -1,0 +1,11 @@
+Usage:
+
+	ql list {remote | [local]}
+
+Description:
+
+List installed systems. if 'remote' is given, list all the available systems. 'ql list local' is equivalent to 'ql list'.
+
+Example:
+
+	ql list remote

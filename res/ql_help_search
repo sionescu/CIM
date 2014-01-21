@@ -1,0 +1,11 @@
+Usage:
+
+	ql search <keyword>
+
+Description:
+
+Search quicklisp for <keyword>.
+
+Example:
+
+	ql search http
