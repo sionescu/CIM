@@ -74,11 +74,17 @@ EOF
 	echo "$rc" >> "$rcfile"
     fi
 fi
+
+echo
+
 if [ -n "$CIM_HAS_INSTALLED" ];then
     echo "Install done. Thank you for using cim."
 else
     echo "Install done. Please reload your *rc file. Enjoy your Lisp life."
 fi
+
+echo
+
 cat <<EOF
 If you have some problems or questions, ask keen (@blackenedgold) freely.
 EOF
