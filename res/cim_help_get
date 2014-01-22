@@ -1,0 +1,10 @@
+Usage:
+	cim get
+
+Description:
+
+Upgrade to the latest cim.
+
+Examples:
+
+	cim get
