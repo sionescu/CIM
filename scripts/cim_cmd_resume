@@ -13,7 +13,7 @@ case "$1" in
 		continue
 	    else
 		. "$CIM_HOME/scripts/cim_utils"
-		target=`__cim_split_impl_version "$target" $1 | tr \  -`
+		target=`__cim_split_impl_version "$1" | tr \  -`
 		if [ -s "$CIM_HOME/tmp/resume-$target" ]; then
 		    resume="$CIM_HOME/tmp/resume-$target"
 		    impl=${target%*-}
