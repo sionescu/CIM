@@ -17,10 +17,10 @@ __get_download_path(){
 	abcl)
 	    echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
 	    ;;
+	# sbcl)
+	#     echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
+	#     ;;
 	sbcl)
-	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
-	    ;;
-	sbcl-bin)
 	    {
 		grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
 		{ echo "SBCL binary does not support your machine." >&2;return 1;}
@@ -119,6 +119,7 @@ __expand(){
     if [ "$1" = gcl ] || [ "$1" = ccl ];then
 	mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
     fi
+    [ "$1" = "sbcl" ] && mv "$CIM_HOME/src/$1-$2"* "$CIM_HOME/src/$1-$2"
     return 0
 }
 __configure(){
@@ -141,9 +142,9 @@ __make(){
 
 __doc(){
     mkdir -p "$CIM_HOME/share/man"
-    if [ "$1" = "sbcl" ] ;then
-	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
-    fi
+    # if [ "$1" = "sbcl" ] ;then
+    # 	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
+    # fi
     return $?
 }
 
@@ -178,33 +179,9 @@ __install_ql_if_need(){
     fi
 }
 
-__sbcl_ensure_impl(){
-    if which sbcl > /dev/null 2>&1;then
-	touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which lisp > /dev/null 2>&1;then
-	echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which ccl > /dev/null 2>&1;then
-	echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which clisp > /dev/null 2>&1;then
-	echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif [ -n run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ];then
-	echo "$CIM_HOME/tmp/$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif url=`__cim_get_download_path sbcl-bin`;then
-	__cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
-	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh` --disable-debugger --no-userinit --no-sysinit" |
-	head -n 1 > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    else
-	echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
-	exit 1
-    fi
-	
-}
-__sbcl_make(){
-    (cd "$CIM_HOME/src/$1-$2" &&
-	sh make.sh --xc-host="`cat .cim_available_impl`" --prefix="$CIM_HOME/impls/$1-$2 --fancy")
-}
 __sbcl_install(){
-    (cd "$CIM_HOME/src/$1-$2" && sh install.sh)
+    mkdir -p "$CIM_HOME/impls/$1-$2"
+    (cd "$CIM_HOME/src/$1-$2" && INSTALL_ROOT="$CIM_HOME/impls/$1-$2"  sh install.sh)
 }
 
 __ccl_rebuild_full(){

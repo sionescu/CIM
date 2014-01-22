@@ -20,8 +20,6 @@ cim_install_sbcl_full="
 __start
 __download
 __expand
-__sbcl_ensure_impl
-__sbcl_make
 __doc
 __sbcl_install
 __link
