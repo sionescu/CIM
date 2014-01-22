@@ -50,19 +50,27 @@ elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
     esac
 fi
 
-cat <<EOM
+if grep "$rc" "$rcfile" > /dev/null 2>&1;then
+    echo "It seems cim initialization has been added to your *rc file."
+else
+    cat <<EOM
 Adding to your $rcfile
 '$rc'
 EOM
-grep "$rc" "$rcfile" > /dev/null 2>&1 || echo "$rc" >> "$rcfile"
-
+    echo "$rc" >> "$rcfile"
+fi
 
 if [ -d "$HOME/.emacs.d/eshell" ];then
     rc='(load (expand-file-name "$CIM_HOME/init.esh")) > /dev/null'
     rcfile="$HOME/.emacs.d/profile"
-    cat <<EOF
+    if grep "$rc" "$rcfile" > /dev/null 2>&1;then
+	echo "It seems cim initialization has been added to your *rc file."
+    else
+	cat <<EOF
 Adding to your $rcfile
 '$rc'
 EOF
-    grep "$rc" "$rcfile" > /dev/null 2>&1 || echo "$rc" >> "$rcfile"
+	echo "$rc" >> "$rcfile"
+    fi
 fi
+echo "Install done. Please reload your *rc file."
