@@ -33,7 +33,7 @@ do
     ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
-if expr $SHELL : '*csh' > /dev/null 2>&1 ;then
+if expr $SHELL : '.*csh' > /dev/null 2>&1 ;then
     rc='if (-r "$CIM_HOME/init.csh" ) then
    source "$CIM_HOME/init.csh"
 fi'
@@ -41,7 +41,7 @@ fi'
 	*/csh)  rcfile="$HOME/.cshrc";;
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
-elif expr $SHELL : '*sh' > /dev/null 2>&1 ;then
+elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
     rc='[ -s "$CIM_HOME/init.sh" ] && . "$CIM_HOME/init.sh"'
     case $SHELL in
 	*/bash) rcfile="$HOME/.bashrc";;

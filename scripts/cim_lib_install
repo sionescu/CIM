@@ -47,7 +47,7 @@ __get_download_path(){
 	    return 1
 	    ;;
 	alisp)
-	    if expr `uname -m` : 'x86*' > /dev/null 2>&1 ; then
+	    if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
 		vname=`echo "$2" | tr -d \.`
 		case `uname` in
 		    Linux)
