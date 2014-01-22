@@ -1,4 +1,11 @@
 #!/bin/sh -
 . "$CIM_HOME/scripts/cim_utils"
+if [ "$1" = "--branch" ];then
+    CIM_INSTALL_BRANCH="$2"
+else
+    CIM_INSTALL_BRANCH=master
+fi
 CIM_HAS_INSTALLED=yes;export CIM_HAS_INSTALLED
+export CIM_INSTALL_BRANCH
+
 __cim_wget https://raw.github.com/KeenS/CIM/master/scripts/cim_installer - | /bin/sh

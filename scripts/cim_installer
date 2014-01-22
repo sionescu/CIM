@@ -1,12 +1,10 @@
 #!/bin/sh -
 # This file is for execute
 set -e
+: ${CIM_INSTALL_BRANCH:=master}
 : ${CIM_HOME:="$HOME/.cim"};
 export CIM_HOME
 umask 077
-mkdir -p "$CIM_HOME/archives"
-mkdir -p "$CIM_HOME/tmp"
-rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download(){
     if which curl > /dev/null 2>&1;then
 	curl -L "$1" > "$2"
@@ -17,10 +15,13 @@ download(){
     fi
 }
 
-download https://codeload.github.com/KeenS/CIM/tar.gz/master "$CIM_HOME/tmp/cim.tar.gz"
-gzip -cd  "$CIM_HOME/tmp/cim.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
-cp -rf "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/"
-rm -rf "$CIM_HOME/tmp/cim.tar.gz" "$CIM_HOME/tmp/CIM-master"
+mkdir -p "$CIM_HOME/archives"
+mkdir -p "$CIM_HOME/tmp"
+rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
+download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
+cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
+rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
 for dir in bin config impls src
 do
