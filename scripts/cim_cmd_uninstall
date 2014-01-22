@@ -12,7 +12,7 @@ while [ $# -gt 0 ];do
     rm -rf "$CIM_HOME/impls/$target"
     rm -f  "$CIM_HOME/bin/$target"
     impl="${target%-*}"
-    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ] [ ! "$impl" = "cim" ];then
+    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ] && [ ! "$impl" = "cim" ];then
         rm -f  "$CIM_HOME/bin/$impl"
     fi
     shift
