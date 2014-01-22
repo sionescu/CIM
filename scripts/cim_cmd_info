@@ -1,8 +1,12 @@
 #!/bin/sh -
-. "$CIM_HOME/config/current.$CIM_ID"
+[ -s "$CIM_HOME/config/current.$CIM_ID"] &&
+. "$CIM_HOME/config/current.$CIM_ID" &&
 current="$LISP_IMPL"
-. "$CIM_HOME/config/default"
+
+[ -s "$CIM_HOME/config/default" ] &&
+. "$CIM_HOME/config/default" &&
 default="$LISP_IMPL"
+
 . "$CIM_HOME/scripts/cim_aware_system_lisp"
 cat <<EOF
 CIM_ID   = $CIM_ID

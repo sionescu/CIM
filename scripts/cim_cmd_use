@@ -2,8 +2,13 @@
 # This file is for execute
 sh "$CIM_HOME/scripts/cim_aware_system_lisp"
 if [ "$1" = "default" ];then
-    . "$CIM_HOME/config/default"
-    set - "$LISP_IMPL"
+    if [ -s "$CIM_HOME/config/default" ];then
+	. "$CIM_HOME/config/default"
+	set - "$LISP_IMPL"
+    else
+	echo "Default lisp is not set. Please 'cim use --default <impl> first."
+	exit 1
+    fi
 fi
 . "$CIM_HOME/scripts/cim_utils"
 LISP_IMPL=${1%-*}

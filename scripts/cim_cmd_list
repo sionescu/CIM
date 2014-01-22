@@ -1,10 +1,12 @@
 #!/bin/sh -
-if [ -s "$CIM_HOME/scripts/cim_cmd_list_$1" ];then
-    sh "$CIM_HOME/scripts/cim_cmd_list_$1"
-elif [ "$1" = "" ];then
+if [ "$1" = "" ];then
     echo "Please specify command." >&2
-    return 1    
+    exit 1
+elif [ -s "$CIM_HOME/scripts/cim_cmd_list_$1" ];then
+    sh "$CIM_HOME/scripts/cim_cmd_list_$1"
+elif [ -s "$CIM_HOME/scripts/cim_cmd_$1" ];then
+    echo "'$1' doesn't take target."
 else
     echo "Unknown subcommand '$1'. See 'cim help list'." >&2
-    return 1
+    exit 1
 fi

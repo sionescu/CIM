@@ -44,7 +44,7 @@ __get_download_path(){
 		    ;;
 	    esac
 	    echo "CCL does not support your machine." >&2
-	    return 1
+	    exit 1
 	    ;;
 	alisp)
 	    if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
@@ -52,12 +52,15 @@ __get_download_path(){
 		case `uname` in
 		    Linux)
 			echo "http://www.franz.com/ftp/pub/acl${vname}express/linux86/acl${vname}express-linux-x86.bz2"
+			return 0
 			;;
 		    Darwin)
 			echo "http://www.franz.com/ftp/pub/acl${vname}express/macosx86/acl${vname}express-macosx-x86.dmg"
+			return 0
 			;;
 		    FreeBSD)
 			echo "http://www.franz.com/ftp/pub/acl${vname}express/freebsd/acl${vname}express-freebsd-x86.bz2"
+			return 0
 			;;
 		esac
 	    fi
@@ -93,6 +96,7 @@ __download(){
 	impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
     fi
     url=`__get_download_path "$1" "$2"`
+    [ "$?" = 0 ] || exit $?
     mkdir -p "$CIM_HOME/archives/"
     {   [ -f "$impl_archive" ] ||
 	{ [ -n "$url" ] && __cim_wget "$url" "$impl_archive"; }
