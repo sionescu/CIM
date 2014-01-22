@@ -29,15 +29,16 @@ Most of commands are designed refering to rvm.
 `cim help <command>` or `cim list <command>` will also help you.
 
 ### Installing Lisp Implementation(s)
-Use `cim install`
+Use `cim install`.
+
 ```
 $ cim install sbcl
 $ cim install clisp abcl-1.2.1
 ```
 As you can see, you can install the latest version or specified version if given.
-
 ### Selecting A Lisp impl
 Use `cim use`.
+
 ```
 $ cim use ccl
 ```
@@ -47,10 +48,24 @@ Or to use it as default,
 ```
 $ cim use ccl --default
 ```
+Of cause, you can use system installed lisp.
+```
+$ cim use clisp-system
+```
+
+This also affects bare lisp command.
+```
+$ sbcl --version
+SBCL 1.1.14
+$ cim use sbcl-1.1.10
+$ sbcl --version
+SBCL 1.1.10
+```
 
 ### Executing Lisp file
-Use `cl`
-```sh
+Use `cl`.
+
+```
 $ cat hello.lisp
 #!/usr/bin/env cl
 (format t "Hello, CIM")
@@ -62,9 +77,9 @@ Hello, CIM
 $ cl -h     # most of options are import of ruby's.
 Usage: cl [switchs] [--] [programfile] [argumensts]
 
--C DIR          set *default-pathname-defaults* DIR
+-C DIR          set *default-pathname-defaults* DIR.
 -d, --debug     set debugging flags (push :debug into *features*)
--e, --eval SEXP one line of script. Several -e's allowed. Omit [programfile]
+-e, --eval SEXP one line of script. Several -e's are allowed. Omit [programfile]
 -f, --load FILE load the FILE
 -i EXT          edit *argv* files in place and make backup with the extension .EXT
 -l LIBRARY      quickload the LIBRARY
@@ -82,6 +97,7 @@ If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scri
 
 ### Running REPL
 Use `cl` with `--repl` or `-r` in short.
+
 ```
 $ cl --repl
 CL-USER> (format t "Hi~%")
@@ -91,16 +107,23 @@ Hi
 
 if `rlwrap` is installed, `cl` use it.
 
-### Executing One Liner
+### Executing one liner
+Use `cl` with `-e`.
 
-```sh
+```
 $ cl -e '(format t "Hello from command line~%")'
 Hello from command line
 ```
+`-e` can be specified many times. Those expressions are concatenated.
+```
+$ cl -e '(format t "Hello, ' -e $USER -e '")'
+Hello, kim
+```
 
 ### Managing lisp systems
+Use `ql`.
 
-```sh
+```
 $ ql install alexandria # alias of quickload
 $ ql search xml         # alias of system-apropos
 $ ql update             # alias of update-all-dists

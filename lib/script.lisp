@@ -94,21 +94,21 @@
 		      "set debugging flags (push :debug into *features*)"
 		      (push '(push :debug *features*) sexps))
 		     (("-e" "--eval") (sexp)
-		      "one line of script. Several -e's allowed. Omit [programfile]"
+		      "one line of script. Several -e's are allowed. Omit [programfile]"
 		      (setf (opt :sexp) (concatenate 'string (opt :sexp) sexp)))
 		     (("-f" "--load") (file)
-		      "load the file"
+		      "load the FILE"
 		      (push `(load ,file) sexps))
 		     (("-i") (ext)
 		      "edit *argv* files in place and make backup with the extension .EXT"
 		      (push `(setf (opt :extension) ,ext) sexps))
 		     (("-l") (library)
-		      "quickload the library"
+		      "quickload the LIBRARY"
 		      (push `(progn
 			       (ensure-quicklisp)
 			       (funcall (intern "QUICKLOAD" :ql) ,(intern (format nil "~:@(~A~)" library) :keyword))) sexps))
 		     (("-L") (library)
-		      "quickload and use-package the library"
+		      "quickload and use-package the LIBRARY"
 		      (let ((sys (intern (format nil "~:@(~A~)" library) :keyword)))
 			(push `(progn
 				 (ensure-quicklisp)
@@ -119,7 +119,7 @@
 		      "run repl"
 		      (setf (opt :repl) t))
 		     (("-q" "--no-init") ()
-		      "do not load ~/.lisprc"
+		      "do not load $CIM_HOME/init.lisp"
 		      (setf (opt :no-init) t))
 		     (("--no-rl") ()
 		      "do not use rlwrap. This is effective only when --repl is specified"
