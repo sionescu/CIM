@@ -9,17 +9,17 @@ mkdir -p "$CIM_HOME/tmp"
 rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download(){
     if which curl > /dev/null 2>&1;then
-	curl -L "$1"
+	curl -L "$1" > "$2"
     elif which wget > /dev/null 2>&1 ;then
-	wget  -O - "$1"
+	wget  -O "$2" "$1"
     elif which fetch > /dev/null 2>&1;then
-	fetch -o - "$1"
+	fetch -o "$2" "$1"
     fi
 }
 
-download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
-mv -f "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/" &&
-rm -rf "$CIM_HOME/tmp/CIM-master/"
+download https://codeload.github.com/KeenS/CIM/tar.gz/master "$CIM_HOME/tmp/cim.tar.gz"
+gzip -cd  "$CIM_HOME/tmp/cim.tar.gz" | tar xf - -C "$CIM_HOME/"
+rm -rf "$CIM_HOME/tmp/cim.tar.gz"
 for dir in bin config impls src
 do
     mkdir -p "$CIM_HOME/$dir"
