@@ -3,6 +3,7 @@
 if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
+    [ -n "SBCL_HOME" ] && export SBCL_HOME
 fi
 if tput=`which tput` > /dev/null 2>&1;then
     COLUMNS=`$tput cols`

@@ -164,8 +164,12 @@ __link(){
     return $?
 }
 __config_cim(){
-    [ -s "$CIM_HOME/config/default" ] ||
-    echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
+    if [ ! -s "$CIM_HOME/config/default" ];then
+	echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
+	if [ "$1" = sbcl];then
+	    echo "SBCL_HOME=$CIM_HOME/impls/$1-$2/lib/sbcl" >> "$CIM_HOME/config/default"
+	fi
+    fi
     [ -s "$CIM_HOME/config/current.$CIM_ID" ] ||
     cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
     return $?    

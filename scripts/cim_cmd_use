@@ -19,9 +19,15 @@ if [ -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$LISP_IMPL"
     if [ "$2" = "--default" ];then
 	echo "LISP_IMPL=$1" > "$CIM_HOME/config/default"
+	if [ "$LISP_IMPL" = "sbcl" ];then
+	    echo "SBCL_HOME=$CIM_HOME/impls/$lisp_full_name/lib/sbcl" >> "$CIM_HOME/config/default"
+	fi
     fi
 else
     echo "$1 is not installed. See 'cim list use'."
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
+if [ "$LISP_IMPL" = "sbcl" ];then
+    echo "SBCL_HOME=$CIM_HOME/impls/$lisp_full_name/lib/sbcl" >> "$CIM_HOME/config/current.$CIM_ID"
+fi
