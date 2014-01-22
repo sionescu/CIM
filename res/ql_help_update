@@ -8,4 +8,4 @@ Update installed systems. If target 'client' is given, update quicklisp itself.
 
 Example:
 
-	ql update cliento
+	ql update client

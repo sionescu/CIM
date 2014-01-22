@@ -4,44 +4,52 @@
 
 ## DESCRIPTION
 
-__CAUTION__
-CIM is under eager development. Most of features does not work yet.
-Please wait for release version or contribute to accelerate development.
-
 CIM aims to be a tool which allows you to easily install, manage,
 run REPL with, and execute with multiple Common Lisp implementation and systems.
 
 I hope CIM could be to Lisp what RVM is to ruby.
 
+## INSTALL
+
+CIM has installer. Run command below and you get cim installed to ~/.cim.
+
+```
+$ curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
+```
+To change install path, set `CIM_HOME`.
+
+```
+$ CIM_HOME=/path/to/cim curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
+```
+
 ## USAGE
 
-Most of commands are designed refering to rvm. Syset is the counterpart of gemset.
+Most of commands are designed refering to rvm.
 
-### Installing Lisp Impl(s)
+`cim help <command>` or `cim list <command>` will also help you.
 
+### Installing Lisp Implementation(s)
+Use `cim install`
 ```
 $ cim install sbcl
 $ cim install clisp abcl-1.2.1
 ```
+As you can see, you can install the latest version or specified version if given.
 
 ### Selecting A Lisp impl
-
+Use `cim use`.
 ```
 $ cim use ccl
+```
+After this command, `cl` uses the latest ccl as backend.
+
+Or to use it as default,
+```
 $ cim use ccl --default
 ```
 
-### Running REPL
-
-```
-$ cl --repl
-CL-USER>
-```
-
-if `rlwrap` is installed, `cl` use it.
-
 ### Executing Lisp file
-
+Use `cl`
 ```sh
 $ cat hello.lisp
 #!/usr/bin/env cl
@@ -53,27 +61,40 @@ $ ./hello.lisp
 Hello, CIM
 $ cl -h     # most of options are import of ruby's.
 Usage: cl [switchs] [--] [programfile] [argumensts]
- -C DIR			set *default-pathname-defaults* DIR, before executing your script
- -d, --debug		set debugging flags (push :debug into *features*)
- -e, --eval SEXP	one line of script. Several -e's allowed. Omit [programfile]
- -f, --load file	load the file
- -h, --help		print this help
- -i[extxntion]		edit *argv* files in place and make backup with the extension .EXT
- -l library		quickload the library
- -L library 		quickload and use-package the library
- -r, --repl		run repl
- -q, --no-init		do not load ~/.lisprc
-     --no-rl		do not use rlwrap
-     --no-right		do not display right prompt. This is effective only --repl is specified
-     --no-color         do not use color. This is effective only --repl is specified
- -v, --version		print the version
-if neither programfile, -e(--eval) nor -r(--repl) are specified, cl reads scripts from the standard input and then eval them.
+
+-C DIR          set *default-pathname-defaults* DIR
+-d, --debug     set debugging flags (push :debug into *features*)
+-e, --eval SEXP one line of script. Several -e's allowed. Omit [programfile]
+-f, --load FILE load the FILE
+-i EXT          edit *argv* files in place and make backup with the extension .EXT
+-l LIBRARY      quickload the LIBRARY
+-L LIBRARY      quickload and use-package the LIBRARY
+-r, --repl      run repl
+-q, --no-init   do not load $CIM_HOME/init.lisp
+--no-rl         do not use rlwrap. This is effective only when --repl is specified
+--no-right      do not display right prompt. This is effective only when --repl is specified
+--no-color      do not use color. This is effective only when --repl is specified
+-h, --help      print this help
+-v, --version   print the version
+
+If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them.
 ```
-	
-### Executing sexp
+
+### Running REPL
+Use `cl` with `--repl` or `-r` in short.
+```
+$ cl --repl
+CL-USER> (format t "Hi~%")
+Hi
+;=> NIL
+```
+
+if `rlwrap` is installed, `cl` use it.
+
+### Executing One Liner
 
 ```sh
-$ cl -e '(format t "Hello from command line")'
+$ cl -e '(format t "Hello from command line~%")'
 Hello from command line
 ```
 
@@ -83,8 +104,7 @@ Hello from command line
 $ ql install alexandria # alias of quickload
 $ ql search xml         # alias of system-apropos
 $ ql update             # alias of update-all-dists
-$ ql update integral    # update system `integral`
-$ ql update-client
+$ ql update client      # update quicklisp itself.
 $ ql list remote
 
 <many systems>
@@ -92,14 +112,11 @@ $ ql list remote
 $ ql list local
 alexandria
 $ ql deps --path ./quicklisp myapp.asd
-$ ql list local --path ./quicklisp
-
-<myapp dependencies>
-
+# myapp dependencies are installed to ./quicklisp.
 ```
 
 ## License
-See LICENSE file.
+BSD
 
 ## Author
 κeen(@blackenedgold)

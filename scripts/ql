@@ -28,7 +28,7 @@ case $command in
 	ql install "$@"
 	;;
     help)
-	cl "$CIM_HOME/scripts/ql_cmd_help" "$@"
+	sh "$CIM_HOME/scripts/ql_cmd_help" "$@"
 	;;
 	*)
 	echo "Unknown command $command. Exit." >&2
