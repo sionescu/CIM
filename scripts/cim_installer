@@ -34,15 +34,15 @@ do
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 if expr $SHELL : '.*csh' > /dev/null 2>&1 ;then
-    rc='if (-r "$CIM_HOME/init.csh" ) then
-   source "$CIM_HOME/init.csh"
-fi'
+    rc="if (-r '$CIM_HOME/init.csh' ) then
+   source '$CIM_HOME/init.csh'
+fi"
     case $SHELL in
 	*/csh)  rcfile="$HOME/.cshrc";;
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
 elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
-    rc='[ -s "$CIM_HOME/init.sh" ] && . "$CIM_HOME/init.sh"'
+    rc="[ -s '$CIM_HOME/init.sh' ] && . 'CIM_HOME/init.sh'"
     case $SHELL in
 	*/bash) rcfile="$HOME/.bashrc";;
 	*/zsh)  rcfile="$HOME/.zshrc";;
