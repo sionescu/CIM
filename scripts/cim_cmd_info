@@ -18,5 +18,5 @@ for impl in `ls "$CIM_HOME/bin/" | grep -v -e '-' | grep -v -w -e 'ql' -e 'cl' -
 done
 echo 
 for impl in `find $CIM_HOME/bin/ -name '*-system' -exec basename '{}' ';'`;do
-    printf "%-12s = %s\n" "$impl" `PATH=/bin:/usr/bin:/usr/local/bin which ${impl%-system}`
+    printf "%-12s = %s\n" "$impl" `PATH=/bin:/usr/bin:/usr/local/bin which ${impl%-system} 2> /dev/null`
 done

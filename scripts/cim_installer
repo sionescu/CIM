@@ -42,7 +42,7 @@ fi"
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
 elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
-    rc="[ -s '$CIM_HOME/init.sh' ] && . 'CIM_HOME/init.sh'"
+    rc="[ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
     case $SHELL in
 	*/bash) rcfile="$HOME/.bashrc";;
 	*/zsh)  rcfile="$HOME/.zshrc";;

@@ -17,7 +17,7 @@ for ARG;do
 done
 
 load_file="$CIM_HOME/lib/script.lisp"
-if [ "$use_rl" = true ] && rlwrap=`which rlwrap`;then
+if [ "$use_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m -q \" -r "
 fi
 
