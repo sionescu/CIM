@@ -122,13 +122,13 @@
 		      "do not load ~/.lisprc"
 		      (setf (opt :no-init) t))
 		     (("--no-rl") ()
-		      "do not use rlwrap. This is effective only --repl is specified"
+		      "do not use rlwrap. This is effective only when --repl is specified"
 		      ())
 		     (("--no-right") ()
-		      "do not display right prompt. This is effective only --repl is specified"
+		      "do not display right prompt. This is effective only when --repl is specified"
 		      (setf (opt :no-right) t))
 		     (("--no-color") ()
-		      "do not use color. This is effective only --repl is specified"
+		      "do not use color. This is effective only when --repl is specified"
 		      (setf (opt :no-color) t))
 		     (("-h" "--help") ()
 		      "print this help"
