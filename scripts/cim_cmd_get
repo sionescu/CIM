@@ -1,3 +1,4 @@
 #!/bin/sh -
 . "$CIM_HOME/scripts/cim_utils"
+CIM_HAS_INSTALLED=yes;export CIM_HAS_INSTALLED
 __cim_wget https://raw.github.com/KeenS/CIM/master/scripts/cim_installer - | /bin/sh

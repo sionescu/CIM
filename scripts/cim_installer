@@ -79,5 +79,5 @@ else
     echo "Install done. Please reload your *rc file. Enjoy your Lisp life."
 fi
 cat <<EOF
-If you have some problem or questions, ask keen (@blackenedgold) freely.
+If you have some problems or questions, ask keen (@blackenedgold) freely.
 EOF
