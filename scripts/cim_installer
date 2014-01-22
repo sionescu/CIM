@@ -19,7 +19,7 @@ download(){
 
 download https://codeload.github.com/KeenS/CIM/tar.gz/master "$CIM_HOME/tmp/cim.tar.gz"
 gzip -cd  "$CIM_HOME/tmp/cim.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
-mv -f "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/"
+cp -rf "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/cim.tar.gz" "$CIM_HOME/tmp/CIM-master"
 
 for dir in bin config impls src
