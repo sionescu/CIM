@@ -167,8 +167,9 @@ __config_cim(){
     if [ ! -s "$CIM_HOME/config/default" ];then
 	echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
 	if [ "$1" = sbcl];then
-	    echo "SBCL_HOME=$CIM_HOME/impls/$1-$2/lib/sbcl" >> "$CIM_HOME/config/default"
+	    SBCL_HOME=`__sbcl_home $1-$2`
 	fi
+	 echo "SBCL_HOME=$SBCL_HOME" >> "$CIM_HOME/config/default"
     fi
     [ -s "$CIM_HOME/config/current.$CIM_ID" ] ||
     cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
@@ -179,7 +180,9 @@ __install_ql_if_need(){
 	rm -f "$CIM_HOME/quicklisp"
 	rm -f "$CIM_HOME/lib/quicklisp.lisp"
 	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
-	LISP_IMPL="$1-$2" ql install --path "$CIM_HOME/quicklisp/" || return 1
+	LISP_IMPL="$1-$2";export LISP_IMPL
+	[ "$1" = "sbcl" ] && SBCL_HOME=`__sbcl_home $1-$2`;export SBCL_HOME
+	ql install --path "$CIM_HOME/quicklisp/" || return 1
     fi
 }
 
@@ -200,7 +203,7 @@ __ccl_rebuild_full(){
 __ccl_install(){
     cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
-	-exec sed -i ".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
+	-exec sed -i".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     mkdir -p "$CIM_HOME/impls/$1-$2/bin"
     if uname -m | grep 64;then
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"

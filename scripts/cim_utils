@@ -38,3 +38,14 @@ __cim_wget(){
 	fetch "$1" -o "$2"
     fi
 }
+
+__sbcl_home(){
+    set -- "`__cim_split_impl_version $1 | tr \\  -`"
+    if expr "$1" : ".*-system" > /dev/null 2>&1 ;then
+	sbcl=`PATH=/bin:/usr/bin:/usr/local/bin:/opt/bin which sbcl`
+	SBCL_HOME="${sbcl%sbcl}../lib/sbcl"
+    else
+	SBCL_HOME="$CIM_HOME/impls/$1/lib/sbcl"
+    fi
+    echo $SBCL_HOME
+}

@@ -17,17 +17,16 @@ lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
 if [ -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     rm -f "$CIM_HOME/bin/$LISP_IMPL"
     ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$LISP_IMPL"
+    if [ "$LISP_IMPL" = "sbcl" ];then
+	SBCL_HOME=`__sbcl_home $lisp_full_name`
+    fi
     if [ "$2" = "--default" ];then
 	echo "LISP_IMPL=$1" > "$CIM_HOME/config/default"
-	if [ "$LISP_IMPL" = "sbcl" ];then
-	    echo "SBCL_HOME=$CIM_HOME/impls/$lisp_full_name/lib/sbcl" >> "$CIM_HOME/config/default"
-	fi
+	echo "SBCL_HOME=$SBCL_HOME" >> "$CIM_HOME/config/default"
     fi
 else
     echo "$1 is not installed. See 'cim list use'."
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
-if [ "$LISP_IMPL" = "sbcl" ];then
-    echo "SBCL_HOME=$CIM_HOME/impls/$lisp_full_name/lib/sbcl" >> "$CIM_HOME/config/current.$CIM_ID"
-fi
+echo "SBCL_HOME=$SBCL_HOME" >> "$CIM_HOME/config/current.$CIM_ID"

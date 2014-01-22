@@ -16,8 +16,8 @@ case "$1" in
 		target=`__cim_split_impl_version "$1" | tr \  -`
 		if [ -s "$CIM_HOME/tmp/resume-$target" ]; then
 		    resume="$CIM_HOME/tmp/resume-$target"
-		    impl=${target%*-}
-		    version=${target#-*}
+		    impl=${target%-*}
+		    version=${target#*-}
 		    for proc in `cat "$resume"`; do
 			{
 			    eval $proc "$impl" "$version" &&
@@ -26,7 +26,7 @@ case "$1" in
 			    mv "$resume.tmp" "$resume"
 			} || exit 1
 		    done
-
+		    rm -f "$CIM_HOME/tmp/resume-$1-$2"
 		    shift
 		else
 		    echo "Cannot resume $1. Cannot find resume file." >&2

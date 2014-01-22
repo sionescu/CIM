@@ -32,7 +32,7 @@ __start
 __download
 __expand
 __ccl_rebuild_full
-___ccl_install
+__ccl_install
 __link
 __config_cim
 __install_ql_if_need
