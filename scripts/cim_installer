@@ -6,6 +6,7 @@ export CIM_HOME
 umask 077
 mkdir -p "$CIM_HOME/archives"
 mkdir -p "$CIM_HOME/tmp"
+rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download(){
     if which curl > /dev/null 2>&1;then
 	curl -L "$1"
@@ -16,7 +17,7 @@ download(){
     fi
 }
 
-download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar -xf - -C "$CIM_HOME/tmp"
+download https://codeload.github.com/KeenS/CIM/tar.gz/master | gzip -cd - | tar xf - -C "$CIM_HOME/tmp"
 mv -f "$CIM_HOME/tmp/CIM-master/"* "$CIM_HOME/" &&
 rm -rf "$CIM_HOME/tmp/CIM-master/"
 for dir in bin config impls src
@@ -31,29 +32,35 @@ do
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 if expr match $SHELL '*csh' > /dev/null 2>&1 ;then
-    cat <<EOM
-Adding to your .`basename $SHELL`rc file
-'if (-r "$CIM_HOME/init.csh" ) then
-   source "$CIM_HOME/init.csh"
-fi'
-EOM
     rc='if (-r "$CIM_HOME/init.csh" ) then
    source "$CIM_HOME/init.csh"
-endif
-'
+fi'
     case $SHELL in
-	*/csh)  grep "$rc" "$HOME/.cshrc" || cat "$rc" >> "$HOME/.cshrc";;
-	*/tcsh) grep "$rc" "$HOME/.tcshrc" || cat "$rc" >> "$HOME/.tcshrc";;
+	*/csh)  rcfile="$HOME/.cshrc";;
+	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
-else
-    cat <<EOM
-Adding to your .`basename $SHELL`rc file
-'[ -s $HOME/.cim/init.sh ] && . $HOME/.cim/init.sh'
+elif expr match $SHELL '*sh' > /dev/null 2>&1 ;then
+    rc='[ -s "$CIM_HOME/init.sh" ] && . "$CIM_HOME/init.sh"'
+    case $SHELL in
+	*/bash) rcfile="$HOME/.bashrc";;
+	*/zsh)  rcfile="$HOME/.zshrc";;
+	*/sh)   rcfile="$HOME/.profile";;
+    esac
+fi
+
+cat <<EOM
+Adding to your $rcfile
+'$rc'
 EOM
-    rc='[ -s "$HOME/.cim/init.sh" ] && . "$HOME/.cim/init.sh"'
-    case $SHELL in
-	*/bash) grep "$rc" "$HOME/.bashrc" || cat "$rc" >> "$HOME/.bashrc";;
-	*/zsh)  grep "$rc" "$HOME/.zshrc" || cat "$rc" >> "$HOME/.zshrc";;
-	*/sh)   grep "$rc" "$HOME/.profile" || cat "$rc" >> "$HOME/.profile";;
-    esac
+grep "$rc" "$rcfile" || cat "$rc" >> "$rcfile"
+
+
+if [ -d "$HOME/.emacs.d/eshell" ];then
+    rc='(load (expand-file-name "$CIM_HOME/init.esh")) > /dev/null'
+    rcfile="$HOME/.emacs.d/profile"
+    cat <<EOF
+Adding to your $rcfile
+'$rc'
+EOF
+    grep "$rc" "$rcfile" || cat "$rc" >> "$rcfile"
 fi
