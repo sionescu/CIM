@@ -33,4 +33,4 @@
     (progn
       (push (pathname (concatenate  'string (getenv "PWD") "/")) asdf:*central-registry*)
       (ql:quickload (intern (car *argv*))))
-    (error "You neet specify the system"))
+    (format t "Quicklisp installed to ~a" path))
