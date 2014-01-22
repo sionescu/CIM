@@ -119,7 +119,6 @@ __expand(){
     if [ "$1" = gcl ] || [ "$1" = ccl ];then
 	mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
     fi
-    [ "$1" = "sbcl" ] && mv "$CIM_HOME/src/$1-$2"* "$CIM_HOME/src/$1-$2"
     return 0
 }
 __configure(){
@@ -192,7 +191,7 @@ __sbcl_ensure_impl(){
 	echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ; [ -n "$run_sbcl" ];};then
 	echo "$CIM_HOME/tmp/$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif { url=`__cim_get_download_path sbcl-bin`; [ -n "$url" ]; };then
+    elif { url=`__get__download_path sbcl-bin`; [ -n "$url" ]; };then
 	__cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
 	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
