@@ -54,7 +54,7 @@ cat <<EOM
 Adding to your $rcfile
 '$rc'
 EOM
-grep "$rc" "$rcfile" || echo "$rc" >> "$rcfile"
+grep "$rc" "$rcfile" > /dev/null 2>&1 || echo "$rc" >> "$rcfile"
 
 
 if [ -d "$HOME/.emacs.d/eshell" ];then
@@ -64,5 +64,5 @@ if [ -d "$HOME/.emacs.d/eshell" ];then
 Adding to your $rcfile
 '$rc'
 EOF
-    grep "$rc" "$rcfile" || echo "$rc" >> "$rcfile"
+    grep "$rc" "$rcfile" > /dev/null 2>&1 || echo "$rc" >> "$rcfile"
 fi
