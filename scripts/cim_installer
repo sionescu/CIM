@@ -28,6 +28,7 @@ do
     mkdir -p "$CIM_HOME/$dir"
 done
 
+rm -f "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/res/ql_help_system-apropos" "$CIM_HOME/res/ql_help_search"
 ln -s "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/scripts/cim_list_reinstall"
 ln -s "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_install"
 ln -s "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
