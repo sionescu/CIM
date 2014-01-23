@@ -17,7 +17,8 @@ __get_download_path(){
 	abcl)
 	    echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
 	    ;;
-	sbcl)
+
+	    	sbcl)
 	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
 	    ;;
 	sbcl-bin)
@@ -176,7 +177,7 @@ __install_ql_if_need(){
 	rm -f "$CIM_HOME/lib/quicklisp.lisp"
 	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
 	LISP_IMPL="$1-$2";export LISP_IMPL
-	ql deps --path "$CIM_HOME/quicklisp/" ql || return 1
+	ql deps --path "$CIM_HOME/quicklisp/" || return 1
     fi
 }
 
