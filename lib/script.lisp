@@ -21,7 +21,7 @@
 	       (list var var))
 	      ((string= (car list) "--") (return (cdr list))))
   #+cmu ext:*command-line-words*
-  #+ccl ccl:*unprocessed-command-line-argument-list*
+  #+ccl ccl:*unprocessed-command-line-arguments*
   #+lispworks system:*line-arguments-list*)
 
 (defun getenv (name &optional default)
@@ -31,13 +31,14 @@
     (if x (cdr x) default))
   #-CMU
   (or
-   #+Allegro (sys:getenv name)
-   #+CLISP (ext:getenv name)
+   #+allegro (sys:getenv name)
+   #+clisp (ext:getenv name)
+   #+ccl (ccl:getenv name)
    #+ECL (si:getenv name)
-   #+GCL (si::getenv name)
-   #+SBCL (sb-unix::posix-getenv name)
-   #+LISPWORKS (lispworks:environment-variable name)
-   #+ABCL (java:jstatic "getenv" "java.lang.System" name)
+   #+gcl (si::getenv name)
+   #+sbcl (sb-unix::posix-getenv name)
+   #+lispworks (lispworks:environment-variable name)
+   #+abcl (java:jstatic "getenv" "java.lang.System" name)
    default))
 
 (defun cim_home (path)
@@ -59,8 +60,8 @@
 
 (defun opt (key)
   (gethash key *options*))
-(defun (setf opt) (obj key)
-  (setf (gethash key *options*) obj))
+(defsetf opt (key) (obj)
+  `(setf (gethash ,key *options*) ,obj))
 
 (defun remove-shebang (in)
   (let ((line (read-line in nil "#!")))
@@ -156,10 +157,13 @@
 		   (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
 		  (*argv*
 		   (let ((*load-print* nil))
-		     (load (if (opt :sexp)
-			       (make-string-input-stream (opt :sexp))
-			       (remove-shebang (open (pop *argv*) :if-does-not-exist :error)))
-			   :verbose nil :print nil)))
+		     (if (opt :sexp)
+			 (with-input-from-string (in (opt :sexp))
+			   (loop :for sexp := (read in nil nil)
+			      :while sexp :do
+			      (eval sexp)))
+			 (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
+			       :verbose nil :print nil))))
 		  ((not *argv*)
 		   (loop (handler-case
 			     (eval (read))
