@@ -212,16 +212,11 @@ __sbcl_install(){
 
 __ccl_rebuild_full(){
     logic="!"
-    if uname -m | grep 64;then
+    if uname -m | grep 64 > /dev/null 2>&1;then
 	logic=
     fi
-    if [ "`uname`" = "Darwin" ];then
-      executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
-      return 1
-    else
-      executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -executable "!" -type d $logic -name '*64'` ||
-      return 1
-    fi
+    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
+    return 1
     "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
 }
 __ccl_install(){
