@@ -215,8 +215,13 @@ __ccl_rebuild_full(){
     if uname -m | grep 64;then
 	logic=
     fi
-    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -executable "!" -type d $logic -name '*64'` ||
-    return 1
+    if [ "`uname`" = "Darwin" ];then
+      executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
+      return 1
+    else
+      executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -executable "!" -type d $logic -name '*64'` ||
+      return 1
+    fi
     "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
 }
 __ccl_install(){
