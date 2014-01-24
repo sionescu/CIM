@@ -5,7 +5,7 @@
 (defvar path (or (when (probe-file (merge-pathnames quicklisp-path))
 		   (with-open-file (in (merge-pathnames quicklisp-path))
 		     (read-line in)))
-		 (format nil "~a" (user-homedir-pathname))))
+		 (cim_home "/quicklisp/")))
 (setf *argv*
       (or (parse-options *argv*
 			 (("--path") (arg)
