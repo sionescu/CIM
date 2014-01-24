@@ -28,7 +28,7 @@ Most of commands are designed refering to rvm.
 
 `cim help <command>` or `cim list <command>` will also help you.
 
-### Installing Lisp Implementation(s)
+### Installing lisp implementation(s)
 Use `cim install`.
 
 ```
@@ -36,7 +36,7 @@ $ cim install sbcl
 $ cim install clisp abcl-1.2.1
 ```
 As you can see, you can install the latest version or specified version if given.
-### Selecting A Lisp impl
+### Selecting a lisp implementation
 Use `cim use`.
 
 ```
@@ -62,7 +62,7 @@ $ sbcl --version
 SBCL 1.1.10
 ```
 
-### Executing Lisp file
+### Executing a lisp file
 Use `cl`.
 
 ```
@@ -122,7 +122,7 @@ Hello, kim
 
 ### Executing with multiple implemetations
 Use `cim for <impl>... do <args>`.
-The args take the same format as `cl`.
+The `<args>` take the same format as `cl`.
 
 ```
 $ cim for clisp sbcl do --no-init -e '(labels ((fib (n) (if (> 1 n) 1 (+ (fib (- n 1)) (fib (- n 2)))))) (time (fib 39)))'
@@ -159,6 +159,13 @@ $ ql list local
 alexandria
 $ ql deps --path ./quicklisp myapp.asd
 # myapp dependencies are installed to ./quicklisp.
+```
+
+### Upgrading cim itself
+Use `cim get`.
+Currently, `cim get` fetch `master` branch.
+```
+$ cim get
 ```
 
 ## License

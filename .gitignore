@@ -10,3 +10,5 @@
 /tmp/*
 /.cache/*
 memo
+/.quicklisp-path
+/lib/quicklisp.lisp
