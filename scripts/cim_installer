@@ -67,7 +67,7 @@ fi
 
 if [ -d "$HOME/.emacs.d/eshell" ];then
     rc='(load (expand-file-name "$CIM_HOME/init.esh")) > /dev/null'
-    rcfile="$HOME/.emacs.d/profile"
+    rcfile="$HOME/.emacs.d/eshell/profile"
     if grep "$rc" "$rcfile" > /dev/null 2>&1;then
 	echo "It seems cim initialization has been added to your *rc file."
     else
