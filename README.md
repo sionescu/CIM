@@ -120,6 +120,29 @@ $ cl -e '(format t "Hello, ' -e $USER -e '")'
 Hello, kim
 ```
 
+### Executing with multiple implemetations
+Use `cim for <impl>... do <args>`.
+The args take the same format as `cl`.
+
+```
+$ cim for clisp sbcl do --no-init -e '(labels ((fib (n) (if (> 1 n) 1 (+ (fib (- n 1)) (fib (- n 2)))))) (time (fib 39)))'
+>>>clisp --no-init -e (labels ((fib (n) (if (> 1 n) 1 (+ (fib (- n 1)) (fib (- n 2)))))) (time (fib 39)))
+Real time: 542.5009 sec.
+Run time: 541.5862 sec.
+Space: 0 Bytes
+<<<
+>>>sbcl --no-init -e (labels ((fib (n) (if (> 1 n) 1 (+ (fib (- n 1)) (fib (- n 2)))))) (time (fib 39)))
+Evaluation took:
+  8.957 seconds of real time
+  8.953758 seconds of total run time (8.949651 user, 0.004107 system)
+  99.97% CPU
+  21,447,269,828 processor cycles
+  0 bytes consed
+  
+<<<
+```
+
+
 ### Managing lisp systems
 Use `ql`.
 
