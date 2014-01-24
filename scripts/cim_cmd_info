@@ -1,5 +1,6 @@
 #!/bin/sh -
-[ -s "$CIM_HOME/config/current.$CIM_ID"] &&
+
+[ -s "$CIM_HOME/config/current.$CIM_ID" ] &&
 . "$CIM_HOME/config/current.$CIM_ID" &&
 current="$LISP_IMPL"
 
