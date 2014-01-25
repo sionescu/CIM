@@ -3,7 +3,7 @@
 command=$1
 shift
 case $command in
-    install)
+    quickload|install)
 	cl "$CIM_HOME/scripts/ql_cmd_install" "$@"
 	;;
     uninstall)
@@ -15,17 +15,11 @@ case $command in
     list)
 	cl "$CIM_HOME/scripts/ql_cmd_list" "$@"
 	;;
-    search)
+    system-apropos|search)
 	cl "$CIM_HOME/scripts/ql_cmd_search" "$@"
 	;;
     deps)
 	cl --no-init -- "$CIM_HOME/scripts/ql_cmd_deps" "$@"
-	;;
-    system-apropos)
-	ql search "$@"
-	;;
-    quickload)
-	ql install "$@"
 	;;
     help)
 	sh "$CIM_HOME/scripts/ql_cmd_help" "$@"
