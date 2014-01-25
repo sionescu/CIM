@@ -18,7 +18,7 @@ __get_download_path(){
 	    echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
 	    ;;
 
-	    	sbcl)
+	sbcl)
 	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
 	    ;;
 	sbcl-bin)
@@ -33,9 +33,9 @@ __get_download_path(){
 		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz" &&
 		    return 0
 		    ;;
-		arm)
+		arm*)
 		    [ "`uname`" = "Linux" ] &&
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxx86.tar.gz" &&
+		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxarm.tar.gz" &&
 		    return 0
 		    ;;
 		ppc)
