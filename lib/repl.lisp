@@ -75,9 +75,11 @@
 (defvar *right-prompt*
   '(let* ((dir (namestring *default-pathname-defaults*))
 	  (impl (getenv "LISP_IMPL")))
-    (let* ((it (string<  (getenv "HOME") dir))
-	   (subdirp (= it (length (getenv "HOME")))))
-      (when subdirp (setf dir (concatenate 'string "~" (subseq dir it (1- (length dir)))))))
+    (when (char/= (aref dir (1- (length dir))) #\/)
+      (setf dir (concatenate 'string dir "/")))
+    (let* ((len (string<  (getenv "HOME") dir))
+	   (subdirp (and len (= len (length (getenv "HOME"))))))
+      (when subdirp (setf dir (concatenate 'string "~" (subseq dir len (1- (length dir)))))))
     (format nil "~a ~a" (blue "(" impl ")")  (cyan dir))))
 
 (defun print-prompt (stream &optional continuep)
