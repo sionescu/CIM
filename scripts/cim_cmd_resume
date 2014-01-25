@@ -20,12 +20,15 @@ case "$1" in
 		    version=${target#*-}
 		    for proc in `cat "$resume"`; do
 			{
-			    eval $proc "$impl" "$version" &&
+			    $proc "$impl" "$version" &&
 			    [ -s "$resume" ] &&
 			    sed -e "/$proc/d" "$resume" > "$resume.tmp" &&
 			    mv "$resume.tmp" "$resume"
 			} || exit 1
 		    done
+		    rm -f "$CIM_HOME/tmp/resume-$1-$2"
+		    shift
+		elif [ -e "$CIM_HOME/tmp/resume-$target" ];then
 		    rm -f "$CIM_HOME/tmp/resume-$1-$2"
 		    shift
 		else
