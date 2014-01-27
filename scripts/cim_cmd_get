@@ -8,4 +8,4 @@ fi
 CIM_HAS_INSTALLED=yes;export CIM_HAS_INSTALLED
 export CIM_INSTALL_BRANCH
 
-__cim_wget https://raw.github.com/KeenS/CIM/master/scripts/cim_installer - | /bin/sh
+__cim_wget "https://raw.github.com/KeenS/CIM/${CIM_INSTALL_BRANCH}/scripts/cim_installer" - | /bin/sh
