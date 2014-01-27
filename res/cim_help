@@ -13,6 +13,6 @@ purge <impl>|all  		   ;; Just clean and uninstall the impl.
 info   	    			   ;; Display current state.
 get				   ;; Upgrade cim itself.
 version				   ;; Show the version
-help [command]			   ;; Show help for [command]. If no commands are specified, show this help.
+help <command>			   ;; Show help for <command>. If no commands are specified, show this help.
 
 If you want detailed help, type `cim help <command>'.

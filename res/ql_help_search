@@ -4,7 +4,7 @@ Usage:
 
 Description:
 
-Search quicklisp for <keyword>.
+Search quicklisp for <keyword>. 'system-apropos' is also available as alias.
 
 Example:
 

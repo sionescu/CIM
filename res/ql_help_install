@@ -4,7 +4,7 @@ Usage:
 
 Description:
 
-Install given system(s) to $CIM_HOME/quicklisp.
+Install given system(s) to $CIM_HOME/quicklisp. 'quickload' is also available as alias.
 
 Example:
 
