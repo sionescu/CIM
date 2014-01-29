@@ -1,5 +1,5 @@
 #!/bin/sh
-: ${CIM_HOME:="$HOME/.cim"}
+CIM_HOME="`(cd \`dirname $0\`; pwd)`"
 export CIM_HOME
 PATH="$CIM_HOME/bin:$PATH";export PATH
 CIM_ID="$$";export CIM_ID
