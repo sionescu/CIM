@@ -12,7 +12,9 @@ download(){
 	wget  -O "$2" "$1"
     elif which fetch > /dev/null 2>&1;then
 	fetch -o "$2" "$1"
-    fi
+    elif which ruby > /dev/null 2>&1;then
+	ruby -ropen-uri -e "out = ARGV[1] == '-' ? STDOUT : open('ARGV[1]');out.write open(ARGV[0]).read" "$1" "$2"
+fi
 }
 
 mkdir -p "$CIM_HOME/tmp"
@@ -22,8 +24,7 @@ gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_H
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
-for dir in bin config impls src archives
-do
+for dir in bin config impls src archives;do
     mkdir -p "$CIM_HOME/$dir"
 done
 
@@ -32,12 +33,12 @@ ln -s "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/scripts/cim_list_reinsta
 ln -s "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_quickload"
 ln -s "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
 
-for executable in cl ql cim
-do
+for executable in cl ql cim;do
     rm -f "$CIM_HOME/bin/$executable"
     ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
+
 if expr $SHELL : '.*csh' > /dev/null 2>&1 ;then
     rc="set CIM_HOME $CIM_HOME
 if (-r '$CIM_HOME/init.csh' ) then
@@ -60,7 +61,8 @@ if grep "$rc" "$rcfile" > /dev/null 2>&1;then
     echo "It seems cim initialization has been added to $rcfile."
     CIM_HAS_INSTALLED="true"
 fi
-if [ -n "$CIM_HAS_INSTALLED" ];then
+
+if [ -z "$CIM_HAS_INSTALLED" ];then
     cat <<EOM
 Adding to your $rcfile
 '$rc'
