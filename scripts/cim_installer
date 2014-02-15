@@ -15,7 +15,6 @@ download(){
     fi
 }
 
-mkdir -p "$CIM_HOME/archives"
 mkdir -p "$CIM_HOME/tmp"
 rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
@@ -23,7 +22,7 @@ gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_H
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
-for dir in bin config impls src
+for dir in bin config impls src archives
 do
     mkdir -p "$CIM_HOME/$dir"
 done
@@ -32,6 +31,7 @@ rm -f "$CIM_HOME/scripts/cim_list_reinstall" "$CIM_HOME/res/ql_help_system-aprop
 ln -s "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/scripts/cim_list_reinstall"
 ln -s "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_quickload"
 ln -s "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
+
 for executable in cl ql cim
 do
     rm -f "$CIM_HOME/bin/$executable"
@@ -39,7 +39,8 @@ do
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 if expr $SHELL : '.*csh' > /dev/null 2>&1 ;then
-    rc="if (-r '$CIM_HOME/init.csh' ) then
+    rc="set CIM_HOME $CIM_HOME
+if (-r '$CIM_HOME/init.csh' ) then
    source '$CIM_HOME/init.csh'
 fi"
     case $SHELL in
@@ -47,7 +48,7 @@ fi"
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
 elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
-    rc="[ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
+    rc="CIM_HOME=$CIM_HOME; [ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
     case $SHELL in
 	*/bash) rcfile="$HOME/.bashrc";;
 	*/zsh)  rcfile="$HOME/.zshrc";;
@@ -56,8 +57,10 @@ elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
 fi
 
 if grep "$rc" "$rcfile" > /dev/null 2>&1;then
-    echo "It seems cim initialization has been added to your *rc file."
-else
+    echo "It seems cim initialization has been added to $rcfile."
+    CIM_HAS_INSTALLED="true"
+fi
+if [ -n "$CIM_HAS_INSTALLED" ];then
     cat <<EOM
 Adding to your $rcfile
 '$rc'
@@ -69,7 +72,7 @@ if [ -d "$HOME/.emacs.d/eshell" ];then
     rc='(load (expand-file-name "$CIM_HOME/init.esh")) > /dev/null'
     rcfile="$HOME/.emacs.d/eshell/profile"
     if grep "$rc" "$rcfile" > /dev/null 2>&1;then
-	echo "It seems cim initialization has been added to your *rc file."
+	echo "It seems cim initialization has been added to $rcfile."
     else
 	cat <<EOF
 Adding to your $rcfile
