@@ -12,3 +12,6 @@
 memo
 /.quicklisp-path
 /lib/quicklisp.lisp
+/res/ql_help_quickload
+/res/ql_help_system-apropos
+/scripts/cim_list_reinstall
