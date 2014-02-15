@@ -1,14 +1,22 @@
-;; ECL ignores the first line, so dose not write any code here.
-(in-package :cim)
+(in-package :cl-user)
+(defpackage cim.repl
+  (:use :CL :cim)
+  (:export :*history*
+	   :print-prompt
+	   :with-handle-conditions
+	   :strf))
+(in-package :cim.repl)
+
 (defun get-current-package-name ()
   (or (car (package-nicknames *package*))
       (package-name *package*)))
 
 (defmacro make-color (name before after)
   (let ((str (gensym "strings")))
-    `(defmacro ,name (&rest ,str)
-       `(concatenate 'string
-		     (if (opt :no-color) "" ,,before) ,@,str (if (opt :no-color) "" ,,after)))))
+    `(defun ,name (&rest ,str)
+       (apply #'concatenate
+		(append '(string)
+		 (list ,(if (opt :no-color) "" before)) ,str (list ,(if (opt :no-color) "" after)))))))
 
 (defmacro make-colors ((name before after) &rest clauses)
   `(progn
@@ -27,18 +35,22 @@
  (bright  "[1m"  "[0m")
  (str     ""       ""))
 
+(defmacro strf (sym &rest strings)
+  (let ((strs (gensym "strs")))
+    `(let ((,strs ,(cons 'list (cons sym strings))))
+       (setf ,sym
+	     (apply #'str ,strs)))))
 
 (defun filter-escapes (string)
   (if (string= string "")
       ""
       (let ((list (coerce string 'list)))
 	(do ((char (pop list) (pop list))
-	     (prev #\Space char)
 	     (in-escape-p) (result))
 	    (nil)
 	  (cond
-	    ((and (char= prev #\) (char= char #\[))
-	     (pop result)
+	    ((and (char= char #\) (char= (car list) #\[))
+	     (pop list)
 	     (setf in-escape-p t))
 	    (t (if in-escape-p
 		   (when (member char '(#\m #\H #\D #\C #\N #\s #\u))
@@ -47,20 +59,20 @@
 	  (if (null list)
 	      (return (coerce (nreverse result) 'string)))))))
 
-(defun handle-condition (err)
+(defun handle-condition (condition)
   (format *error-output*
 	  (str " *~A*~%~A~%")
-	  (red (bright (format nil "~A" (class-name (class-of err)))))
-	  (red (bright (format nil "~A" err))))
-  (if (string= (class-name (class-of err)) "INTERACTIVE-INTERRUPT")
+	  (red (bright (format nil "~A" (class-name (class-of condition)))))
+	  (red (bright (format nil "~A" condition))))
+  (if (string= (class-name (class-of condition)) "INTERACTIVE-INTERRUPT")
       (format *error-output* "~&~A~%" (red "If you want to quit, type 'exit', 'quit', '(exit)', '(quit)', or Ctrl-D")))
   (force-output *error-output*))
 
-(defmacro handling-errors (&body body)
+(defmacro with-handle-conditions (&body body)
   `(handler-case
        (progn ,@body)
-     (CONDITION (e)
-       (handle-condition e))))
+     (condition (c)
+       (handle-condition c))))
 
 (defvar *history* 0)
 (defvar *prompt-before* "")
@@ -69,20 +81,20 @@
     (get-current-package-name) *history*))
 (defvar *continue-prompt*
   '(format nil (cyan "~A> ")
-    (coerce (make-array
-	     (- (length (filter-escapes *prompt-before*)) 2)
-	     :initial-element #\-) 'string)))
+    (make-string
+     (- (length (filter-escapes *prompt-before*)) 2)
+     :initial-element #\-)))
 (defvar *right-prompt*
   '(let* ((dir (namestring *default-pathname-defaults*))
 	  (impl (getenv "LISP_IMPL")))
     (when (char/= (aref dir (1- (length dir))) #\/)
-      (setf dir (concatenate 'string dir "/")))
+      (strf dir "/"))
     (let* ((len (string<  (getenv "HOME") dir))
 	   (subdirp (and len (= len (length (getenv "HOME"))))))
-      (when subdirp (setf dir (concatenate 'string "~" (subseq dir len (1- (length dir)))))))
+      (when subdirp (setf dir (str "~" (subseq dir len (1- (length dir)))))))
     (format nil "~a ~a" (blue "(" impl ")")  (cyan dir))))
 
-(defun print-prompt (stream &optional continuep)
+(defun print-prompt (stream &key continuep)
   (let* ((left (eval (if continuep *continue-prompt* *left-prompt*)))
 	 (col (or (parse-integer (or (getenv "COLUMNS") "") :junk-allowed t) 75)))
     (unless (opt :no-right)
@@ -94,49 +106,58 @@
     (write-string left stream)
     (force-output stream)))
 
+(in-package :cl-user)
 (defun repl ()
-    (do ((+eof+ (gensym))
-	 (+eol+ (gensym))
-	 (read-done-p nil nil)
-	 (-) (--) (+) (++) (+++)
-	 (/) (//) (///) (*) (**) (***))
-	(nil)
-      (block iter
-	(incf *history*)
-	(print-prompt *query-io*)
-	;; read part
-	(handling-errors
-	 ;; repeat until sexp complete
-	 (do ((input) (form))
-	     (read-done-p)
-	   (setf input (read-line *standard-input* nil +eof+))
-	   (when (equal input "")
-	     (return-from iter))
-	   (when (eq input +eof+) (return-from repl))
-	   (setf form (concatenate 'string form " " input))
-	   (handler-case
-	       ;; repeat over the input sexps
-	       (do* ((in (make-string-input-stream form))
-		     (sexp (read in nil +eol+) (read in nil +eol+))
-		     (count 0) (sexps))
-		    ((eql sexp +eol+)
-		     (setf read-done-p t)
-		     (setf -- (if (= count 1) (car sexps) (cons 'values (nreverse sexps)))))
-		 (push sexp sexps)
-		 (incf count))
-	     (END-OF-FILE ()
-	       (print-prompt *error-output* t))))
-	 (setf +++ ++   ++ +   + - - --)
-	 ;; eval and print part
-	 (when (member - '((quit) quit (exit) exit (bye)) :test (function equal))
-	   (return-from repl))
-	 (format *error-output* "~A"
-		 (yellow
-		  (with-output-to-string (s)
-		    (let ((*standard-output* s))
-		      (setf /// //   // /   / (multiple-value-list (eval -)))))))
-	 (setf *** **   ** *   * (first /))
-	 (force-output)
-	 (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
-	 (force-output *error-output*)))))
+  (let ((+eof+ (gensym "eof"))
+	(+bol+ (gensym "bol"))
+	(+sexps+)
+	;; previous multiple forms
+	(-) (--) (---)
+	;; previous foms
+	(+) (++) (+++)
+	;; previous multiple values
+	(/) (//) (///)
+	;; previous values
+	(*) (**) (***))
+    (loop :for continue := nil :do
+       (block iter
+	 (incf cim.repl:*history*)
+	 (cim.repl:print-prompt *query-io*)
+	 ;; read part
+	 (cim.repl:with-handle-conditions
+	     ;; repeat until sexps complete. 
+	     (loop :named reader :with form
+		:for input := (read-line *standard-input* nil +eof+) :do
+		(cond
+		  ;; if input is null, go next prompt
+		  ((and (equal input "")  (not continue)) (return-from iter))
+		  ;; if ^D is signaled, exit
+		  ((eq input +eof+) (return-from repl))
+		  (t
+		   (cim.repl:strf form (format nil "~%") input)
+		   (handler-case
+		       ;; repeat over the input sexps
+		       (loop :with in := (make-string-input-stream form)
+			  :for sexp := (read in nil +bol+)
+			  :until (eq sexp +bol+) :collect sexp :into sexps
+			  :finally (return-from reader (setf +sexps+ sexps)))
+		     ;; input was incomplete
+		     (END-OF-FILE ()
+		       (setf continue t)
+		       (cim.repl:print-prompt *query-io* :continuep t))))))
+	   ;; eval part
+	   (when (member + '((quit) quit (exit) exit (bye)) :test (function equal))
+	     (return-from repl))
+	   (format *standard-output* "~A"
+		   (cim.repl::yellow
+		    (with-output-to-string (*standard-output*)
+		      (setf /// //  // /  / (loop :for sexp :in +sexps+ :append
+						 (multiple-value-list (eval sexp))))
+		      (setf *** **  ** *  * (first /))
+		      (setf --- --  -- -  - +sexps+)
+		      (setf +++ ++  ++ +  + (first -)))))
+	   (force-output)
+	   ;; print part
+	   (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
+	   (force-output *error-output*))))))
 (repl)
