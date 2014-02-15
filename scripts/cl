@@ -4,7 +4,7 @@ if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
 fi
-if tput=`which tput 2> /dev/null`;then
+if tput=`which tput` > /dev/null 2>&1;then
     COLUMNS=`$tput cols`
     export COLUMNS
 fi
@@ -18,7 +18,7 @@ done
 
 load_file="$CIM_HOME/lib/script.lisp"
 if [ "$use_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
-    rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -q \" -r "
+    rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m\\ -q \" -r "
 fi
 
 case "$LISP_IMPL" in
@@ -44,7 +44,7 @@ case "$LISP_IMPL" in
 	exec $rlwrap "$CIM_HOME/bin/$LISP_IMPL" --qq -L "$load_file" --kill -- "$@"
 	;;
     "")
-	echo "\$LISP_IMPL is not set. Have you loaded ~/.cim/init ?" >&2
+	echo "\$LISP_IMPL is not set. Have you loaded ~/.cim/scripts/cim ?" >&2
 	exit 1
 	;;
     *)
