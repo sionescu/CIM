@@ -4,7 +4,7 @@
 
 while [ $# -gt 0 ];do
     if [ "$1" = "all" ] ;then
-	set -- `cim list uninstall | grep -v '\(Subcommand\|^#\)'`
+	set -- `cim list uninstall | grep -v -F '\(Subcommand\|^#\)'`
 	continue
     fi
 
@@ -13,7 +13,7 @@ while [ $# -gt 0 ];do
     rm -f  "$CIM_HOME/bin/$target"
     rm -f "$CIM_HOME/tmp/resume-$target"
     impl="${target%-*}"
-    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ] && [ ! "$impl" = "cim" ];then
+    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep -F "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ] && [ ! "$impl" = "cim" ];then
         rm -f  "$CIM_HOME/bin/$impl"
     fi
     shift

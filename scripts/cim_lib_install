@@ -212,7 +212,7 @@ __sbcl_install(){
 
 __ccl_rebuild_full(){
     logic="!"
-    if uname -m | grep 64 > /dev/null 2>&1;then
+    if uname -m | grep -F 64 > /dev/null 2>&1;then
 	logic=
     fi
     executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
@@ -224,7 +224,7 @@ __ccl_install(){
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
 	-exec sed -i".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     mkdir -p "$CIM_HOME/impls/$1-$2/bin"
-    if uname -m | grep 64;then
+    if uname -m | grep -F 64;then
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"
     else
 	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/impls/$1-$2/bin/$1"

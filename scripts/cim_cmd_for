@@ -3,7 +3,7 @@
 
 impls=""
 while [ "$1" != "do" ];do
-    if cim list use | grep "$1" > /dev/null 2>&1;then
+    if cim list use | grep -F "$1" > /dev/null 2>&1;then
 	impls="$impls $1"
     else
 	echo "$1 is not installed." >&2

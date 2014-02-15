@@ -17,7 +17,7 @@ current lisp = $current
 default lisp = $default
 
 EOF
-for impl in `ls "$CIM_HOME/bin/" | grep -v -e '-' | grep -v -w -e 'ql' -e 'cl' -e 'cim'`;do
+for impl in `ls "$CIM_HOME/bin/" | grep -v -Fe '-' | grep -v -w -Fe 'ql' -e 'cl' -e 'cim'`;do
     detail=`ls -l "$CIM_HOME/bin/$impl"`
     printf "%-5s = %s\n" "$impl" `basename ${detail#*->}`
 done

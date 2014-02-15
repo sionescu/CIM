@@ -4,7 +4,7 @@
 
 while [ $# -gt 0 ];do
     if [ "$1" = "all" ] ;then
-	set -- `cim list distclean| grep -v '\(Subcommand\|^#\)'`
+	set -- `cim list distclean| grep -v -F '\(Subcommand\|^#\)'`
 	continue
     fi
     impl=`__cim_split_impl_version "$1" | tr \  -`
