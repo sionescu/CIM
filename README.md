@@ -19,7 +19,7 @@ $ curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
 To change install path, set `CIM_HOME`.
 
 ```
-$ CIM_HOME=/path/to/cim curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
+$ curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
 
 ## USAGE
@@ -172,4 +172,6 @@ $ cim get
 BSD
 
 ## Author
-κeen(@blackenedgold)
+Sunrim KIM
+Eitarow FUKAMACHI
+Syohei YOSHIDA
