@@ -18,6 +18,15 @@ fi
 }
 
 mkdir -p "$CIM_HOME/tmp"
+lockfile="$CIM_HOME/tmp/installer.lock"
+if [ -e "$lockfile" ];then
+    echo "Another install process is running."
+    exit 1
+else
+    touch "$lockfile"
+    trap "exit 1" HUP INT PIPE QUIT TERM
+    trap "rm -f $lockfile" EXIT
+fi
 rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
 gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
