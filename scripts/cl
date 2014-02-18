@@ -8,16 +8,29 @@ if tput=`which tput` > /dev/null 2>&1;then
     COLUMNS=`$tput cols`
     export COLUMNS
 fi
-use_rl=false
+
 for ARG;do
-   { [ "$ARG" = "--repl" ] || [ "$ARG" = "-r" ]; } && use_rl=true
-done
-for ARG;do
-    [ "$ARG" = "--no-rl" ] && use_rl=false
+    case "$ARG" in
+	--repl) use_repl=true
+		;;
+	--no-rl) no_rl=true
+		 ;;
+	--*) ;;
+	-*)
+	    OPTIND=1
+	    while getopts :rd OPT "$ARG"; do
+		case "$OPT" in
+		    d) debug=true;;
+		    r) use_repl=true;;
+		esac
+	    done
+	    ;;
+	    
+    esac
 done
 
 load_file="$CIM_HOME/lib/script.lisp"
-if [ "$use_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
+if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m\\ -q \" -r "
 fi
 
