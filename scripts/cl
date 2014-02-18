@@ -4,17 +4,15 @@ if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
 fi
-if tput=`which tput` > /dev/null 2>&1;then
+if tput=`which tput` 2>&1;then
     COLUMNS=`$tput cols`
     export COLUMNS
 fi
 
 for ARG;do
     case "$ARG" in
-	--repl) use_repl=true
-		;;
-	--no-rl) no_rl=true
-		 ;;
+	--repl) use_repl=true ;;
+	--no-rl) no_rl=true ;;
 	--*) ;;
 	-*)
 	    OPTIND=1
