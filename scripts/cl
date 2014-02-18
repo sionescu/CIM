@@ -31,7 +31,7 @@ done
 
 load_file="$CIM_HOME/lib/script.lisp"
 if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
-    rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -m\\ -q \" -r "
+    rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -q \" -r "
 fi
 
 run_lisp(){
