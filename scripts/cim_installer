@@ -12,6 +12,8 @@ download(){
 	wget  -O "$2" "$1"
     elif which fetch > /dev/null 2>&1;then
 	fetch -o "$2" "$1"
+    elif which tclsh > /dev/null > 2&1;then
+	echo 'package require http ; if {"[lindex $argv 2]" == "-"} {set chan stdout} else {set chan [file open "[lindex $argv 2]"]} ; ::http::geturl "[lindex $argv 1]" -channel $chan' | tclsh - "$1" "$2"
     elif which ruby > /dev/null 2>&1;then
 	ruby -ropen-uri -e "out = ARGV[1] == '-' ? STDOUT : open('ARGV[1]');out.write open(ARGV[0]).read" "$1" "$2"
 fi
