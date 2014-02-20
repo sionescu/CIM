@@ -2,7 +2,7 @@
 # This file is for execute
 for LISP_IMPL in clisp gcl ecl ccl lisp alisp abcl sbcl;do
     rm -f "$CIM_HOME/bin/${LISP_IMPL}-system"
-    if PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" lisp_full_name=`which "$LISP_IMPL" 2> /dev/null` ;then
+    if lisp_full_name=`PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" which "$LISP_IMPL" 2> /dev/null` ;then
 	ln -s "$lisp_full_name" "$CIM_HOME/bin/${LISP_IMPL}-system"
 	[ -s "$CIM_HOME/config/default" ] || echo "LISP_IMPL=${LISP_IMPL}-system" > "$CIM_HOME/config/default"
     fi
