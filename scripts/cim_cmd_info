@@ -10,6 +10,8 @@ default="$LISP_IMPL"
 
 . "$CIM_HOME/scripts/cim_aware_system_lisp"
 cat <<EOF
+PATH = $PATH
+
 CIM_ID   = $CIM_ID
 CIM_HOME = $CIM_HOME
 
