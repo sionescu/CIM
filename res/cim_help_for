@@ -1,11 +1,12 @@
 Usage:
 
-	cim for {<impl[-version]>... | all} do ARGS
+	cim for {<impl[-version]>... | all | impls} do ARGS
  
 Description:
 Execute for all the given lisp implementations with ARGS.
 If version is not specified, install the latest version.
-If target is 'all', do on all the available targets.
+If the target is 'all', do on all the available targets.
+If the target is 'impls' do on each impl.
 
 Examples:
 

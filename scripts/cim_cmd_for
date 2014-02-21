@@ -2,25 +2,34 @@
 # This file is for execute
 
 impls=""
-while [ "$1" != "do" ];do
-    if cim list use | grep -F "$1" > /dev/null 2>&1;then
-	impls="$impls $1"
-    else
-	echo "$1 is not installed." >&2
-	exit 1
-    fi
-    if [ "$#" -gt 0 ];then
-	shift
-    else
-	echo "Missing 'do'." >&2
-	exit 1
-    fi
-done
+if [ "$1" = "all" ];then
+    impls=`cim list use`
+    shift
+elif [ "$1" = "impls" ];then
+    impls=`find "$CIM_HOME/bin" -mindepth 1 ! -name '*-*' ! -name 'cl' ! -name 'ql' ! -name 'cim' -exec basename '{}' ';' | sort`
+    shift
+else
+    while [ "$1" != "do" ];do
+	if cim list use | grep -F "$1" > /dev/null 2>&1;then
+	    impls="$impls $1"
+	else
+	    echo "$1 is not installed." >&2
+	    exit 1
+	fi
+	if [ "$#" -gt 0 ];then
+	    shift
+	else
+	    echo "Missing 'do'." >&2
+	    exit 1
+	fi
+    done
+fi
+# shift "do"
 shift
+
 . "$CIM_HOME/scripts/cim_utils"
 for impl in $impls;do
     cim_green ">>>$impl $@"
     LISP_IMPL="$impl" cl "$@"
     cim_green "<<<"
 done
-
