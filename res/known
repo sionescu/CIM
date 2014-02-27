@@ -20,11 +20,11 @@ ecl-12.12.1
 ecl[-13.5.1]
 
 # Steel Bank Common Lisp
-sbcl-1.1.10
 sbcl-1.1.11
 sbcl-1.1.12
 sbcl-1.1.13
-sbcl[-1.1.14]
+sbcl-1.1.14
+sbcl[-1.1.15]
 
 # Clozure CL
 ccl-1.5
