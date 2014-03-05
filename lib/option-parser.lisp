@@ -1,4 +1,33 @@
 (defmacro parse-options (argv &rest clauses)
+  "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
+((options) (parameters)
+  \"docstring \"
+   body)
+where
+`OPTIONS' are strings which start with \"-\" followed by single char (shot option) or \"--\" followed by string (long option).
+`PARAMETERS' are symbols which will be bound given arguments.
+`DOCSTRING' is string which explain the option. This is used for `--help'.
+`BODY' is forms doing with `PARAMETERS'.
+If \"--\" is found, immidiately exit from this macro.
+The return value is the rest of `ARGV'.
+You can access to the variable `GENERATED-HELP' which contains help string.
+Example:
+(defvar foo)
+(parse-options *argv*
+  ((\"--foo\" \"-f\") ()
+   \"set foo\"
+   (setf foo t))
+  ((\"--bar\") (arg)
+   \"do something with `ARG'\"
+   (do-something-with arg)))
+
+The predefined option is
+((\"-h\" \"--help\") ()
+ ""
+ (write-string generated-help)
+ (return)).
+You can override \"-h\" and \"--help\" to controll help printing.
+ "
   (let ((long-cond ()) (short-case ())
 	(helpgiven nil) (help ()) (help-max 0)
 	(generated-help "")
