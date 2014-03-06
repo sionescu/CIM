@@ -23,7 +23,7 @@ Example:
 
 The predefined option is
 ((\"-h\" \"--help\") ()
- ""
+\"\"
  (write-string generated-help)
  (return)).
 You can override \"-h\" and \"--help\" to controll help printing.
