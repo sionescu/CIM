@@ -34,11 +34,11 @@ ccl-1.8
 ccl[-1.9]
 
 # Armed Bear Common Lisp
-abcl-1.1.0.1
 abcl-1.1.0.2
 abcl-1.1.1
 abcl-1.2.0
-abcl[-1.2.1]
+abcl-1.2.1
+abcl[-1.3.0]
 
 # Allegro CL Express Edition
 alisp-8.2
