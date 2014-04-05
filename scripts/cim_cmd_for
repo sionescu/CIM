@@ -9,8 +9,11 @@ elif [ "$1" = "impls" ];then
     impls=`find "$CIM_HOME/bin" -mindepth 1 ! -name '*-*' ! -name 'cl' ! -name 'ql' ! -name 'cim' -exec basename '{}' ';' | sort`
     shift
 else
+    installed=`cim list use`
+    installed="$installed
+"
     while [ "$1" != "do" ];do
-	if cim list use | grep -F "$1" > /dev/null 2>&1;then
+	if echo "$installed" | grep -xF "$1" > /dev/null 2>&1;then
 	    impls="$impls $1"
 	else
 	    echo "$1 is not installed." >&2
@@ -24,7 +27,10 @@ else
 	fi
     done
 fi
-# shift "do"
+if [ "$1" != do ];then
+    echo "$1 is found where 'do' is expected"
+    exit 1
+fi
 shift
 
 . "$CIM_HOME/scripts/cim_utils"
