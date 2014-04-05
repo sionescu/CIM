@@ -7,7 +7,7 @@ if [ $# -gt 0 ];then
 	    continue
 	fi
 	. "$CIM_HOME/scripts/cim_utils"
-	resume=`__cim_split_impl_version "$1" | tr \  -`
+	resume=`normarize_impl_version "$1"`
 
 	if [ -f "$CIM_HOME/res/resume-$resume" ];then
 	    rm "$CIM_HOME/res/resume-$resume"

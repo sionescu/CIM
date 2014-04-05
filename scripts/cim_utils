@@ -1,6 +1,5 @@
 #!/bin/sh -
-# This file is for load
-
+CIM_UTILS=true
 cim_black(){
     echo "[0;30m$@[0;39m"
 }
@@ -29,6 +28,10 @@ cim_white(){
 __cim_split_impl_version(){
     awk -f "$CIM_HOME/scripts/split_version.awk" "$1" "$CIM_HOME/res/known" 
 }
+
+normarize_impl_version(){
+    __cim_split_impl_version "$1" | tr \  -
+}
 __cim_wget(){
     if which curl > /dev/null 2>&1 ;then
 	curl -L "$1" -o "$2"
@@ -43,3 +46,10 @@ __cim_wget(){
     fi
 }
 
+set_sbcl_home_for(){
+    if [ "$1" = "sbcl-system" ];then
+	expr `ls -l "$CIM_HOME/bin/sbcl-system" | awk '{print $NF}'` : '\(.*\)/bin/sbcl' | { read sbcl_base; SBCL_HOME="${sbcl_base}/lib/sbcl";}
+    else
+	SBCL_HOME="$CIM_HOME/impls/$1/lib/sbcl"
+    fi
+}

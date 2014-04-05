@@ -7,7 +7,7 @@ while [ $# -gt 0 ];do
 	set -- `cim list distclean| grep -v -F '\(Subcommand\|^#\)'`
 	continue
     fi
-    impl=`__cim_split_impl_version "$1" | tr \  -`
+    impl=`normarize_impl_version "$1"`
     if [ -d "$CIM_HOME/impls/$impl" ];then
 	case "$1" in
 	    ecl*|gcl*)

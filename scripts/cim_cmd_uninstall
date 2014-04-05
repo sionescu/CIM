@@ -8,7 +8,7 @@ while [ $# -gt 0 ];do
 	continue
     fi
 
-    target=`__cim_split_impl_version "$1" | tr \  -`
+    target=`normarize_impl_version "$1"`
     rm -rf "$CIM_HOME/impls/$target"
     rm -f  "$CIM_HOME/bin/$target"
     rm -f "$CIM_HOME/tmp/resume-$target"
