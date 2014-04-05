@@ -1,27 +1,33 @@
 #!/bin/sh -
-# This file is for execute
+
 sh "$CIM_HOME/scripts/cim_aware_system_lisp"
 if [ "$1" = "default" ];then
     if [ -s "$CIM_HOME/config/default" ];then
 	. "$CIM_HOME/config/default"
 	set - "$LISP_IMPL"
     else
-	echo "Default lisp is not set. Please 'cim use --default <impl> first."
+	echo "Default lisp is not set. Please 'cim use <impl> --default first."
 	exit 1
     fi
 fi
 . "$CIM_HOME/scripts/cim_utils"
-LISP_IMPL=${1%-*}
-lisp_full_name=`__cim_split_impl_version $1 | tr \  -`
-    
-if [ -L "$CIM_HOME/bin/$lisp_full_name" ]; then
-    rm -f "$CIM_HOME/bin/$LISP_IMPL"
-    ln -s "$CIM_HOME/bin/$lisp_full_name" "$CIM_HOME/bin/$LISP_IMPL"
-    if [ "$2" = "--default" ];then
-	echo "LISP_IMPL=$1" > "$CIM_HOME/config/default"
-    fi
-else
+. "$CIM_HOME/config/current.$CIM_ID"
+LISP_IMPL="${1%-*}"
+lisp_full_name=`normarize_impl_version "$1"`
+
+if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     echo "$1 is not installed. See 'cim list use'."
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
+for impl in $abcl $alisp $ccl $clisp $ecl $gcl $sbcl;do
+    if [ "${impl%-*}" = "$LISP_IMPL" ];then
+	echo "${impl%-*}=$LISP_IMPL"
+    else
+	echo "${impl%-*}=$impl"
+    fi
+done >> "$CIM_HOME/config/current.$CIM_ID"
+
+if [ "$2" = "--default" ];then
+    cp "$CIM_HOME/config/current.$CIM_ID" "$CIM_HOME/config/default"
+fi

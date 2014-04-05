@@ -160,15 +160,21 @@ __install(){
 __link(){
     rm -f  "$CIM_HOME/bin/$1-$2"
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
-    [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/bin/$1-$2" "$CIM_HOME/bin/$1"
+    [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/scripts/$1" "$CIM_HOME/bin/$1"
     return $?
 }
 __config_cim(){
     if [ ! -s "$CIM_HOME/config/default" ];then
 	echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
+	echo "$1=$1-$2" >> "$CIM_HOME/config/default"
     fi
-    [ -s "$CIM_HOME/config/current.$CIM_ID" ] ||
-    cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
+    if [ -s "$CIM_HOME/config/current.$CIM_ID" ] ;then
+	if ! grep -F "^$1=";then
+	    echo "$1=$1-$2" >> "$CIM_HOME/config/current.$CIM_ID"
+	fi
+    else
+	cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
+    fi
     return $?    
 }
 __install_ql_if_need(){
@@ -207,7 +213,7 @@ __sbcl_make(){
 }
 __sbcl_install(){
     mkdir -p "$CIM_HOME/impls/$1-$2"
-    (cd "$CIM_HOME/src/$1-$2" && INSTALL_ROOT="$CIM_HOME/impls/$1-$2"  sh install.sh)
+    (cd "$CIM_HOME/src/$1-$2" && SBCL_HOME="$CIM_HOME/impls/$1-$2/lib/sbcl" INSTALL_ROOT="$CIM_HOME/impls/$1-$2"  sh install.sh)
 }
 
 __ccl_rebuild_full(){

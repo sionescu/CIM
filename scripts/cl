@@ -1,9 +1,18 @@
 #!/bin/sh -
-# This file is for execute
 if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
+else
+    . "$CIM_HOME/scripts/cim_utils"
+    LISP_IMPL=`normarize_impl_version "$LISP_IMPL"`
 fi
+
+if expr "LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
+    [ -z "$CIM_UTILS" ] &&  . "$CIM_HOME/scripts/cim_utils"
+    set_sbcl_home_for "$LISP_IMPL"
+    export SBCL_HOME
+fi
+
 if tput=`which tput` 2>&1;then
     COLUMNS=`$tput cols`
     export COLUMNS
@@ -13,6 +22,7 @@ for ARG;do
     case "$ARG" in
 	--repl) use_repl=true ;;
 	--no-rl) no_rl=true ;;
+	--debug) debug=true;;
 	--*) ;;
 	-*)
 	    OPTIND=1
