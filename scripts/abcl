@@ -1,0 +1,15 @@
+#!/bin/sh -
+if [ -n "$ABCL" ];then
+    if [ ! -L "$CIM_HOME/bin/$ABCL" ];then
+	echo "$ABCL is not installed"
+	exit 1
+    fi
+    if ! expr "$ABCL" : 'abcl.*' > /dev/null 2>&1;then
+	echo "$ABCL is not a abcl"
+	exit 1
+    fi
+    abcl="$ABCL"
+else
+    . "$CIM_HOME/config/current.$CIM_ID"
+fi
+exec "$abcl" "$@"

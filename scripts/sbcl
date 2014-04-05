@@ -1,0 +1,18 @@
+#!/bin/sh -
+if [ -n "$SBCL" ] ;then
+    if [ ! -L "$CIM_HOME/bin/$SBCL" ];then
+	echo "$SBCL is not installed"
+	exit 1
+    fi
+    if ! expr "$SBCL" : 'sbcl.*' > /dev/null 2>&1 ;then
+	echo "$SBCL is not a sbcl"
+	exit 1
+    fi
+    sbcl="$SBCL"
+else 
+    . "$CIM_HOME/config/current.$CIM_ID"
+fi
+. "$CIM_HOME/scripts/cim_utils"
+set_sbcl_home_for "$sbcl"
+export SBCL_HOME
+exec "$sbcl" "$@"

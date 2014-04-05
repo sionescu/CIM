@@ -1,0 +1,14 @@
+#!/bin/sh -
+. "$CIM_HOME/config/current.$CIM_ID"
+if [ -n "$CLISP" ];then
+    if [ ! -L "$CIM_HOME/bin/$CLISP" ];then
+	echo "$CLISP is not installed"
+	exit 1
+    fi
+    if ! expr "$CLISP" : 'clisp.*' > /dev/null 2>&1 ;then
+	echo "$CLISP is not a clisp"
+	exit 1
+    fi
+    clisp="$CLISP"
+fi
+exec "$clisp" "$@"

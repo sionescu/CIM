@@ -1,0 +1,15 @@
+#!/bin/sh -
+if [ -n "$ALISP" ];then
+    if [ ! -L "$CIM_HOME/bin/$ALISP" ];then
+	echo "$ALISP is not installed"
+	exit 1
+    fi
+    if ! expr "$ALISP" : 'alisp.*' > /dev/null 2>&1 ;then
+	echo "$ALISP is not a alisp"
+	exit 1
+    fi
+    alisp="$ALISP"
+else
+    . "$CIM_HOME/config/current.$CIM_ID"
+fi
+exec "$alisp" "$@"
