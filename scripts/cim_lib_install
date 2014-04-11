@@ -5,84 +5,84 @@
 
 __get_download_path(){
     case "$1" in
-	clisp)
-	    echo "http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz"
-	    ;;
-	gcl)
-	    echo "ftp://ftp.gnu.org/pub/gnu/gcl/gcl-$2.tar.gz"
-	    ;;
-	ecl)
-	    echo "http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz"
-	    ;;
-	abcl)
-	    echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
-	    ;;
+        clisp)
+            echo "http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz"
+            ;;
+        gcl)
+            echo "ftp://ftp.gnu.org/pub/gnu/gcl/gcl-$2.tar.gz"
+            ;;
+        ecl)
+            echo "http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz"
+            ;;
+        abcl)
+            echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz"
+            ;;
 
-	sbcl)
-	    echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
-	    ;;
-	sbcl-bin)
-	    {
-		grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
-		{ echo "SBCL binary does not support your machine." >&2;return 1;}
-	    } | cut -f 3
-	    ;;
-	ccl)
-	    case "`uname -m`" in
-		x86*)
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz" &&
-		    return 0
-		    ;;
-		arm*)
-		    [ "`uname`" = "Linux" ] &&
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxarm.tar.gz" &&
-		    return 0
-		    ;;
-		ppc)
-		    [ "`uname`" = "Linux" ] &&
-		    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz" &&
-		    return 0
-		    ;;
-	    esac
-	    echo "CCL does not support your machine." >&2
-	    exit 1
-	    ;;
-	alisp)
-	    if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
-		vname=`echo "$2" | tr -d \.`
-		case `uname` in
-		    Linux)
-			echo "http://www.franz.com/ftp/pub/acl${vname}express/linux86/acl${vname}express-linux-x86.bz2"
-			return 0
-			;;
-		    Darwin)
-			echo "http://www.franz.com/ftp/pub/acl${vname}express/macosx86/acl${vname}express-macosx-x86.dmg"
-			return 0
-			;;
-		    FreeBSD)
-			echo "http://www.franz.com/ftp/pub/acl${vname}express/freebsd/acl${vname}express-freebsd-x86.bz2"
-			return 0
-			;;
-		esac
-	    fi
-	    echo "ALISP does not support your machine." >&2
-	    return 1
-	    ;;
-	*)
-	    echo "$1 is not supported" >&2;
-	    return 1
-	    ;;
+        sbcl)
+            echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2"
+            ;;
+        sbcl-bin)
+            {
+                grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
+                { echo "SBCL binary does not support your machine." >&2;return 1;}
+            } | cut -f 3
+            ;;
+        ccl)
+            case "`uname -m`" in
+                x86*|i386|i686)
+                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz" &&
+                    return 0
+                    ;;
+                arm*)
+                    [ "`uname`" = "Linux" ] &&
+                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxarm.tar.gz" &&
+                    return 0
+                    ;;
+                ppc)
+                    [ "`uname`" = "Linux" ] &&
+                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz" &&
+                    return 0
+                    ;;
+            esac
+            echo "CCL does not support your machine." >&2
+            exit 1
+            ;;
+        alisp)
+            if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
+                vname=`echo "$2" | tr -d \.`
+                case `uname` in
+                    Linux)
+                        echo "http://www.franz.com/ftp/pub/acl${vname}express/linux86/acl${vname}express-linux-x86.bz2"
+                        return 0
+                        ;;
+                    Darwin)
+                        echo "http://www.franz.com/ftp/pub/acl${vname}express/macosx86/acl${vname}express-macosx-x86.dmg"
+                        return 0
+                        ;;
+                    FreeBSD)
+                        echo "http://www.franz.com/ftp/pub/acl${vname}express/freebsd/acl${vname}express-freebsd-x86.bz2"
+                        return 0
+                        ;;
+                esac
+            fi
+            echo "ALISP does not support your machine." >&2
+            return 1
+            ;;
+        *)
+            echo "$1 is not supported" >&2;
+            return 1
+            ;;
     esac
 }
 
 __start(){
     if [ -d "$CIM_HOME/impls/$1-$2" ];then
-	echo "It seems you have installed $1-$2. Did you mean 'cim reinstall $1-$2'?." >&2
-	return 1
+        echo "It seems you have installed $1-$2. Did you mean 'cim reinstall $1-$2'?." >&2
+        return 1
     fi
     if [ -f "$CIM_HOME/tmp/$1-$v2.lock" ];then
-	echo "You have been already running $1-$2 installation." >&2
-	return 1
+        echo "You have been already running $1-$2 installation." >&2
+        return 1
     fi
     trap "exit 1" HUP INT PIPE QUIT TERM
     trap "rm -f $CIM_HOME/tmp/$1-$2.lock" EXIT
@@ -92,33 +92,33 @@ __start(){
 
 __download(){
     if [ "$1" = "sbcl" ] || [ "$1" = "alisp" ];then
-	impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
+        impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
     else
-	impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
+        impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
     fi
     url=`__get_download_path "$1" "$2"`
     [ "$?" = 0 ] || exit $?
     mkdir -p "$CIM_HOME/archives/"
     {   [ -f "$impl_archive" ] ||
-	{ [ -n "$url" ] && __cim_wget "$url" "$impl_archive"; }
+        { [ -n "$url" ] && __cim_wget "$url" "$impl_archive"; }
     } || {
-	echo "Failed to Donwload. Exit" >&2
-	exit 1
+        echo "Failed to Donwload. Exit" >&2
+        exit 1
     }
 }
 __expand(){
     rm -rf  "$CIM_HOME/src/$1-$2"
     if [ "$1" = "sbcl" ] || [ "$1" = "alisp" ];then
-	dist="$1-$2.tar.bz2"
-	zip="bzip2"
+        dist="$1-$2.tar.bz2"
+        zip="bzip2"
     else
-	dist="$1-$2.tar.gz"
-	zip="gzip"
+        dist="$1-$2.tar.gz"
+        zip="gzip"
     fi
     mkdir -p "$CIM_HOME/src"
     $zip -dc "$CIM_HOME/archives/$dist" | tar -xf - -C "$CIM_HOME/src"
     if [ "$1" = gcl ] || [ "$1" = ccl ];then
-	mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
+        mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
     fi
     return 0
 }
@@ -133,9 +133,9 @@ __configure(){
 }
 __make(){
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make)
+        (cd "$CIM_HOME/src/$1-$2/src" && make)
     else
-	(cd "$CIM_HOME/src/$1-$2" && make)
+        (cd "$CIM_HOME/src/$1-$2" && make)
     fi
     return $?
 }
@@ -143,7 +143,7 @@ __make(){
 __doc(){
     mkdir -p "$CIM_HOME/share/man"
     # if [ "$1" = "sbcl" ] ;then
-    # 	(cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
+    # (cd "$CIM_HOME/src/$1-$2/doc/manual" && make)
     # fi
     return $?
 }
@@ -151,9 +151,9 @@ __doc(){
 __install(){
     mkdir -p "$CIM_HOME/impls/$1-$2" &&
     if [ "$1" = "clisp" ]; then
-	(cd "$CIM_HOME/src/$1-$2/src" && make install)
+        (cd "$CIM_HOME/src/$1-$2/src" && make install)
     else
-	(cd "$CIM_HOME/src/$1-$2" && make install)
+        (cd "$CIM_HOME/src/$1-$2" && make install)
     fi
     return $?
 }
@@ -165,51 +165,51 @@ __link(){
 }
 __config_cim(){
     if [ ! -s "$CIM_HOME/config/default" ];then
-	echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
-	echo "$1=$1-$2" >> "$CIM_HOME/config/default"
+        echo "LISP_IMPL=$1-$2" > "$CIM_HOME/config/default"
+        echo "$1=$1-$2" >> "$CIM_HOME/config/default"
     fi
     if [ -s "$CIM_HOME/config/current.$CIM_ID" ] ;then
-	if ! grep -F "^$1=";then
-	    echo "$1=$1-$2" >> "$CIM_HOME/config/current.$CIM_ID"
-	fi
+        if ! grep -F "^$1=";then
+            echo "$1=$1-$2" >> "$CIM_HOME/config/current.$CIM_ID"
+        fi
     else
-	cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
+        cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
     fi
     return $?    
 }
 __install_ql_if_need(){
     if [ ! -d "$CIM_HOME/quicklisp/" ];then
-	rm -f "$CIM_HOME/quicklisp"
-	rm -f "$CIM_HOME/lib/quicklisp.lisp"
-	__cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
-	LISP_IMPL="$1-$2";export LISP_IMPL
-	ql deps --path "$CIM_HOME/quicklisp/" || return 1
+        rm -f "$CIM_HOME/quicklisp"
+        rm -f "$CIM_HOME/lib/quicklisp.lisp"
+        __cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
+        LISP_IMPL="$1-$2";export LISP_IMPL
+        ql deps --path "$CIM_HOME/quicklisp/" || return 1
     fi
 }
 
 __sbcl_ensure_impl(){
     if which sbcl > /dev/null 2>&1;then
-	touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which lisp > /dev/null 2>&1;then
-	echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which ccl > /dev/null 2>&1;then
-	echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which clisp > /dev/null 2>&1;then
-	echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ; [ -n "$run_sbcl" ];};then
-	echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { url=`__get_download_path sbcl-bin`; [ -n "$url" ]; };then
-	__cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
-	echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        __cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
+        echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
-	echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
-	exit 1
+        echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
+        exit 1
     fi
-	
+
 }
 __sbcl_make(){
     (cd "$CIM_HOME/src/$1-$2" &&
-	sh make.sh "`cat .cim_available_impl`" --prefix="$CIM_HOME/impls/$1-$2"  --fancy )
+     sh make.sh "`cat .cim_available_impl`" --prefix="$CIM_HOME/impls/$1-$2"  --fancy )
 }
 __sbcl_install(){
     mkdir -p "$CIM_HOME/impls/$1-$2"
@@ -219,7 +219,7 @@ __sbcl_install(){
 __ccl_rebuild_full(){
     logic="!"
     if uname -m | grep -F 64 > /dev/null 2>&1;then
-	logic=
+        logic=
     fi
     executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
     return 1
@@ -228,12 +228,12 @@ __ccl_rebuild_full(){
 __ccl_install(){
     cp -R "$CIM_HOME/src/$1-$2" "$CIM_HOME/impls/$1-$2"
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
-	-exec sed -i".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
+         -exec sed -i".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     mkdir -p "$CIM_HOME/impls/$1-$2/bin"
     if uname -m | grep -F 64;then
-	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"
+        ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"
     else
-	ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/impls/$1-$2/bin/$1"
+        ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/impls/$1-$2/bin/$1"
     fi    
 }
 
