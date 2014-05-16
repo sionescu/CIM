@@ -24,6 +24,31 @@ cim_cyan(){
 cim_white(){
     echo "[0;37m$@[0;39m"
 }
+cim_message(){
+    echo "$1"
+}
+cim_error(){
+    echo "$1" >&2
+    return 1
+}
+cim_with_output_control(){
+    impl="$1"
+    step="$2"
+    shift 2
+    output="$CIM_HOME/log/$impl/$step.log"
+    err="$CIM_HOME/log/$impl/$step.err"
+    touch "$output" "$err"
+    "$@" > "$output"  2> "$err"
+    return $?
+}
+
+cim_cat_errlog(){
+    impl="$1"
+    step="$2"
+    tail -n 10 "$CIM_HOME/log/$impl/$step.log"
+    cat "$CIM_HOME/log/$impl/$step.err"
+}
+
 
 __cim_split_impl_version(){
     awk -f "$CIM_HOME/scripts/split_version.awk" "$1" "$CIM_HOME/res/known" 
@@ -34,9 +59,9 @@ normarize_impl_version(){
 }
 __cim_wget(){
     if which curl > /dev/null 2>&1 ;then
-	curl -L "$1" -o "$2"
+	curl -Ss -L "$1" -o "$2"
     elif which wget > /dev/null 2>&1 ;then
-	wget "$1" -O "$2"
+	wget -q "$1" -O "$2"
     elif which fetch > /dev/null 2>&1 ;then
 	fetch "$1" -o "$2"
     elif wich tclsh > /dev/null 2>&2 ;then
