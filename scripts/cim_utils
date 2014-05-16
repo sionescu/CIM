@@ -1,5 +1,6 @@
 #!/bin/sh -
 CIM_UTILS=true
+impls="abcl alisp ccl clisp ecl gcl sbcl"
 cim_black(){
     echo "[0;30m$@[0;39m"
 }
@@ -51,12 +52,43 @@ cim_cat_errlog(){
 
 
 __cim_split_impl_version(){
-    awk -f "$CIM_HOME/scripts/split_version.awk" "$1" "$CIM_HOME/res/known" 
+    echo "$1" | tr - \  |
+    while IFS=' ' read impl version;do
+        if [ -n "$version" ]; then
+            echo "$impl" "$version"
+        else
+            grep -v "^#" "$CIM_HOME/res/known" |
+                grep -F "$impl" |
+                grep -F "latest" |
+                cut -f2,3
+        fi
+    done
 }
 
 normarize_impl_version(){
     __cim_split_impl_version "$1" | tr \  -
 }
+
+cim_aware_system_lisp(){
+    for impl in $impls;do
+        rm -f "$CIM_HOME/bin/${impl}-system"
+        if lisp_full_name=`PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" which "$impl" 2> /dev/null` ;then
+	    ln -s "$lisp_full_name" "$CIM_HOME/bin/${LISP_IMPL}-system"
+	    [ -s "$CIM_HOME/config/default" ] || echo "LISP_IMPL=${impl}-system" > "$CIM_HOME/config/default"
+        fi
+    done
+}
+
+cim_register_all_impls(){
+    for impl in $impls; do
+        for config in `find "$CIM_HOME/config/"`; do
+            if ! grep "^$impl" "$config" > /dev/null 2>&1; then
+                echo "$impl=" >> "$config"
+            fi
+        done
+    done
+}
+                         
 __cim_wget(){
     if which curl > /dev/null 2>&1 ;then
 	curl -Ss -L "$1" -o "$2"
