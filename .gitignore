@@ -8,6 +8,7 @@
 /src/*
 /systes/*
 /tmp/*
+/log/*
 /.cache/*
 memo
 /.quicklisp-path
