@@ -1,6 +1,7 @@
 #!/bin/sh -
 CIM_UTILS=true
 impls="abcl alisp ccl clisp ecl gcl sbcl"
+
 cim_black(){
     echo "[0;30m$@[0;39m"
 }
@@ -79,17 +80,24 @@ cim_aware_system_lisp(){
     done
 }
 
+cim_choose_one_version(){
+    echo "$2" | sort -rn | head -n 1
+}
+
 cim_register_all_impls(){
     for impl in $impls; do
-        for config in `find "$CIM_HOME/config/"`; do
-            if ! grep "^$impl" "$config" > /dev/null 2>&1; then
-                echo "$impl=" >> "$config"
-            fi
-        done
+        installed=`find "$CIM_HOME/bin" -name "$impl-*"`
+        if [ -n "$installed" ];then
+            for config in `find "$CIM_HOME/config/"`; do
+                if ! grep "^$impl" "$config" > /dev/null 2>&1; then
+                    echo "$impl=`cim_choose_one_version "$impl" "$installed"`" >> "$config"
+                fi
+            done
+        fi
     done
 }
                          
-__cim_wget(){
+cim_wget(){
     if which curl > /dev/null 2>&1 ;then
 	curl -Ss -L "$1" -o "$2"
     elif which wget > /dev/null 2>&1 ;then

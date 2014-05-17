@@ -106,7 +106,7 @@ __download(){
     
     if [ ! -f "$impl_archive" ] || [ -n "$url" ]; then
         mkdir -p "$CIM_HOME/archives/"
-        cim_with_output_control "$1-$2" "download" __cim_wget "$url" "$impl_archive"
+        cim_with_output_control "$1-$2" "download" cim_wget "$url" "$impl_archive"
     fi
     if [ "$?" != "0" ]; then
         cim_error "Failed to donwload."
@@ -226,7 +226,7 @@ __install_ql_if_need(){
     if [ ! -d "$CIM_HOME/quicklisp/" ]; then
         rm -f "$CIM_HOME/quicklisp"
         rm -f "$CIM_HOME/lib/quicklisp.lisp"
-        __cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
+        cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
         LISP_IMPL="$1-$2";export LISP_IMPL
         if [ "$1" = sbcl ]; then
             set_sbcl_home_for "$1-$2"
@@ -254,7 +254,7 @@ __sbcl_ensure_impl(){
     elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ; [ -n "$run_sbcl" ];};then
         echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { url=`__get_download_path sbcl-bin`; [ -n "$url" ]; };then
-        __cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
+        cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
         echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
         echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
