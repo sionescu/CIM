@@ -63,7 +63,7 @@ __install_ql_if_need
 target="$1"
 shift
 set -e
-set  --  `__cim_split_impl_version "$target"` "$@"
+set  --  `cim_split_impl_version "$target"` "$@"
 case "$target" in
     clisp*|gcl*|ecl*)
 	processes="$cim_install_full"

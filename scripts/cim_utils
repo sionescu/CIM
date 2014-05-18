@@ -67,7 +67,7 @@ cim_cat_errlog(){
 }
 
 
-__cim_split_impl_version(){
+cim_split_impl_version(){
     echo "$1" | tr - \  |
     while IFS=' ' read impl version;do
         if [ -n "$version" ]; then
@@ -82,7 +82,7 @@ __cim_split_impl_version(){
 }
 
 normarize_impl_version(){
-    __cim_split_impl_version "$1" | tr \   -
+    cim_split_impl_version "$1" | tr \   -
 }
 
 cim_aware_system_lisp(){
