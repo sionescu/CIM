@@ -1,6 +1,13 @@
 #!/bin/sh -
-# This file is for execute
 set -e
+. "$CIM_HOME/scripts/cim_utils"
+# FIXME: cim_split_impl_version is used to validate argument
+if cim_split_impl_version "$1" > /dev/null 2>&1 ; then
+    cim_error "Error: cim_cmd_install: invalid argument '$1'"
+    exit 1
+fi
+
+
 
 . "$CIM_HOME/scripts/cim_lib_install"
 
@@ -64,6 +71,7 @@ target="$1"
 shift
 set -e
 set  --  `cim_split_impl_version "$target"` "$@"
+
 case "$target" in
     clisp*|gcl*|ecl*)
 	processes="$cim_install_full"
@@ -82,7 +90,7 @@ case "$target" in
 	;;
     *)
 	echo "Unknown Lisp impl $1. Exit." >&2
-	continue
+        exit 1
 	;;
 esac
     
