@@ -229,7 +229,7 @@ __install_ql_if_need(){
         cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
         LISP_IMPL="$1-$2";export LISP_IMPL
         if [ "$1" = sbcl ]; then
-            set_sbcl_home_for "$1-$2"
+            cim_set_sbcl_home_for "$1-$2"
         fi
         cim_with_output_control "$1-$2" quicklisp ql deps --path "$CIM_HOME/quicklisp/"
         if [ "$?" != "0" ]; then

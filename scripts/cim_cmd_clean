@@ -7,7 +7,7 @@ while [ $# -gt 0 ];do
 	set -- `cim list clean | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
-    impl=`normarize_impl_version "$1"`
+    impl=`cim_normarize_impl_version "$1"`
     rm -rf "$CIM_HOME/archives/$impl".*
     rm -rf "$CIM_HOME/src/$impl"
     shift

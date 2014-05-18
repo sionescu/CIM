@@ -4,12 +4,12 @@ if [ -z "$LISP_IMPL" ];then
     export LISP_IMPL
 else
     . "$CIM_HOME/scripts/cim_utils"
-    LISP_IMPL=`normarize_impl_version "$LISP_IMPL"`
+    LISP_IMPL=`cim_normarize_impl_version "$LISP_IMPL"`
 fi
 
 if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
     [ -z "$CIM_UTILS" ] &&  . "$CIM_HOME/scripts/cim_utils"
-    set_sbcl_home_for "$LISP_IMPL"
+    cim_set_sbcl_home_for "$LISP_IMPL"
     export SBCL_HOME
 fi
 

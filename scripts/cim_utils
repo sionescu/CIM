@@ -31,7 +31,6 @@ cim_message(){
 }
 cim_error(){
     echo "$1" >&2
-    return 1
 }
 
 cim_wget(){
@@ -78,10 +77,18 @@ cim_split_impl_version(){
                 grep -F "latest" |
                 cut -f2,3 --output-delimiter=" "
         fi
+    done |
+    while read impl version; do
+        if [ -z "$impl" ] || [ -z "$version" ];then
+            cim_error "cim_split_impl_version: invalid argument $1"
+            exit 1
+        else
+            OFS=" " echo "$impl" "$version"
+        fi
     done
 }
 
-normarize_impl_version(){
+cim_normarize_impl_version(){
     cim_split_impl_version "$1" | tr \   -
 }
 
@@ -112,7 +119,7 @@ cim_register_all_impls(){
     done
 }
                          
-set_sbcl_home_for(){
+cim_set_sbcl_home_for(){
     if [ "$1" = "sbcl-system" ];then
 	expr `ls -l "$CIM_HOME/bin/sbcl-system" | awk '{print $NF}'` : '\(.*\)/bin/sbcl' | { read sbcl_base; SBCL_HOME="${sbcl_base}/lib/sbcl";}
     else

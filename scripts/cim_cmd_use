@@ -14,7 +14,7 @@ if [ "$1" = "default" ];then
 fi
 . "$CIM_HOME/config/current.$CIM_ID"
 impl="${1%-*}"
-lisp_full_name=`normarize_impl_version "$1"`
+lisp_full_name=`cim_normarize_impl_version "$1"`
 
 if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     echo "$1 is not installed. See 'cim list use'."

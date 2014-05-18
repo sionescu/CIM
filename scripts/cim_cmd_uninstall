@@ -8,7 +8,7 @@ while [ $# -gt 0 ];do
 	continue
     fi
 
-    target=`normarize_impl_version "$1"`
+    target=`cim_normarize_impl_version "$1"`
     rm -rf "$CIM_HOME/impls/$target"
     rm -f  "$CIM_HOME/bin/$target"
     rm -f "$CIM_HOME/tmp/resume-$target"
