@@ -86,7 +86,7 @@ cim_split_impl_version(){
             cim_error "Error:cim_split_impl_version: invalid argument '$1'"
             return 1            
         fi
-        echo "$impl-$version"
+        OFS=" " echo "$impl" "$version"
     done
 }
 
