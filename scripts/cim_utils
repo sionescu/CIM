@@ -67,27 +67,28 @@ cim_cat_errlog(){
 
 
 cim_split_impl_version(){
-    echo "$1" | tr - \  |
-    while IFS=' ' read impl version; do
+    echo "$1" | tr - \  | {
+        IFS=' ' read impl version;
         if [ -n "$version" ]; then
             echo "$impl" "$version"
         elif [ -n "$impl" ]; then
             cat "$CIM_HOME/res/known" |
                 grep -F "$impl" | 
                 grep -F "latest" |
-                cut -s -f2,3
+                cut -s -f2,3 | {
+                    read impl version;
+                    if [ -z "$impl$version" ]; then
+                        cim_error "Error:cim_split_impl_version: invalid argument '$1'"
+                        return 1            
+                    fi
+                    OFS=" " echo "$impl" "$version"
+                }
         else
             cim_error "Error:cim_split_impl_version: argument is null"
             return 1
         fi
-    done |
-    while read impl version; do
-        if [ -z "$impl$version" ]; then
-            cim_error "Error:cim_split_impl_version: invalid argument '$1'"
-            return 1            
-        fi
-        OFS=" " echo "$impl" "$version"
-    done
+    }
+
 }
 
 cim_normarize_impl_version(){
