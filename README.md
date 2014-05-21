@@ -14,12 +14,12 @@ I hope CIM could be to Lisp what RVM is to ruby.
 CIM has installer. Run command below and you get cim installed to ~/.cim.
 
 ```
-$ curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
+$ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
 ```
 To change install path, set `CIM_HOME`.
 
 ```
-$ curl https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
+$ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
 
 ## USAGE
