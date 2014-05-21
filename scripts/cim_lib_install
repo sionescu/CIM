@@ -222,8 +222,8 @@ __config_cim(){
     return $?    
 }
 __install_ql_if_need(){
-    cim_message "Installing quicklisp."
     if [ ! -d "$CIM_HOME/quicklisp/" ]; then
+        cim_message "Installing quicklisp."
         rm -f "$CIM_HOME/quicklisp"
         rm -f "$CIM_HOME/lib/quicklisp.lisp"
         cim_wget "http://beta.quicklisp.org/quicklisp.lisp" "$CIM_HOME/lib/quicklisp.lisp"
