@@ -2,19 +2,31 @@
 # This file is for execute
 . "$CIM_HOME/scripts/cim_utils"
 
-while [ $# -gt 0 ];do
-    if [ "$1" = "all" ] ;then
+while [ $# -gt 0 ]; do
+    if [ "$1" = "all" ]; then
 	set -- `cim list uninstall | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
 
     target=`cim_normarize_impl_version "$1"`
+    if [ $? -nq 0 ]; then
+        cim_error "Invalid argument '$1'"
+        exit 1
+    fi
+    if [ ! -e "$CIM_HOME/bin/$target" ]; then
+        cim_error "$target is not installed"
+        exit 1
+    fi
     rm -rf "$CIM_HOME/impls/$target"
     rm -f  "$CIM_HOME/bin/$target"
     rm -f "$CIM_HOME/tmp/resume-$target"
+    for config in `find "$CIM_HOME/config/" -mindepth 1`; do
+        __sed_i "/$target/d" "$config"
+    done
     impl="${target%-*}"
-    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep -F "$impl" | wc -w` ] && [ ! "$impl" = "cl" ] && [ ! "$impl" = "ql" ] && [ ! "$impl" = "cim" ];then
+    if [ 1 -eq `ls "$CIM_HOME/bin/" | grep -F "$impl" | wc -w` ]; then
         rm -f  "$CIM_HOME/bin/$impl"
     fi
+    cim_register_all_impls
     shift
 done
