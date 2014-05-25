@@ -1,12 +1,13 @@
 #!/bin/sh -
 
+[ -s "$CIM_HOME/config/default" ] &&
+. "$CIM_HOME/config/default" &&
+default="$LISP_IMPL"
+
 [ -s "$CIM_HOME/config/current.$CIM_ID" ] &&
 . "$CIM_HOME/config/current.$CIM_ID" &&
 current="$LISP_IMPL"
 
-[ -s "$CIM_HOME/config/default" ] &&
-. "$CIM_HOME/config/default" &&
-default="$LISP_IMPL"
 
 . "$CIM_HOME/scripts/cim_utils"
 cim_aware_system_lisp
@@ -20,9 +21,11 @@ current lisp = $current
 default lisp = $default
 
 EOF
-for impl in `ls "$CIM_HOME/bin/" | grep -v -Fe '-' | grep -v -w -Fe 'ql' -e 'cl' -e 'cim'`;do
-    detail=`ls -l "$CIM_HOME/bin/$impl"`
-    printf "%-5s = %s\n" "$impl" `basename ${detail#*->}`
+for impl in $impls; do
+    eval detail=\$$impl
+    if [ -n "$detail" ]; then
+        printf "%-5s = %s\n" "$impl" "$detail"
+    fi
 done
 echo 
 for impl in `find $CIM_HOME/bin/ -name '*-system' -exec basename '{}' ';'`;do
