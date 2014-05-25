@@ -130,3 +130,8 @@ cim_set_sbcl_home_for(){
 	SBCL_HOME="$CIM_HOME/impls/$1/lib/sbcl"
     fi
 }
+
+__sed_i(){
+    sed -e "$1" "$2" > "$2.bck.$CIM_ID"
+    mv "$2.bck.$CIM_ID" "$2"
+}
