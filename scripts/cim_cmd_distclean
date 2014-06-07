@@ -7,27 +7,27 @@ while [ $# -gt 0 ];do
 	set -- `cim list distclean| grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
-    impl=`cim_normarize_impl_version "$1"`
-    if [ -z "$impl" ]; then
+    target=`cim_normarize_impl_version "$1"`
+    if [ -z "$target" ]; then
         cim_error "Error: cim_cmd_distclean: invalid argument '$1'"
         exit 1
     fi
-    if [ -d "$CIM_HOME/impls/$impl" ];then
+    if [ -d "$CIM_HOME/impls/$target" ];then
 	case "$1" in
 	    ecl*|gcl*)
-		(cd "$CIM_HOME/src/$impl" && make clean)
+		(cd "$CIM_HOME/src/$target" && make clean)
 		;;
 	    clisp*)
-		(cd "$CIM_HOME/src/$impl/src" && make clean)
+		(cd "$CIM_HOME/src/$target/src" && make clean)
 		;;
-	    ccl*|abcl*)
+	    ccl*|abcl*|alisp*)
 		;;
 	    sbcl)
-		(cd "$CIM_HOME/src/$impl" && sh clean.sh)
+		(cd "$CIM_HOME/src/$target" && sh clean.sh)
 		;;
 	esac
     else
-	 "Src of $impl was not found." >&2
+	 "Src of $target was not found." >&2
     fi
     shift
 done
