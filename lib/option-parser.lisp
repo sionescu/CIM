@@ -139,6 +139,6 @@ The predefined option is
  (return)).
 You can override \"-h\" and \"--help\" to controll help printing.
  "
-  `(make-parse-options ,argv ,clauses))
+  (make-parse-options argv clauses))
 
 
