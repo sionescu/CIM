@@ -1,11 +1,9 @@
 (in-package :cim)
 
-(defun short-opt-p (opt-string &optional string)
+(defun short-opt-p (opt-string)
   (and (= (length opt-string) 2)
        (char= (aref opt-string 0) #\-)
-       (char/= (aref opt-string 1) #\-)
-       (if string-like
-           ())
+       (char/= (aref opt-string 1) #\-)))
 
 (defun long-opt-p (opt-string)
   (and (> (length opt-string) 2)
@@ -24,7 +22,7 @@
   (destructuring-bind (options lambda-list . body) clause
     (dolist (designator '(&rest &optional &key &allow-other-keys
                           &aux &body &whole &environment))
-      (assert (not (member designator lambda-list)) lambda-list
+      (assert (not (member designator lambda-list)) (lambda-list)
               "option lambda-list should not contain ~a." designator))
     (clause :long-options (remove-if-not #'long-opt-p options)
             :short-options (remove-if-not #'short-opt-p options)
@@ -51,7 +49,7 @@
 
 (defun clause-flag-match-condition (flag-var clause)
   (assert (symbolp flag-var) nil)
-  `(or ,@(mapcar (lambda (opt) (string= opt ,argv)) (clause-options clause))))
+  `(or ,@(mapcar (lambda (opt) `(string= ,opt ,flag-var)) (clause-options clause))))
 
 (defun make-dispatcher-function (clauses)
   (let ((argv (gensym "ARGV"))
@@ -66,7 +64,8 @@
               `(,(clause-flag-match-condition head c)
                  (destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
                    ,@(clause-body c)
-                   (values ,crest t)))))
+                   (values ,crest t))))
+            clauses)
          ((string= ,head "--") (values ,rest nil)))))))
 
 ;; help message aggregation
@@ -89,7 +88,7 @@
         (%parse-options-rec result dispatcher)
         result)))
 
-(defun make-parse-options (argv raw-clauses)
+(defun make-parse-options (argv clauses)
   `(%parse-options-rec
     ,argv
     ,(make-dispatcher-function
@@ -132,6 +131,6 @@ The predefined option is
  (return)).
 You can override \"-h\" and \"--help\" to controll help printing.
  "
-  (make-parse-options ,argv ,clauses))
+  `(make-parse-options ,argv ,clauses))
 
 
