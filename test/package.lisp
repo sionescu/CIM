@@ -1,5 +1,5 @@
 
-(defpackage :cim-test
-  (:use :cl :cim :fiveam))
+(defpackage :cim.test
+  (:use :cl :cim.impl :fiveam))
 
 

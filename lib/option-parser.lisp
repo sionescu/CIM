@@ -1,4 +1,4 @@
-(in-package :cim)
+(in-package :cim.impl)
 
 (defun short-opt-p (opt-string)
   (and (= (length opt-string) 2)

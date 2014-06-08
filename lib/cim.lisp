@@ -1,5 +1,5 @@
 
-(in-package :cim)
+(in-package :cim.impl)
 (defvar *raw-argv*
   #+allegro  (cdr (system:command-line-arguments))
   #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
