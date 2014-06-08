@@ -1,10 +1,4 @@
-(in-package :cl-user)
-(defpackage cim.repl
-  (:use :CL :cim)
-  (:export :*history*
-	   :print-prompt
-	   :with-handle-conditions
-	   :strf))
+
 (in-package :cim.repl)
 
 (defun get-current-package-name ()
@@ -106,7 +100,6 @@
     (write-string left stream)
     (force-output stream)))
 
-(in-package :cl-user)
 (defun repl ()
   (let ((+eof+ (gensym "eof"))
 	(+bol+ (gensym "bol"))
@@ -160,4 +153,4 @@
 	   ;; print part
 	   (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
 	   (force-output *error-output*))))))
-(repl)
+
