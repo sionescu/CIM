@@ -102,8 +102,8 @@
                 (list
                  (parse-clause
                   `(("-h" "--help") ()
-                    (write-string ,(generate-help-message
-                                    parsed-clauses))
+                    ,(generate-help-message parsed-clauses) ;; help of help
+                    (write-string ,(generate-help-message parsed-clauses))
                     (return)))))))))
 
 (defmacro parse-options (argv &rest clauses)
