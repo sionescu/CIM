@@ -34,16 +34,23 @@
     (is (not (eval `(let ((flag "-a"))
                       ,(clause-flag-match-condition 'flag help)))))))
 
-(defvar *sample*
+(defparameter *sample*
   '((("-a") ()
      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.")
     (("-b" "--bb") ()
      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.")
+
+    ;; handling of arguments
     (("-c" "--cc") (file)
      "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.")
+
+    ;; see the effect of evaluation
     (("-d" "--dd" "--double-down") (file file2)
      "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd."
-     (signal "hi!"))))
+     (error "hi!"))
+    (("-e") (number)
+     "set a number to x."
+     (setf x (parse-integer number)))))
 
 (test help-message
   (finishes
@@ -58,21 +65,46 @@
     (princ
      (generate-help-message (mapcar #'parse-clause *sample*)))))
 
+(defun print-and-eval (x)
+  (assert (or (symbolp x) (listp x)))
+  (print x)
+  (eval x))
+
+(defun split-args (str)
+  `(list ,@(split " " str)))
+
 (test make-parse-options
   (finishes
-    (make-parse-options 'x *sample*))
+    (print
+     (make-parse-options 'x *sample*)))
 
-  (dolist (argv (mapcar (lambda (str)
-                          `(list ,@(split " " str)))
+  (dolist (argv (mapcar #'split-args
                         (list "-a"
                               "-b"
                               "-b -bb"
                               "-a -bb"
                               "-a -c c-value -bb")))
     (finishes
-      (let ((compiled (make-parse-options argv *sample*)))
-        (print compiled)
-        (eval compiled)))))
+      (eval (make-parse-options argv *sample*))))
+
+  (is (equal (eval (split-args "-c c-value"))
+             (eval (make-parse-options (split-args "-a -- -c c-value") *sample*))))
+
+  (signals error
+    (eval
+     (make-parse-options (split-args "-d 1 2") *sample*)))
+  (signals error
+    (eval
+     (make-parse-options (split-args "--double-down 1 2") *sample*)))
+  (signals error
+    (eval
+     (make-parse-options (split-args "--dd 1 2") *sample*)))
+
+  (is (= 1
+         (eval
+          `(let ((x nil))
+             ,(make-parse-options (split-args "-e 1") *sample*)
+             x)))))
 
 
 
