@@ -52,26 +52,24 @@
   `(or ,@(mapcar (lambda (opt) `(string= ,opt ,flag-var)) (clause-options clause))))
 
 (defun make-dispatcher-function (clauses)
-  (let ((argv (gensym "ARGV"))
-        (head (gensym "HEAD"))
+  (let ((head (gensym "HEAD"))
         (rest (gensym "REST"))
         (crest (gensym "CREST")))
-  `(lambda (,argv)
+  `(lambda (,head &rest ,rest)
      (block nil
-       (destructuring-bind (,head . ,rest) ,argv
-         (cond
-           ,@(mapcar
-              (lambda (c)
-                `(,(clause-flag-match-condition head c)
-                   ,(if (clause-lambda-list c)
-                        `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
-                           ,@(clause-body c)
-                           (values ,crest t))
-                        `(progn
-                           ,@(clause-body c)
-                           (values ,rest t)))))
-              clauses)
-           ((string= ,head "--") (values ,rest nil))))))))
+       (cond
+         ,@(mapcar
+            (lambda (c)
+              `(,(clause-flag-match-condition head c)
+                 ,(if (clause-lambda-list c)
+                      `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
+                         ,@(clause-body c)
+                         (values ,crest t))
+                      `(progn
+                         ,@(clause-body c)
+                         (values ,rest t)))))
+            clauses)
+         ((string= ,head "--") (values ,rest nil)))))))
 
 ;; help message aggregation
 
@@ -88,7 +86,7 @@
 ;; runtime dispatch
 
 (defun %parse-options-rec (argv dispatcher)
-  (multiple-value-bind (result dispatched-p) (funcall dispatcher argv)
+  (multiple-value-bind (result dispatched-p) (apply dispatcher argv)
     (if (and result dispatched-p)
         (%parse-options-rec result dispatcher)
         result)))
