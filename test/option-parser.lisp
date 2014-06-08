@@ -10,11 +10,10 @@
   (is (not (short-opt-p "-avl")))
   (is (not (short-opt-p "-"))))
 
-
 (test long-opt-p
   (is (long-opt-p "--help"))
   (is (not (long-opt-p "-a")))
-  (is (not (long-opt-p "-avl")))
+  (is (not (long-opt-p "-avl"))) ;; TODO.
   (is (not (long-opt-p "--"))))
 
 (test parse-clause
@@ -59,7 +58,21 @@
     (princ
      (generate-help-message (mapcar #'parse-clause *sample*)))))
 
+(test make-parse-options
+  (finishes
+    (make-parse-options 'x *sample*))
 
+  (dolist (argv (mapcar (lambda (str)
+                          `(list ,@(split " " str)))
+                        (list "-a"
+                              "-b"
+                              "-b -bb"
+                              "-a -bb"
+                              "-a -c c-value -bb")))
+    (finishes
+      (let ((compiled (make-parse-options argv *sample*)))
+        (print compiled)
+        (eval compiled)))))
 
 
 

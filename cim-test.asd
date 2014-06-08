@@ -1,7 +1,7 @@
 (defsystem cim-test
   :author "keens"
   :license "LLGPL"
-  :depends-on (:cim :fiveam)
+  :depends-on (:cim :fiveam :cl-ppcre)
   :components ((:module "test"
                 :serial t
                 :components
