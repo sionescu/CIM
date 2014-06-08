@@ -84,21 +84,21 @@
      (dolist (sexp (nreverse cim::sexps)) 
        (eval sexp))
      (in-package :cim)
-     (macrolet ((main ()
-		  '(cond
-		    ((opt :repl) (repl))
-		    ((opt :sexp)
-		     (let ((+eof+ (gensym "eof")))
-		      (with-input-from-string (in (opt :sexp))
-			(loop :for sexp := (read in nil +eof+)
-			   :until (eq sexp +eof+) :do
-			   (eval sexp)))))
-		    ((car *argv*)
-		     (let ((*load-print* nil))
-		       (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
-			     :verbose nil :print nil)))
-		    (t
-		     (loop (eval (read)))))))
+     (flet ((main ()
+              (cond
+                ((opt :repl) (repl))
+                ((opt :sexp)
+                 (let ((+eof+ (gensym "eof")))
+                   (with-input-from-string (in (opt :sexp))
+                     (loop :for sexp := (read in nil +eof+)
+                        :until (eq sexp +eof+) :do
+                        (eval sexp)))))
+                ((car *argv*)
+                 (let ((*load-print* nil))
+                   (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
+                         :verbose nil :print nil)))
+                (t
+                 (loop (eval (read)))))))
        (if (opt :extension)
 	   (let ((files (if (and (not (opt :sexp)) *argv*)
 			    (cdr *argv*)
