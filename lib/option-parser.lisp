@@ -108,9 +108,9 @@
 
 (defmacro parse-options (argv &rest clauses)
   "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
-((options) (parameters)
-  \"docstring \"
-   body)
+ ((options) (parameters)
+   \"docstring \"
+    body)
 where
 `OPTIONS'    are either strings which start with \"-\" followed by a single
              character (short option) or \"--\" followed by string (long option).
@@ -123,8 +123,8 @@ If \"--\" is found, immidiately exit from this macro.
 The return value is the rest of `ARGV'.
 You can access to the variable `GENERATED-HELP' which contains help string.
 Example:
-(defvar foo)
-(parse-options *argv*
+ (defvar foo)
+ (parse-options *argv*
   ((\"--foo\" \"-f\") ()
    \"set foo\"
    (setf foo t))
@@ -133,10 +133,8 @@ Example:
    (do-something-with arg)))
 
 The predefined option is
-((\"-h\" \"--help\") ()
-\"\"
- (write-string generated-help)
- (return)).
+ ((\"-h\" \"--help\") ()
+  (return)).
 You can override \"-h\" and \"--help\" to controll help printing.
  "
   (make-parse-options argv clauses))
