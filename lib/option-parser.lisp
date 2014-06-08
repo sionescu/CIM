@@ -57,20 +57,21 @@
         (rest (gensym "REST"))
         (crest (gensym "CREST")))
   `(lambda (,argv)
-     (destructuring-bind (,head . ,rest) ,argv
-       (cond
-         ,@(mapcar
-            (lambda (c)
-              `(,(clause-flag-match-condition head c)
-                 ,(if (clause-lambda-list c)
-                      `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
-                         ,@(clause-body c)
-                         (values ,crest t))
-                      `(progn
-                         ,@(clause-body c)
-                         (values ,rest t)))))
-            clauses)
-         ((string= ,head "--") (values ,rest nil)))))))
+     (block nil
+       (destructuring-bind (,head . ,rest) ,argv
+         (cond
+           ,@(mapcar
+              (lambda (c)
+                `(,(clause-flag-match-condition head c)
+                   ,(if (clause-lambda-list c)
+                        `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
+                           ,@(clause-body c)
+                           (values ,crest t))
+                        `(progn
+                           ,@(clause-body c)
+                           (values ,rest t)))))
+              clauses)
+           ((string= ,head "--") (values ,rest nil))))))))
 
 ;; help message aggregation
 
