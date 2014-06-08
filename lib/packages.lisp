@@ -8,7 +8,20 @@
 	   :parse-options
 	   :opt
            :short-opt-p
-           :long-opt-p))
+           :long-opt-p
+           :parse-clause
+           :clause-options
+           :clause-short-options
+           :clause-long-options
+           :clause-aux-options
+           :clause-lambda-list
+           :clause-doc
+           :clause-body
+           :clause-help-title
+           :clause-flag-match-condition
+           :make-dispatcher-function
+           :generate-help-message
+           :make-parse-options))
 
 (defpackage cim.repl
   (:use :CL :cim.impl)
