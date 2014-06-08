@@ -19,6 +19,10 @@ download(){
 fi
 }
 
+download_from_git(){
+    git archive --remote $1 -o $2 --prefix="CIM-$CIM_INSTALL_BRANCH/" $CIM_INSTALL_BRANCH
+}
+
 mkdir -p "$CIM_HOME/tmp"
 lockfile="$CIM_HOME/tmp/installer.lock"
 if [ -e "$lockfile" ];then
@@ -30,8 +34,18 @@ else
     trap "rm -f $lockfile" EXIT
 fi
 rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
-download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
-gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
+
+case $1 in
+    git)
+        archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar"
+        download_from_git $2 $archive ;
+        tar xf $archive -C "$CIM_HOME/tmp/";;
+    *)
+        archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+        download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" $archive ;
+        gzip -cd $archive | tar xf - -C "$CIM_HOME/tmp/";;
+esac
+
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
