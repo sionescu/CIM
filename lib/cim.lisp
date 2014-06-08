@@ -4,15 +4,19 @@
   #+allegro  (cdr (system:command-line-arguments))
   #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
 		(list var var))
-	       ((string= (car list) "--") (return (cdr list))))
+	       ((or (null list)
+                    (string= (car list) "--"))
+                (return (cdr list))))
   #+clisp ext:*args*
   #+ecl (do*  ((var (si:command-args) (cdr list))
 	       (list var var))
-	      ((string= (car list) "--") (return (cdr list))))
+	      ((or (null list)
+                   (string= (car list) "--")) (return (cdr list))))
   #+abcl extensions:*command-line-argument-list*
   #+gcl (do*  ((var si::*command-args* (cdr list))
 	       (list var var))
-	      ((string= (car list) "--") (return (cdr list))))
+	      ((or (null list)
+                   (string= (car list) "--")) (return (cdr list))))
   #+cmu ext:*command-line-words*
   #+ccl ccl:*unprocessed-command-line-arguments*
   #+lispworks system:*line-arguments-list*)
