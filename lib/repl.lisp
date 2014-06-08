@@ -114,10 +114,10 @@
 	(*) (**) (***))
     (loop :for continue := nil :do
        (block iter
-	 (incf cim.repl:*history*)
-	 (cim.repl:print-prompt *query-io*)
+	 (incf *history*)
+	 (print-prompt *query-io*)
 	 ;; read part
-	 (cim.repl:with-handle-conditions
+	 (with-handle-conditions
 	     ;; repeat until sexps complete. 
 	     (loop :named reader :with form
 		:for input := (read-line *standard-input* nil +eof+) :do
@@ -127,7 +127,7 @@
 		  ;; if ^D is signaled, exit
 		  ((eq input +eof+) (return-from repl))
 		  (t
-		   (cim.repl:strf form (format nil "~%") input)
+		   (strf form (format nil "~%") input)
 		   (handler-case
 		       ;; repeat over the input sexps
 		       (loop :with in := (make-string-input-stream form)
@@ -137,20 +137,20 @@
 		     ;; input was incomplete
 		     (END-OF-FILE ()
 		       (setf continue t)
-		       (cim.repl:print-prompt *query-io* :continuep t))))))
+		       (print-prompt *query-io* :continuep t))))))
 	   ;; eval part
 	   (when (member + '((quit) quit (exit) exit (bye)) :test (function equal))
 	     (return-from repl))
 	   (format *standard-output* "~A"
-		   (cim.repl::yellow
+		   (yellow
 		    (with-output-to-string (*standard-output*)
 		      (setf /// //  // /  / (loop :for sexp :in +sexps+ :append
-						 (multiple-value-list (eval sexp))))
+                                               (multiple-value-list (eval sexp))))
 		      (setf *** **  ** *  * (first /))
 		      (setf --- --  -- -  - +sexps+)
 		      (setf +++ ++  ++ +  + (first -)))))
 	   (force-output)
 	   ;; print part
-	   (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
+	   (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
 	   (force-output *error-output*))))))
 
