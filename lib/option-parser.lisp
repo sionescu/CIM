@@ -62,9 +62,13 @@
          ,@(mapcar
             (lambda (c)
               `(,(clause-flag-match-condition head c)
-                 (destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
-                   ,@(clause-body c)
-                   (values ,crest t))))
+                 ,(if (clause-lambda-list c)
+                      `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
+                         ,@(clause-body c)
+                         (values ,crest t))
+                      `(progn
+                         ,@(clause-body c)
+                         (values ,rest t)))))
             clauses)
          ((string= ,head "--") (values ,rest nil)))))))
 
@@ -84,19 +88,22 @@
 
 (defun %parse-options-rec (argv dispatcher)
   (multiple-value-bind (result dispatched-p) (funcall dispatcher argv)
-    (if dispatched-p
+    (if (and result dispatched-p)
         (%parse-options-rec result dispatcher)
         result)))
 
 (defun make-parse-options (argv clauses)
-  `(%parse-options-rec
-    ,argv
-    ,(make-dispatcher-function
-      (mapcar #'parse-clause
-              (append clauses
-                      `((("-h" "--help") ()
-                         (write-string ,(generate-help-message clauses))
-                         (return))))))))
+  (let ((parsed-clauses (mapcar #'parse-clause clauses)))
+    `(%parse-options-rec
+      ,argv
+      ,(make-dispatcher-function
+        (append parsed-clauses
+                (list
+                 (parse-clause
+                  `(("-h" "--help") ()
+                    (write-string ,(generate-help-message
+                                    parsed-clauses))
+                    (return)))))))))
 
 (defmacro parse-options (argv &rest clauses)
   "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
