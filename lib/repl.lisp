@@ -5,12 +5,25 @@
   (or (car (package-nicknames *package*))
       (package-name *package*)))
 
+;; NOTE: modified by Masataro Asai
+;; the value of (opt :no-color) cannot be determined
+;; until the option parsing actually occurs, so
+;; I moved ,(if (opt :no-color) "" before)
+;; into runtime. This file used to be directly
+;; loaded via `load' and it is tricky.
+
+;; For performance issue, I guess here are already lots of consing regarding string
+;; manipulation, so the performance is not a major problem.  At least, the below
+;; `make-color' is very inefficient, but I don't care.
+
 (defmacro make-color (name before after)
   (let ((str (gensym "strings")))
     `(defun ,name (&rest ,str)
        (apply #'concatenate
-		(append '(string)
-		 (list ,(if (opt :no-color) "" before)) ,str (list ,(if (opt :no-color) "" after)))))))
+              (append '(string)
+                      (list (if (opt :no-color) "" ,before))
+                      ,str
+                      (list (if (opt :no-color) "" ,after)))))))
 
 (defmacro make-colors ((name before after) &rest clauses)
   `(progn
