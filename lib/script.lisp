@@ -168,16 +168,20 @@
 		     (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
 		    ((opt :sexp)
 		     (let ((+eof+ (gensym "eof")))
-		      (with-input-from-string (in (opt :sexp))
-			(loop :for sexp := (read in nil +eof+)
-			   :until (eq sexp +eof+) :do
-			   (eval sexp)))))
+                       (with-input-from-string (in (opt :sexp))
+                         (loop :for sexp := (read in nil +eof+)
+                            :until (eq sexp +eof+) :do
+                            (eval sexp)))))
 		    ((car *argv*)
 		     (let ((*load-print* nil))
 		       (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
 			     :verbose nil :print nil)))
 		    (t
-		     (loop (eval (read)))))))
+		     (let ((+eof+ (gensym "eof")))
+                       (loop
+                          :for sexp := (read *standard-input* nil +eof+)
+                          :until (eq sexp +eof+) :do
+                          (eval sexp)))))))
        (if (opt :extension)
 	   (let ((files (if (and (not (opt :sexp)) *argv*)
 			    (cdr *argv*)
