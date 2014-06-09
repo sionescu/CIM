@@ -6,15 +6,26 @@
 (test short-opt-p
   (is (short-opt-p "-h"))
   (is (not (short-opt-p "--help")))
-  (is (short-opt-p "-a"))
   (is (not (short-opt-p "-avl")))
-  (is (not (short-opt-p "-"))))
+  (is (not (short-opt-p "--")))
+  (is (not (short-opt-p "-")))
+  (is (not (short-opt-p "a-"))))
 
 (test long-opt-p
   (is (long-opt-p "--help"))
   (is (not (long-opt-p "-a")))
-  (is (not (long-opt-p "-avl"))) ;; TODO.
-  (is (not (long-opt-p "--"))))
+  (is (not (long-opt-p "-avl")))
+  (is (not (long-opt-p "--")))
+  (is (not (long-opt-p "-")))
+  (is (not (long-opt-p "a-"))))
+
+(test combined-opt
+  (is (combined-opt-p "-avl"))
+  (is (not (combined-opt-p "-a")))
+  (is (not (combined-opt-p "--help")))
+  (is (not (combined-opt-p "--")))
+  (is (not (combined-opt-p "-")))
+  (is (not (combined-opt-p "a-"))))
 
 (test parse-clause
   (finishes

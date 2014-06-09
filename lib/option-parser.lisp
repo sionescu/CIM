@@ -9,6 +9,27 @@
   (and (> (length opt-string) 2)
        (string= opt-string "--" :end1 2)))
 
+(defun combined-opt-p (opt-string)
+  (and (> (length opt-string) 2)
+       (char= (aref opt-string 0) #\-)
+       (char/= (aref opt-string 1) #\-)))
+
+(defun make-option (string-or-char &optional long)
+  (symbol-macrolet ((sc string-or-char))
+    (if long
+        (concatenate 'string "--" (string sc))
+        (typecase sc
+          (string
+           (assert (= (length sc) 1))
+           (concatenate 'string "-" sc))
+          (character
+           (let ((s (make-string 2)))
+             (setf (aref s 0) #\-)
+             (setf (Aref s 1) c)
+             s))))))
+
+(defun explode-combined-opts (optstring)
+  (map 'list #'make-option optstring))
 
 (defstruct (clause (:constructor clause))
   (long-options nil :type list)
@@ -24,6 +45,8 @@
                           &aux &body &whole &environment))
       (assert (not (member designator lambda-list)) (lambda-list)
               "option lambda-list should not contain ~a." designator))
+    (assert (notany #'combined-opt-p options) (options)
+            "option specification in the definition do not accept combined short options. ~% ~a." options)
     (clause :long-options (remove-if-not #'long-opt-p options)
             :short-options (remove-if-not #'short-opt-p options)
             :aux-options (remove-if (lambda (o) (or (long-opt-p o) (short-opt-p o)))
