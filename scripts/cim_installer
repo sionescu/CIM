@@ -19,6 +19,10 @@ download(){
 fi
 }
 
+download_from_git(){
+    git archive --remote $1 -o $2 --prefix="CIM-$CIM_INSTALL_BRANCH/" $CIM_INSTALL_BRANCH
+}
+
 mkdir -p "$CIM_HOME/tmp"
 lockfile="$CIM_HOME/tmp/installer.lock"
 if [ -e "$lockfile" ];then
@@ -29,13 +33,23 @@ else
     trap "exit 1" HUP INT PIPE QUIT TERM
     trap "rm -f $lockfile" EXIT
 fi
-rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
-download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
-gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
+rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
+
+case $1 in
+    git)
+        archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar"
+        download_from_git $2 $archive ;
+        tar xf $archive -C "$CIM_HOME/tmp/";;
+    *)
+        archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+        download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" $archive ;
+        gzip -cd $archive | tar xf - -C "$CIM_HOME/tmp/";;
+esac
+
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
-for dir in bin config impls src archives;do
+for dir in bin config log impls src archives;do
     mkdir -p "$CIM_HOME/$dir"
 done
 
@@ -51,16 +65,17 @@ for executable in cl ql cim;do
 done
 
 for link in abcl alisp ccl clisp ecl gcl sbcl;do
-    if [ -L "$link" ] &&
+    rm -f "$CIM_HOME/bin/$link"
+    ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
+    chmod u+x "$CIM_HOME/scripts/$link"
+    # if it is older system
+    if [ -L "$CIM_HOME/bin/$link" ] &&
        ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1;then
 	full_name=`ls -l "$CIM_HOME/bin/$link" | grep -o "$CIM_HOME/bin/\(.*-.*\)"`
 	impl=${full_name%-*}
 	for config in `find "$CIM_HOME/config/" -mindepth 1`;do
 	    echo "$impl=$full_name" >> "$config"
 	done
-	rm -f "$CIM_HOME/bin/$link"
-	ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
-	chmod u+x "$CIM_HOME/scripts/$link"
     fi
 done
 
@@ -96,7 +111,7 @@ EOM
 fi
 
 if [ -d "$HOME/.emacs.d/eshell" ];then
-    rc='(load (expand-file-name "$CIM_HOME/init.esh")) > /dev/null'
+    rc="(load (expand-file-name \"$CIM_HOME/init.esh\")) > /dev/null"
     rcfile="$HOME/.emacs.d/eshell/profile"
     if grep -F "$rc" "$rcfile" > /dev/null 2>&1;then
 	echo "It seems cim initialization has been added to $rcfile."

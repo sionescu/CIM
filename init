@@ -1,4 +1,8 @@
 #!/bin/sh
+. "$CIM_HOME/scripts/cim_utils"
+touch "$CIM_HOME/config/default"
+cim_aware_system_lisp
+cim_register_all_impls
 if [ -s "$CIM_HOME/config/default" ];then
     cp "$CIM_HOME/config/default" "$CIM_HOME/config/current.$CIM_ID"
 fi

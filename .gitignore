@@ -8,6 +8,7 @@
 /src/*
 /systes/*
 /tmp/*
+/log/*
 /.cache/*
 memo
 /.quicklisp-path
@@ -15,3 +16,4 @@ memo
 /res/ql_help_quickload
 /res/ql_help_system-apropos
 /scripts/cim_list_reinstall
+*~

@@ -1,5 +1,7 @@
 #!/bin/sh -
 CIM_UTILS=true
+impls="abcl alisp ccl clisp ecl gcl sbcl"
+
 cim_black(){
     echo "[0;30m$@[0;39m"
 }
@@ -24,19 +26,18 @@ cim_cyan(){
 cim_white(){
     echo "[0;37m$@[0;39m"
 }
-
-__cim_split_impl_version(){
-    awk -f "$CIM_HOME/scripts/split_version.awk" "$1" "$CIM_HOME/res/known" 
+cim_message(){
+    echo "$1"
+}
+cim_error(){
+    echo "$1" >&2
 }
 
-normarize_impl_version(){
-    __cim_split_impl_version "$1" | tr \  -
-}
-__cim_wget(){
+cim_wget(){
     if which curl > /dev/null 2>&1 ;then
-	curl -L "$1" -o "$2"
+	curl -Ss -L "$1" -o "$2"
     elif which wget > /dev/null 2>&1 ;then
-	wget "$1" -O "$2"
+	wget -q "$1" -O "$2"
     elif which fetch > /dev/null 2>&1 ;then
 	fetch "$1" -o "$2"
     elif wich tclsh > /dev/null 2>&2 ;then
@@ -46,10 +47,91 @@ __cim_wget(){
     fi
 }
 
-set_sbcl_home_for(){
+cim_with_output_control(){
+    impl="$1"
+    step="$2"
+    shift 2
+    output="$CIM_HOME/log/$impl/$step.log"
+    err="$CIM_HOME/log/$impl/$step.err"
+    touch "$output" "$err"
+    "$@" > "$output"  2> "$err"
+    return $?
+}
+
+cim_cat_errlog(){
+    impl="$1"
+    step="$2"
+    tail -n 10 "$CIM_HOME/log/$impl/$step.log"
+    cat "$CIM_HOME/log/$impl/$step.err"
+}
+
+
+cim_split_impl_version(){
+    echo "$1" | tr - \  | {
+        IFS=' ' read impl version;
+        if [ -n "$version" ]; then
+            echo "$impl" "$version"
+        elif [ -n "$impl" ]; then
+            cat "$CIM_HOME/res/known" |
+                grep -F "$impl" | 
+                grep -F "latest" |
+                cut -s -f2,3 | {
+                    read impl version;
+                    if [ -z "$impl$version" ]; then
+                        cim_error "Error:cim_split_impl_version: invalid argument '$1'"
+                        return 1            
+                    fi
+                    OFS=" " echo "$impl" "$version"
+                }
+        else
+            cim_error "Error:cim_split_impl_version: argument is null"
+            return 1
+        fi
+    }
+
+}
+
+cim_normarize_impl_version(){
+    cim_split_impl_version "$1" | tr \   -
+}
+
+cim_aware_system_lisp(){
+    for impl in $impls;do
+        rm -f "$CIM_HOME/bin/${impl}-system"
+        if lisp_full_name=`PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" which "$impl"` ;then
+	    ln -s "$lisp_full_name" "$CIM_HOME/bin/${impl}-system"
+	    [ -s "$CIM_HOME/config/default" ] || echo "LISP_IMPL=${impl}-system" > "$CIM_HOME/config/default"
+        fi
+    done
+}
+
+cim_choose_one_version(){
+    # FIXME: select more preferer version
+    echo "$2" | sort -rn | head -n 1
+}
+
+cim_register_all_impls(){
+    for impl in $impls; do
+        installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';'`
+        if [ -n "$installed" ];then
+            for config in `find "$CIM_HOME/config/" -mindepth 1`; do
+                if ! grep "^$impl" "$config" > /dev/null 2>&1; then
+                    echo "$impl=`cim_choose_one_version "$impl" "$installed"`" >> "$config"
+                fi
+            done
+        fi
+    done
+}
+                         
+cim_set_sbcl_home_for(){
     if [ "$1" = "sbcl-system" ];then
 	expr `ls -l "$CIM_HOME/bin/sbcl-system" | awk '{print $NF}'` : '\(.*\)/bin/sbcl' | { read sbcl_base; SBCL_HOME="${sbcl_base}/lib/sbcl";}
     else
 	SBCL_HOME="$CIM_HOME/impls/$1/lib/sbcl"
     fi
+}
+
+__sed_i(){
+    sed -e "$1" "$2" > "$2.bck.$CIM_ID"
+    mv "$2.bck.$CIM_ID" "$2"
 }

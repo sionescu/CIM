@@ -1,2 +1,15 @@
 #!/bin/sh -
-cat "$CIM_HOME/res/known"
+last=""
+grep -vF "#" "$CIM_HOME/res/known" | cut -f2,3,4|
+while read impl version tag; do
+    if [ "$last" != "$impl" ];then
+        printf "\n# "
+        grep "$impl" "$CIM_HOME/res/abbr" | cut -f2
+        last="$impl"
+    fi
+    if [ "$tag" = latest ]; then
+        echo "$impl[-$version]"
+    else
+        echo "$impl-$version"
+    fi
+done

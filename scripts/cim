@@ -9,5 +9,5 @@ if [ $# -gt 0 ];then
 	sh "$CIM_HOME/scripts/cim_cmd_unknown" "$command" "$@"
     fi
 else
-    sh "$CIM_HOME/scripts/cim_cmd_help"
+    sh "$CIM_HOME/scripts/cim_cmd_unknown"
 fi

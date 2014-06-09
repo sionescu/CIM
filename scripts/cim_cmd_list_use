@@ -1,4 +1,5 @@
 #!/bin/sh
-sh "$CIM_HOME/scripts/cim_aware_system_lisp"
+. "$CIM_HOME/scripts/cim_utils"
+cim_aware_system_lisp
 current=$LISP_IMPL
-find "$CIM_HOME/bin/" -exec basename '{}' ';' | grep -F '-' | sort
+find "$CIM_HOME/bin/" -mindepth 1 -exec basename '{}' ';' | grep -F '-' | sort

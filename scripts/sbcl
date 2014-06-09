@@ -13,6 +13,6 @@ else
     . "$CIM_HOME/config/current.$CIM_ID"
 fi
 . "$CIM_HOME/scripts/cim_utils"
-set_sbcl_home_for "$sbcl"
+cim_set_sbcl_home_for "$sbcl"
 export SBCL_HOME
 exec "$sbcl" "$@"

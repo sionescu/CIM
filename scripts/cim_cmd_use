@@ -1,6 +1,8 @@
 #!/bin/sh -
 
-sh "$CIM_HOME/scripts/cim_aware_system_lisp"
+. "$CIM_HOME/scripts/cim_utils"
+cim_aware_system_lisp
+cim_register_all_impls
 if [ "$1" = "default" ];then
     if [ -s "$CIM_HOME/config/default" ];then
 	. "$CIM_HOME/config/default"
@@ -10,21 +12,20 @@ if [ "$1" = "default" ];then
 	exit 1
     fi
 fi
-. "$CIM_HOME/scripts/cim_utils"
 . "$CIM_HOME/config/current.$CIM_ID"
-LISP_IMPL="${1%-*}"
-lisp_full_name=`normarize_impl_version "$1"`
+impl="${1%-*}"
+lisp_full_name=`cim_normarize_impl_version "$1"`
 
 if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     echo "$1 is not installed. See 'cim list use'."
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
-for impl in $abcl $alisp $ccl $clisp $ecl $gcl $sbcl;do
-    if [ "${impl%-*}" = "$LISP_IMPL" ];then
-	echo "${impl%-*}=$LISP_IMPL"
+for var in $abcl $alisp $ccl $clisp $ecl $gcl $sbcl;do
+    if [ "${var%-*}" = "$impl" ];then
+	echo "${var%-*}=$lisp_full_name"
     else
-	echo "${impl%-*}=$impl"
+	echo "${var%-*}=$var"
     fi
 done >> "$CIM_HOME/config/current.$CIM_ID"
 

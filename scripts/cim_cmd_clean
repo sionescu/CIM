@@ -7,8 +7,18 @@ while [ $# -gt 0 ];do
 	set -- `cim list clean | grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
-    impl=`normarize_impl_version "$1"`
-    rm -rf "$CIM_HOME/archives/$impl".*
-    rm -rf "$CIM_HOME/src/$impl"
+    target=`cim_normarize_impl_version "$1"`
+    if [ -z "$target" ]; then
+        cim_error "Error: cim_cmd_clean: invalid argument '$1'"
+        exit 1
+    fi
+    if ! { [ -e "$CIM_HOME/archives/$target" ] ||
+           [ -e "$CIM_HOME/src/$target" ];}; then
+        cim_error "$target is not installed"
+        exit 1
+    fi
+
+    rm -rf "$CIM_HOME/archives/$target"
+    rm -rf "$CIM_HOME/src/$target"
     shift
 done

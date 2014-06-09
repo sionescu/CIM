@@ -1,22 +1,29 @@
-(in-package :cl-user)
-(defpackage cim.repl
-  (:use :CL :cim)
-  (:export :*history*
-	   :print-prompt
-	   :with-handle-conditions
-	   :strf))
+
 (in-package :cim.repl)
 
 (defun get-current-package-name ()
   (or (car (package-nicknames *package*))
       (package-name *package*)))
 
+;; NOTE: modified by Masataro Asai
+;; the value of (opt :no-color) cannot be determined
+;; until the option parsing actually occurs, so
+;; I moved ,(if (opt :no-color) "" before)
+;; into runtime. This file used to be directly
+;; loaded via `load' and it is tricky.
+
+;; For performance issue, I guess here are already lots of consing regarding string
+;; manipulation, so the performance is not a major problem.  At least, the below
+;; `make-color' is very inefficient, but I don't care.
+
 (defmacro make-color (name before after)
   (let ((str (gensym "strings")))
     `(defun ,name (&rest ,str)
        (apply #'concatenate
-		(append '(string)
-		 (list ,(if (opt :no-color) "" before)) ,str (list ,(if (opt :no-color) "" after)))))))
+              (append '(string)
+                      (list (if (opt :no-color) "" ,before))
+                      ,str
+                      (list (if (opt :no-color) "" ,after)))))))
 
 (defmacro make-colors ((name before after) &rest clauses)
   `(progn
@@ -106,7 +113,6 @@
     (write-string left stream)
     (force-output stream)))
 
-(in-package :cl-user)
 (defun repl ()
   (let ((+eof+ (gensym "eof"))
 	(+bol+ (gensym "bol"))
@@ -121,10 +127,10 @@
 	(*) (**) (***))
     (loop :for continue := nil :do
        (block iter
-	 (incf cim.repl:*history*)
-	 (cim.repl:print-prompt *query-io*)
+	 (incf *history*)
+	 (print-prompt *query-io*)
 	 ;; read part
-	 (cim.repl:with-handle-conditions
+	 (with-handle-conditions
 	     ;; repeat until sexps complete. 
 	     (loop :named reader :with form
 		:for input := (read-line *standard-input* nil +eof+) :do
@@ -134,7 +140,7 @@
 		  ;; if ^D is signaled, exit
 		  ((eq input +eof+) (return-from repl))
 		  (t
-		   (cim.repl:strf form (format nil "~%") input)
+		   (strf form (format nil "~%") input)
 		   (handler-case
 		       ;; repeat over the input sexps
 		       (loop :with in := (make-string-input-stream form)
@@ -144,20 +150,20 @@
 		     ;; input was incomplete
 		     (END-OF-FILE ()
 		       (setf continue t)
-		       (cim.repl:print-prompt *query-io* :continuep t))))))
+		       (print-prompt *query-io* :continuep t))))))
 	   ;; eval part
 	   (when (member + '((quit) quit (exit) exit (bye)) :test (function equal))
 	     (return-from repl))
 	   (format *standard-output* "~A"
-		   (cim.repl::yellow
+		   (yellow
 		    (with-output-to-string (*standard-output*)
 		      (setf /// //  // /  / (loop :for sexp :in +sexps+ :append
-						 (multiple-value-list (eval sexp))))
+                                               (multiple-value-list (eval sexp))))
 		      (setf *** **  ** *  * (first /))
 		      (setf --- --  -- -  - +sexps+)
 		      (setf +++ ++  ++ +  + (first -)))))
 	   (force-output)
 	   ;; print part
-	   (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
+	   (format *error-output* (green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
 	   (force-output *error-output*))))))
-(repl)
+
