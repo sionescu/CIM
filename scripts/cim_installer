@@ -49,6 +49,7 @@ esac
 
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
+(cd $CIM_HOME/lib; ./build.sh)
 
 for dir in bin config log impls src archives; do
     mkdir -p "$CIM_HOME/$dir"
