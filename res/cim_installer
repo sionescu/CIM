@@ -1,0 +1,12 @@
+usage: cim_installer
+usage: cim_installer git <repo>
+
+cim_installer -- Install CIM into the home directory.
+                 Add a snipet into the initialization script of current shell.
+
+cim_installer git <repo> -- instead of retrieving CIM from the predefined official repository,
+                            get the archive from any specified git repository, using git-archive feature.
+                            This is only for the debugging purpose.
+
+
+
