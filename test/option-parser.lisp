@@ -46,28 +46,27 @@
   (finishes
     (parse-clause '(("-h" "--help") () (return))))
 
-  ;; ;; docstring on
-  ;; (finishes
-  ;;   (parse-clause '(("-h" "--help") () "giving a help" (return))))
+  ;; docstring on
+  (finishes
+    (parse-clause '(("-h" "--help") () "giving a help" (return))))
 
-  ;; ;; no combined options in the option definition
-  ;; (signals error
-  ;;   (parse-clause '(("-cim") () (return))))
+  ;; no combined options in the option definition
+  (signals error
+    (parse-clause '(("-cim") () (return))))
 
 
 
-  ;; (let ((help (parse-clause '(("-h" "--help") () (return)))))
-  ;;   (is (equal (clause-doc help) ""))
-  ;;   (is (null (clause-lambda-list help)))
-  ;;   (is (member "--help" (clause-long-options help)))
-  ;;   (is (member "-h" (clause-short-options help)))
-  ;;   (is (null (clause-aux-options help)))
+  (let ((help (parse-clause '(("-h" "--help") () (return)))))
+    (is (equal (clause-doc help) ""))
+    (is (null (clause-lambda-list help)))
+    (is (member "--help" (clause-long-options help)))
+    (is (member "-h" (clause-short-options help)))
+    (is (null (clause-aux-options help)))
 
-  ;;   (let ((condition (clause-flag-match-condition 'flag help)))
-  ;;     ;; a form that checks if the variable `flag' matches the definition in help
-  ;;     (is (eval `(let ((flag "-h")) ,condition)))
-  ;;     (is (not (eval `(let ((flag "-a")) ,condition))))))
-  )
+    (let ((condition (clause-flag-match-condition 'flag help)))
+      ;; a form that checks if the variable `flag' matches the definition in help
+      (is (eval `(let ((flag "-h")) ,condition)))
+      (is (not (eval `(let ((flag "-a")) ,condition)))))))
 
 (defparameter *sample*
   '((("-a") ()
