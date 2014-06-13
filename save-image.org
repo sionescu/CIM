@@ -1,0 +1,319 @@
+
+
+* comparison
+
+| clisp | acl | lispworks | ecl | abcl | sbcl                             | cmucl                     | clozure cl                             |
+|-------+-----+-----------+-----+------+----------------------------------+---------------------------+----------------------------------------|
+|       |     |           |     |      | save-lisp-and-die core-file-name | save-lisp file            | save-application filename              |
+|       |     |           |     |      | :toplevel (default:repl)         | :init-function            | :toplevel-function (default:repl)      |
+|       |     |           |     |      |                                  | :load-init-file (boolean) |                                        |
+|       |     |           |     |      | *sysinit-pathname-function*      | :site-init                | :init-file                             |
+|       |     |           |     |      | -- (do it with your own restart) |                           | :error-handler                         |
+|       |     |           |     |      |                                  |                           | :application-class                     |
+|       |     |           |     |      |                                  |                           | :clear-clos-caches                     |
+|       |     |           |     |      | :purify                          | :purify                   | :purify                                |
+|       |     |           |     |      |                                  |                           | :impurify                              |
+|       |     |           |     |      |                                  |                           | :mode                                  |
+|       |     |           |     |      | :executable (--noinform implied) | :executable               | :prepend-kernel (boolean or pathname)  |
+|       |     |           |     |      | (only ELF)                       |                           | :native (choose from ELF, mach-o, PEF) |
+|       |     |           |     |      | :root-structures                 | :root-structures          | --                                     |
+|       |     |           |     |      |                                  | :print-herald             |                                        |
+|       |     |           |     |      |                                  | :batch-mode               |                                        |
+|       |     |           |     |      |                                  | :process-command-line     |                                        |
+|       |     |           |     |      | :save-runtime-options            |                           |                                        |
+|       |     |           |     |      | :environment-name                |                           |                                        |
+|       |     |           |     |      | :compression                     |                           |                                        |
+|       |     |           |     |      | :application-type                |                           |                                        |
+|       |     |           |     |      | *userinit-pathname-function*     |                           |                                        |
+|       |     |           |     |      | *core-pathname*                  |                           |                                        |
+|       |     |           |     |      | *save-hooks*                     |                           |                                        |
+|       |     |           |     |      | *init-hooks*                     |                           |                                        |
+|       |     |           |     |      | *exit-hooks*                     |                           |                                        |
+
+** sbcl
+
+http://www.sbcl.org/manual/#Saving-a-Core-Image
+
+SBCL has the ability to save its state as a file for later execution. This
+functionality is important for its bootstrapping process, and is also provided as
+an extension to the user.
+
+*** Function: save-lisp-and-die core-file-name &key ...
+
+Save a "core image", i.e. enough information to restart a Lisp process later in
+the same state, in the file of the specified name. Only global state is
+preserved: the stack is unwound in the process.
+
+The following &key arguments are defined:
+
+**** :toplevel
+
+The function to run when the created core file is resumed. The default
+function handles command line toplevel option processing and runs the top
+level read-eval-print loop. This function returning is equivalent to
+(sb-ext:exit :code 0) being called.
+
+toplevel functions should always provide an abort restart: otherwise code
+they call will run without one.
+**** :executable
+
+If true, arrange to combine the sbcl runtime and the core image to create a
+standalone executable. If false (the default), the core image will not be
+executable on its own. Executable images always behave as if they were
+passed the –noinform runtime option.
+**** :save-runtime-options
+
+If true, values of runtime options –dynamic-space-size and
+–control-stack-size that were used to start sbcl are stored in the
+standalone executable, and restored when the executable is run. This also
+inhibits normal runtime option processing, causing all command line
+arguments to be passed to the toplevel. Meaningless if :executable is nil.
+**** :purify
+
+If true (the default on cheneygc), do a purifying gc which moves all
+dynamically allocated objects into static space. This takes somewhat longer
+than the normal gc which is otherwise done, but it’s only done once, and
+subsequent GC’s will be done less often and will take less time in the
+resulting core file. See the purify function. This parameter has no effect
+on platforms using the generational garbage collector.
+**** :root-structures
+
+This should be a list of the main entry points in any newly loaded
+systems. This need not be supplied, but locality and/or gc performance may
+be better if they are. Meaningless if :purify is nil. See the purify
+function.
+**** :environment-name
+
+This is also passed to the purify function when :purify is t. (rarely used)
+**** :compression
+
+This is only meaningful if the runtime was built with
+the :sb-core-compression feature enabled. If nil (the default), saves to
+uncompressed core files. If :sb-core-compression was enabled at build-time,
+the argument may also be an integer from -1 to 9, corresponding to zlib
+compression levels, or t (which is equivalent to the default compression
+level, -1).
+**** :application-type
+      
+Present only on Windows and is meaningful only with :executable
+  t. Specifies the subsystem of the executable, :console or :gui. The notable
+  difference is that :gui doesn’t automatically create a console window. The
+  default is :console.
+
+The save/load process changes the values of some global variables:
+
+*standard-output*, *debug-io*, etc.
+
+    Everything related to open streams is necessarily changed, since the os
+won’t let us preserve a stream across save and load.
+
+*default-pathname-defaults*
+
+    This is reinitialized to reflect the working directory where the saved core
+    is loaded.
+
+save-lisp-and-die interacts with sb-alien:load-shared-object: see its
+documentation for details.
+
+On threaded platforms only a single thread may remain running after
+sb-ext:*save-hooks* have run. Applications using multiple threads can be
+save-lisp-and-die friendly by registering a save-hook that quits any additional
+threads, and an init-hook that restarts them.
+
+This implementation is not as polished and painless as you might like:
+
+    It corrupts the current Lisp image enough that the current process needs to
+    be killed afterwards. This can be worked around by forking another process
+    that saves the core.  There is absolutely no binary compatibility of core
+    images between different runtime support programs. Even runtimes built from
+    the same sources at different times are treated as incompatible for this
+    purpose.
+
+This isn’t because we like it this way, but just because there don’t seem to
+be good quick fixes for either limitation and no one has been sufficiently
+motivated to do lengthy fixes.
+
+*** related variables
+
+**** Variable: *save-hooks* [sb-ext]
+
+This is a list of functions which are called in an unspecified order before
+creating a saved core image. Unused by sbcl itself: reserved for user and
+applications.
+
+In cases where the standard initialization files have already been loaded into the
+saved core, and alternative ones should be used (or none at all), SBCL allows
+customizing the initfile pathname computation.
+
+**** Variable: *sysinit-pathname-function* [sb-ext]
+
+Designator for a function of zero arguments called to obtain a pathname
+designator for the default sysinit file, or nil. If the function returns nil,
+no sysinit file is used unless one has been specified on the command-line.
+
+**** Variable: *userinit-pathname-function* [sb-ext]
+
+Designator for a function of zero arguments called to obtain a pathname
+designator or a stream for the default userinit file, or nil. If the function
+returns nil, no userinit file is used unless one has been specified on the
+command-line.
+
+To facilitate distribution of SBCL applications using external resources, the
+filesystem location of the SBCL core file being used is available from Lisp.
+
+**** Variable: *core-pathname* [sb-ext]
+
+The absolute pathname of the running sbcl core.
+
+** clozure cl
+
+http://ccl.clozure.com/manual/chapter4.9.html
+
+*** SAVE-APPLICATION filename &key
+
+toplevel-function init-file error-handler application-class clear-clos-caches
+(purify t) impurify (mode #o644) prepend-kernel native [Function]
+
+**** filename
+
+The pathname of the file to be created when Clozure CL saves the application.
+
+**** toplevel-function
+
+The function to be executed after startup is complete. The toplevel is a
+function of no arguments that performs whatever actions the lisp system should
+perform when launched with this image.
+
+If this parameter is not supplied, Clozure CL uses its default toplevel. The
+default toplevel runs the read-eval-print loop.
+
+**** init-file
+
+The pathname of a Lisp file to be loaded when the image starts up. You can
+place initialization expressions in this file, and use it to customize the behavior
+of the Lisp system when it starts up.
+
+**** error-handler
+
+The error-handling mode for the saved image. The supplied value determines what
+happens when an error is not handled by the saved image. Valid values are :quit
+(Lisp exits with an error message); :quit-quietly (Lisp exits without an error
+message); or :listener (Lisp enters a break loop, enabling you to debug the problem
+by interacting in a listener). If you don't supply this parameter, the saved image
+uses the default error handler (:listener).
+
+**** application-class
+
+The CLOS class that represents the saved Lisp application. Normally you don't
+need to supply this parameter; CCL:SAVE-APPLICATION uses the class
+CCL:LISP-DEVELOPMENT-SYSTEM. In some cases you may choose to create a custom
+application class; in that case, pass the name of the class as the value for this
+parameter.  
+
+**** clear-clos-caches
+
+If true, ensures that CLOS caches are emptied before saving the image. Normally
+you don't need to supply this parameter, but if for some reason you want to ensure
+the CLOS caches are clear when the image starts up, you can pass any true value.
+
+**** purify
+
+When true, calls (in effect) purify before saving the heap image. This moves
+certain objects that are unlikely to become garbage to a special memory area that
+is not scanned by the GC (since it is expected that the GC wouldn't find anything
+to collect).
+
+**** impurify
+
+If true, calls (in effect) impurify before saving the heap image. (If
+both :impurify and :purify are true, first impurify is done, and then purify.)
+
+impurify moves objects in certain special memory areas into the regular dynamic
+, where they will be scanned by the GC.
+
+**** mode
+
+A number specifying the mode (permission bits) of the output file.
+
+**** prepend-kernel
+
+Specifies the file to prepend to the saved heap image. A value of t means to
+prepend the lisp kernel binary that the lisp started with. Otherwise, the value
+of :prepend-kernel should be a pathname designator for the file to be
+prepended.
+
+If the prepended file is execuatable, its execute mode bits will be copied to
+the output file.
+
+This argument can be used to prepend any kind of file to the saved heap
+e. This can be useful in some special cases.
+
+**** native
+
+If true, saves the image as a native (ELF, Mach-O, PE) shared library. (On
+platforms where this isn't yet supported, a warning is issued and the option is
+ignored.)
+
+** cmucl
+
+*** extensions:save-lisp file &key
+**** :purify
+If non-nil (the default), the core image is purified before it is saved (see
+purify.) This reduces the amount of work the garbage collector must do when the
+resulting core image is being run. Also, if more than one Lisp is running on the
+same machine, this maximizes the amount of memory that can be shared between the
+two processes.
+**** :root-structures
+This should be a list of the main entry points in any newly loaded systems. This
+need not be supplied, but locality and/or GC performance will be better if they
+are. Meaningless if :purify is nil. See purify.
+
+**** :init-function
+This is the function that starts running when the created core file is resumed. The
+default function simply invokes the top level read-eval-print loop. If the function
+returns the lisp will exit.
+
+**** :load-init-file
+If non-NIL, then load an init file; either the one specified on the command line or
+``init.fasl-type'', or, if ``init.fasl-type'' does not exist, init.lisp from the
+user's home directory. If the init file is found, it is loaded into the resumed
+core file before the read-eval-print loop is entered.
+
+**** :print-herald
+If non-NIL (the default), then print out the standard Lisp herald when starting.
+
+**** :site-init
+If non-NIL, the name of the site init file to quietly load. The default is
+library:site-init. No error is signalled if the file does not exist.
+
+**** :process-command-line
+If non-NIL (the default), processes the command line switches and performs the
+appropriate actions.
+
+**** :batch-mode
+If NIL (the default), then the presence of the -batch command-line switch will
+invoke batch-mode processing upon resuming the saved core. If non-NIL, the produced
+core will always be in batch-mode, regardless of any command-line switches.
+
+**** :executable
+If non-NIL, an executable image is created. Normally, CMUCL consists of the C
+runtime along with a core file image. When :executable is non-NIL, the core file is
+incorporated into the C runtime, so one (large) executable is created instead of a
+new separate core file.
+
+This feature is only available on some platforms, as indicated by having the
+feature :executable. Currently only x86 ports and the solaris/sparc port have this
+feature.
+
+
+* libraries
+** trivial-dump-core
+
+https://github.com/rolando2424/trivial-dump-core
+quicklisp loadable
+sbcl,ccl,clisp
+
+** lisp-executable
+
+based on a macro `define-program', I don't like it
+SBCL, ECL, CLISP, CCL and CMUCL.
