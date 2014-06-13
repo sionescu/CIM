@@ -24,7 +24,7 @@ $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HO
 
 ## USAGE
 
-Most command interfaces are designed to be somewhat compatible with rvm.
+Most commands are designed to be somewhat compatible with rvm.
 
 `cim help <command>` or `cim list <command>` will also help you.
 
