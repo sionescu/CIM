@@ -13,7 +13,7 @@ if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
     export SBCL_HOME
 fi
 
-if tput=`which tput 2> /dev/null` 2>&1;then
+if tput=`__which tput`;then
     COLUMNS=`$tput cols`
     export COLUMNS
 fi
@@ -22,7 +22,7 @@ for ARG;do
     case "$ARG" in
 	--repl) use_repl=true ;;
 	--no-rl) no_rl=true ;;
-	--debug) debug=true;;
+	--debug) debug=true ;;
 	--*) ;;
 	-*)
 	    OPTIND=1
@@ -38,7 +38,7 @@ for ARG;do
 done
 
 load_file="$CIM_HOME/lib/script.lisp"
-if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`which rlwrap 2> /dev/null`;then
+if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`__which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -q \" -r "
 fi
 
