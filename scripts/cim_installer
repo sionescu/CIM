@@ -73,6 +73,7 @@ fi"
     case "$SHELL" in
 	*/csh)  rcfile="$HOME/.cshrc";;
 	*/tcsh) rcfile="$HOME/.tcshrc";;
+        *) UNKNOWN_SHELL=true;;
     esac
 elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
     rc="CIM_HOME=$CIM_HOME; [ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
@@ -80,6 +81,7 @@ elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
 	*/bash) rcfile="$HOME/.bashrc";;
 	*/zsh)  rcfile="$HOME/.zshrc";;
 	*/sh)   rcfile="$HOME/.profile";;
+        *) UNKNOWN_SHELL=true;;
     esac
 fi
 
@@ -88,7 +90,7 @@ if [ -n "$rcfile" ] && [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2
     CIM_HAS_INSTALLED="true"
 fi
 
-if [ "$CIM_HAS_INSTALLED" != "true" ]; then
+if [ "$CIM_HAS_INSTALLED" != "true" ] && [ "$UNKNOWN_SHELL" != "true" ]; then
     cat <<EOM
 Adding to your $rcfile
 '$rc'
