@@ -65,25 +65,25 @@ for link in abcl alisp ccl clisp ecl gcl sbcl;do
     fi
 done
 
-if expr $SHELL : '.*csh' > /dev/null 2>&1 ;then
+if expr "$SHELL" : '.*csh' > /dev/null 2>&1 ;then
     rc="set CIM_HOME $CIM_HOME
 if (-r '$CIM_HOME/init.csh' ) then
    source '$CIM_HOME/init.csh'
 fi"
-    case $SHELL in
+    case "$SHELL" in
 	*/csh)  rcfile="$HOME/.cshrc";;
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
-elif expr $SHELL : '.*sh' > /dev/null 2>&1 ;then
+elif expr "$SHELL" : '.*sh' > /dev/null 2>&1 ;then
     rc="CIM_HOME=$CIM_HOME; [ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
-    case $SHELL in
+    case "$SHELL" in
 	*/bash) rcfile="$HOME/.bashrc";;
 	*/zsh)  rcfile="$HOME/.zshrc";;
 	*/sh)   rcfile="$HOME/.profile";;
     esac
 fi
 
-if grep -F "$rc" "$rcfile" > /dev/null 2>&1 ;then
+if [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2>&1 ;then
     echo "It seems cim initialization has been added to $rcfile."
     CIM_HAS_INSTALLED="true"
 fi
