@@ -27,7 +27,7 @@ while [ $# -gt 0 ];do
 		;;
 	esac
     else
-	 "Src of $target was not found." >&2
+	cim_error "Src of $target was not found."
     fi
     shift
 done

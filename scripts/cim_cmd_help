@@ -1,4 +1,5 @@
 #!/bin/sh -
+. "$CIM_HOME/scripts/cim_utils"
 case "$1" in
     "")
 	cat "$CIM_HOME/res/cim_help" ;;
@@ -6,7 +7,7 @@ case "$1" in
 	if [ -s "$CIM_HOME/res/cim_help_$1" ];then
 	    cat "$CIM_HOME/res/cim_help_$1"
 	else
-	    echo "Help for '$1' is not prepared, sorry." >&2
+	    cim_error "Help for '$1' is not prepared, sorry."
 	    return 1
 	fi
 	;;
