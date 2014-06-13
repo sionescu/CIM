@@ -88,7 +88,7 @@ if [ -n "$rcfile" ] && [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2
     CIM_HAS_INSTALLED="true"
 fi
 
-if [ -z "$CIM_HAS_INSTALLED" ]; then
+if [ "$CIM_HAS_INSTALLED" != "true" ]; then
     cat <<EOM
 Adding to your $rcfile
 '$rc'
@@ -112,7 +112,7 @@ fi
 
 echo
 
-if [ -n "$CIM_HAS_INSTALLED" ];then
+if [ "$CIM_HAS_INSTALLED" = "true" ];then
     echo "Install done. Thank you for using cim."
 else
     echo "Install done. Please reload your *rc file. Enjoy your Lisp life."
