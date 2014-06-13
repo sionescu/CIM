@@ -143,7 +143,7 @@
                     (write-string ,(generate-help-message parsed-clauses))
                     (return)))))))))
 
-(defmacro parse-options (argv &rest clauses)
+(defmacro parse-options (argv &body clauses)
   "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
  ((options) (parameters)
    \"docstring \"
