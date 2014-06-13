@@ -1,23 +1,23 @@
 #!/bin/sh -
 status=0
+. "$CIM_HOME/scripts/cim_utils"
 if [ $# -gt 0 ];then
     for resume in "$@";do
 	if [ "$resume" = "all" ]; then
 	    set -- `cim list resume rm | grep -v '\(Subcommand\|^#\)'`
 	    continue
 	fi
-	. "$CIM_HOME/scripts/cim_utils"
 	resume=`cim_normarize_impl_version "$1"`
 
 	if [ -f "$CIM_HOME/res/resume-$resume" ];then
 	    rm "$CIM_HOME/res/resume-$resume"
 	else
-	    echo "Unknown resume $resume." >&2
+	    cim_error "Unknown resume $resume."
 	    status=`expr $status + 1`
 	fi
     done
 else
-    echo "Please specify what to rm. To get the list, use 'cim list resume rm'." >&2
+    cim_error "Please specify what to rm. To get the list, use 'cim list resume rm'."
     exit 1
 fi
 exit $status

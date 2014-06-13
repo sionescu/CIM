@@ -12,7 +12,7 @@ __get_download_path(){
         sbcl) echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2" ;;
         sbcl-bin)
             { grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
-                { echo "SBCL binary does not support your machine." >&2;return 1;}
+                { cim_error "SBCL binary does not support your machine."; return 1;}
             } | cut -f 3
             ;;
         ccl)
@@ -34,8 +34,8 @@ __get_download_path(){
                     fi
                     ;;
             esac
-            echo "CCL does not support your machine." >&2
-            exit 1
+            cim_error "CCL does not support your machine."
+            return 1
             ;;
         alisp)
             if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
@@ -55,11 +55,11 @@ __get_download_path(){
                         ;;
                 esac
             fi
-            echo "ALISP does not support your machine." >&2
+            cim_error "ALISP does not support your machine."
             return 1
             ;;
         *)
-            echo "$1 is not supported" >&2;
+            cim_error "$1 is not supported"
             return 1
             ;;
     esac
@@ -75,11 +75,11 @@ __install_running_p(){
 
 __start(){
     if __impl_installed_p "$1" "$2"; then
-        echo "It seems you have installed $1-$2. Did you mean 'cim reinstall $1-$2'?." >&2
+        cim_error "It seems you have installed $1-$2. Did you mean 'cim reinstall $1-$2'?."
         return 1
     fi
     if __install_running_p "$1" "$2"; then
-        echo "You have been already running $1-$2 installation." >&2
+        cim_error "You have been already running $1-$2 installation."
         return 1
     fi
     trap "exit 1" HUP INT PIPE QUIT TERM
@@ -243,13 +243,13 @@ __install_ql_if_need(){
 
 __sbcl_ensure_impl(){
     cim_message "Finding Lisp impl to build sbcl."
-    if which sbcl > /dev/null 2>&1;then
+    if __which sbcl > /dev/null;then
         touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which lisp > /dev/null 2>&1;then
+    elif __which lisp > /dev/null;then
         echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which ccl > /dev/null 2>&1;then
+    elif __which ccl > /dev/null;then
         echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif which clisp > /dev/null 2>&1;then
+    elif __which clisp > /dev/null;then
         echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 2> /dev/null` ; [ -n "$run_sbcl" ];};then
         echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
@@ -257,7 +257,7 @@ __sbcl_ensure_impl(){
         cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
         echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh 2> /dev/null | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
-        echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
+        cim_error "No CL implementation for compiling SBCL found. Please install another implementation first."
         exit 1
     fi
 

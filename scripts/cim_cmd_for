@@ -18,19 +18,19 @@ else
 	if echo "$installed" | grep -xF "$1" > /dev/null 2>&1;then
 	    impls="$impls $1"
 	else
-	    echo "$1 is not installed." >&2
+	    cim_error "$1 is not installed."
 	    exit 1
 	fi
 	if [ "$#" -gt 0 ];then
 	    shift
 	else
-	    echo "Missing 'do'." >&2
+	    cim_error "Missing 'do'."
 	    exit 1
 	fi
     done
 fi
 if [ "$1" != do ];then
-    echo "$1 is found where 'do' is expected"
+    cim_error "$1 is found where 'do' is expected"
     exit 1
 fi
 shift

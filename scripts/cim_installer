@@ -6,13 +6,13 @@ set -e
 export CIM_HOME
 umask 077
 download(){
-    if which curl > /dev/null 2>&1; then
+    if command -v curl > /dev/null 2>&1;then
 	curl -L "$1" > "$2"
-    elif which wget > /dev/null 2>&1; then
+    elif command -v wget > /dev/null 2>&1 ;then
 	wget  -O "$2" "$1"
-    elif which fetch > /dev/null 2>&1; then
+    elif command -v fetch > /dev/null 2>&1;then
 	fetch -o "$2" "$1"
-    elif which tclsh > /dev/null > 2&1; then
+    elif command -v tclsh > /dev/null > 2&1;then
 	echo 'package require http ; if {"[lindex $argv 2]" == "-"} {set chan stdout} else {set chan [file open "[lindex $argv 2]"]} ; ::http::geturl "[lindex $argv 1]" -channel $chan' | tclsh - "$1" "$2"
     elif which ruby > /dev/null 2>&1; then
 	ruby -ropen-uri -e "out = ARGV[1] == '-' ? STDOUT : open('ARGV[1]');out.write open(ARGV[0]).read" "$1" "$2"
@@ -31,6 +31,7 @@ else
 fi
 rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
 download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+# :FIXME: check checksum
 gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"

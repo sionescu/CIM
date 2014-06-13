@@ -8,7 +8,7 @@ if [ "$1" = "default" ];then
 	. "$CIM_HOME/config/default"
 	set - "$LISP_IMPL"
     else
-	echo "Default lisp is not set. Please 'cim use <impl> --default first."
+	cim_error "Default lisp is not set. Please 'cim use <impl> --default first."
 	exit 1
     fi
 fi
@@ -17,7 +17,7 @@ impl="${1%-*}"
 lisp_full_name=`cim_normarize_impl_version "$1"`
 
 if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
-    echo "$1 is not installed. See 'cim list use'."
+    cim_error "$1 is not installed. See 'cim list use'."
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
