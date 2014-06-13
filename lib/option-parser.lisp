@@ -59,7 +59,7 @@
             :short-options (reduce (lambda (o prev)
                                      (cond ((short-opt-p o) (cons o prev))
                                            ((combined-opt-p o)
-                                            ;; here, prev is always a flesh value, so it is safe to use nconc
+                                            ;; here, prev is always a fresh value, so it is safe to use nconc
                                             (nconc (explode-combined-opts o) prev))
                                            (t prev)))
                                    options :from-end t :initial-value nil)
