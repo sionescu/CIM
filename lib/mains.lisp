@@ -15,7 +15,7 @@
     ((and (not (opt :eval)) (consp *argv*))
      ;; then the command is:
      ;; cl ... -- X.lisp [args]...
-     (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
+     (load (remove-shebang (open (car *argv*) :if-does-not-exist :error))))
     (t
      (signal 'repl-entered)
      (let ((*package* #.(find-package :common-lisp-user)))
