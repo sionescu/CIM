@@ -1,5 +1,5 @@
 
-(in-package :cim.repl)
+(in-package :cim.impl)
 
 (defun get-current-package-name ()
   (or (car (package-nicknames *package*))

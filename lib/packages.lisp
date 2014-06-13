@@ -5,7 +5,9 @@
   (:use :cl)
   (:export :*argv*
 	   :getenv
+           :get-raw-argv
 	   :opt
+           :*options*
            :exit
 
            :short-opt-p
@@ -35,11 +37,9 @@
            :process-in-place
 
            :process-args
-))
 
-(defpackage cim.repl
-  (:use :CL :cim.impl)
-  (:export :*history*
+           ;; repl
+           :*history*
 	   :print-prompt
 	   :with-handle-conditions
 	   :strf
@@ -52,4 +52,10 @@
 	   :getenv
 	   :parse-options
 	   :opt
-           :main))
+           :main
+
+           :*history*
+	   :print-prompt
+	   :with-handle-conditions
+	   :strf
+           :repl))

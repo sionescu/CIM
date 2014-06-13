@@ -66,7 +66,10 @@
                                      (cond ((short-opt-p o) (cons o prev))
                                            ((combined-opt-p o)
                                             ;; here, prev is always a fresh value, so it is safe to use nconc
-                                            (nconc (explode-combined-opts o) prev))
+                                            (nconc (remove-duplicates
+                                                    (explode-combined-opts o)
+                                                    :test #'string=)
+                                                   prev))
                                            (t prev)))
                                    options :from-end t :initial-value nil)
             :aux-options (remove-if (lambda (o) (or (long-opt-p o)
@@ -102,6 +105,8 @@
   `(lambda (,head &rest ,rest)
      (block nil
        (cond
+         ((combined-opt-p ,head)
+          (values (nconc (explode-combined-opts ,head) ,rest) t))
          ,@(mapcar
             (lambda (c)
               `(,(clause-flag-match-condition head c)

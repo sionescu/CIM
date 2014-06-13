@@ -1,25 +1,27 @@
 
 (in-package :cim.impl)
-(defvar *raw-argv*
+
+(defun get-raw-argv ()
   #+allegro  (cdr (system:command-line-arguments))
   #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
-		(list var var))
-	       ((or (null list)
+                (list var var))
+               ((or (null list)
                     (string= (car list) "--"))
                 (return (cdr list))))
   #+clisp ext:*args*
   #+ecl (do*  ((var (si:command-args) (cdr list))
-	       (list var var))
-	      ((or (null list)
+               (list var var))
+              ((or (null list)
                    (string= (car list) "--")) (return (cdr list))))
   #+abcl extensions:*command-line-argument-list*
   #+gcl (do*  ((var si::*command-args* (cdr list))
-	       (list var var))
-	      ((or (null list)
+               (list var var))
+              ((or (null list)
                    (string= (car list) "--")) (return (cdr list))))
   #+cmu ext:*command-line-words*
   #+ccl ccl:*unprocessed-command-line-arguments*
   #+lispworks system:*line-arguments-list*)
+
 (defvar *argv*)
 
 (defun getenv (name &optional default)
@@ -40,7 +42,14 @@
    default))
 
 (defun cim_home (path)
-  (concatenate 'string (getenv "CIM_HOME") path))
+  (concatenate 'string
+               (getenv "CIM_HOME"
+                       (load-time-value
+                        (princ-to-string
+                         (merge-pathnames
+                          ".."
+                          *default-pathname-defaults*))))
+               path))
 (defun ql_home (path)
   (concatenate 'string (cim_home "/quicklisp") path))
 

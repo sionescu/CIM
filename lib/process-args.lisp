@@ -11,8 +11,8 @@
 
 ;; the stored closures should be manually executed afterwards.
 
-(defun process-args ()
-  (parse-options *raw-argv*
+(defun process-args (argv)
+  (parse-options argv
     ;; parse the args, stores the processing hooks into *hooks*.
     ;; hooks (zero-arg lambda) should later be run individually.
     ;;
@@ -23,7 +23,7 @@
     (("-C") (dir)
      "set *default-pathname-defaults* to DIR."
      (setf *default-pathname-defaults*
-           (if (char= #\/ (elt dir 1))
+           (if (char= #\/ (elt dir 0))
                (pathname dir)
                (merge-pathnames (pathname dir)))))
 
@@ -36,16 +36,16 @@
 Once -e option is specified, [programfile] is ignored.
 Several -e's are evaluated individually, and in the given order as specified.
 For each time the evaluation is performed,
-the package is reset to the default package `cl-user'.
+the package is reset to the default package `cl-user'
+i.e. changes to the package is not saved among the processing.
 The default package can be modified via -p option.
-Note that, since the option processing is done sequentially,
-you should specify the package BEFORE specifying a script to run.
 "
+     (setf (opt :eval) t)
      (add-hook
       (lambda ()
         (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
           ;; the package is protected and do not interfere the later evaluation
-          (eval sexp)))))
+          (eval (read-from-string sexp))))))
 
     (("-p" "--package") (package)
      "Modifies the default package, initially cl-user.
@@ -55,8 +55,12 @@ i.e. only the last -p is processed."
      (setf (opt :package) (find-package (string-upcase package))))
 
     (("-f" "--load") (file)
-     "load the FILE"
-     (load file))
+     "load the FILE. The file is searched under the effect of -C flag.
+The file is loaded under the default package specified by -p, defaulted to `cl-user'."
+     (add-hook
+      (lambda ()
+        (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
+          (load (merge-pathnames file))))))
 
     (("-i") (ext)
      "Edit the files specified in the remainder of *argv* in place,
@@ -120,7 +124,17 @@ so it is called in the same environment as -e option does."
      "do not use color. This is effective only when --repl is specified"
      (setf (opt :no-color) t))
 
-    (("-v" "--version") ()
+    (("--version") ()
      "print the version of cim"
      (write-line (version))
-     (exit))))
+     (exit))
+
+    (("-v") ()
+     "Specify the verbosity while loading files.
+A fixnum verbosity value is stored in (opt :verbosity), if specified.
+If it is specified once, the value is 1.
+Using duplicate options (e.g. -vvv) increases the verbosity value.
+Otherwise it is NIL."
+     (if (opt :verbosity)
+         (incf (opt :verbosity))
+         (setf (opt :verbosity) 1)))))
