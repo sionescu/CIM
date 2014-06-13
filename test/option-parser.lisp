@@ -124,6 +124,7 @@
   (is (equal (eval (split-args "-c c-value"))
              (eval (make-parse-options (split-args "-a -- -c c-value") *sample*))))
 
+  ;; ensure -d clauses are evaluated
   (signals error
     (eval
      (make-parse-options (split-args "-d 1 2") *sample*)))
@@ -138,7 +139,15 @@
          (eval
           `(let ((x nil))
              ,(make-parse-options (split-args "-e 1") *sample*)
-             x)))))
+             x))))
+
+
+  ;; ensure "--" is removed
+  (is (= 2
+         (eval
+          `(parse-integer
+            (first
+             ,(make-parse-options (split-args "-a --dd -- 2 -a 3") *sample*)))))))
 
 
 

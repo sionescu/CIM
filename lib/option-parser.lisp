@@ -1,5 +1,8 @@
 (in-package :cim.impl)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; predicates and options
+
 (defun short-opt-p (opt-string)
   "input: \"-c\" result: t"
   (and (= (length opt-string) 2)
@@ -38,6 +41,9 @@
        (if (char= #\- (aref opt-string 0))
            (subseq opt-string 1)
            opt-string)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; clauses
 
 (defstruct (clause (:constructor clause))
   (long-options nil :type list)
@@ -81,15 +87,14 @@
           (clause-options clause)
           (clause-lambda-list clause)))
 
-;; TODO: align the table correctly
-;; consider the given help message
-
 ;; dispatcher compilation
 
 (defun clause-flag-match-condition (flag-var clause)
   (assert (symbolp flag-var) nil)
   `(or ,@(mapcar (lambda (opt) `(string= ,opt ,flag-var)) (clause-options clause))))
 
+(defvar *hooks* nil)
+(defun add-hook (fn) (push fn *hooks*))
 (defun make-dispatcher-function (clauses)
   (let ((head (gensym "HEAD"))
         (rest (gensym "REST"))
@@ -102,10 +107,12 @@
               `(,(clause-flag-match-condition head c)
                  ,(if (clause-lambda-list c)
                       `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
-                         ,@(clause-body c)
+                         ;; everything is deferred
+                         (add-hook (lambda () ,@(clause-body c)))
                          (values ,crest t))
                       `(progn
-                         ,@(clause-body c)
+                         ;; everything is deferred
+                         (add-hook (lambda () ,@(clause-body c)))
                          (values ,rest t)))))
             clauses)
          ((string= ,head "--") (values ,rest nil)))))))
@@ -132,16 +139,26 @@
 
 (defun make-parse-options (argv clauses)
   (let ((parsed-clauses (mapcar #'parse-clause clauses)))
-    `(%parse-options-rec
-      ,argv
-      ,(make-dispatcher-function
-        (append parsed-clauses
-                (list
-                 (parse-clause
-                  `(("-h" "--help") ()
-                    ,(generate-help-message parsed-clauses) ;; help of help
-                    (write-string ,(generate-help-message parsed-clauses))
-                    (return)))))))))
+    `(let ((*hooks* nil))
+       (values
+        (%parse-options-rec
+         ,argv
+         ,(make-dispatcher-function
+           (append parsed-clauses
+                   (list
+                    ;; default help format
+                    (clause :short-options '("-h")
+                            :long-options '("--help")
+                            :doc "Print this help"
+                            :body `((format nil "~A~2%~A~%~A~%"
+                                            "Usage: cl [switchs] [--] [programfile] [arguments]"
+                                            ,(generate-help-message parsed-clauses)
+                                            "
+If neither programfile, -e (--eval) or -r (--repl) are specified,
+cl reads scripts from the standard input and then evaluate them.")
+                                    (setf (opt :help) t)
+                                    (exit)))))))
+        (nreverse *hooks*)))))
 
 (defmacro parse-options (argv &body clauses)
   "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
@@ -157,23 +174,14 @@ where
              `PARAMETERS' are bound to the values given in the command arguments.
 
 If \"--\" is found, immidiately exit from this macro.
-The return value is the rest of `ARGV'.
-You can access to the variable `GENERATED-HELP' which contains help string.
-Example:
- (defvar foo)
- (parse-options *argv*
-  ((\"--foo\" \"-f\") ()
-   \"set foo\"
-   (setf foo t))
-  ((\"--bar\") (arg)
-   \"do something with `ARG'\"
-   (do-something-with arg)))
 
-The predefined option is
- ((\"-h\" \"--help\") ()
-  (return)).
-You can override \"-h\" and \"--help\" to controll help printing.
- "
+It returns two values, one is the rest of `ARGV' sans `--'.
+The secondary value is a list of hooks to be run later.
+Each hook is a zero-arg closure of `BODY' which stores the information
+of `PARAMETER'. Hooks are stored in the order the given options are specified.
+To actually process the arguments, users should call each closure.
+
+You can override \"-h\" and \"--help\" to controll help message."
   (make-parse-options argv clauses))
 
 

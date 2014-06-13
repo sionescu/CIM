@@ -8,7 +8,9 @@
 			((:file :packages)
                          (:file :cim)
                          (:file :option-parser)
-                         (:file :repl))))
+                         (:file :repl)
+                         (:file :process-args)
+                         (:file :mains))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames
