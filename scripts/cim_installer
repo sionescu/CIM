@@ -83,6 +83,8 @@ elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
 	*/sh)   rcfile="$HOME/.profile";;
         *) UNKNOWN_SHELL=true;;
     esac
+else
+    UNKNOWN_SHELL=true
 fi
 
 if [ -n "$rcfile" ] && [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2>&1; then
