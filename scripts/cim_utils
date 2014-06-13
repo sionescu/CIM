@@ -34,15 +34,15 @@ cim_error(){
 }
 
 cim_wget(){
-    if which curl > /dev/null 2>&1 ;then
+    if __which curl > /dev/null;then
 	curl -Ss -L "$1" -o "$2"
-    elif which wget > /dev/null 2>&1 ;then
+    elif __which wget > /dev/null;then
 	wget -q "$1" -O "$2"
-    elif which fetch > /dev/null 2>&1 ;then
+    elif __which fetch > /dev/null;then
 	fetch "$1" -o "$2"
-    elif wich tclsh > /dev/null 2>&2 ;then
+    elif __which tclsh > /dev/null;then
 	echo 'package require http ; if {"[lindex $argv 2]" == "-"} {set chan stdout} else {set chan [file open "[lindex $argv 2]"]} ; ::http::geturl "[lindex $argv 1]" -channel $chan' | tclsh - $1 $2
-    elif which ruby > /dev/null 2>&1;then
+    elif __which ruby > /dev/null;then
 	ruby -ropen-uri -e "out = ARGV[1] == '-' ? STDOUT : open('ARGV[1]');out.write open(ARGV[0]).read" "$1" "$2"
     fi
 }
@@ -134,4 +134,8 @@ cim_set_sbcl_home_for(){
 __sed_i(){
     sed -e "$1" "$2" > "$2.bck.$CIM_ID"
     mv "$2.bck.$CIM_ID" "$2"
+}
+
+__which(){
+    command -v "$1" 2> /dev/null
 }
