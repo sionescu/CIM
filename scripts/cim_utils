@@ -98,7 +98,7 @@ cim_normarize_impl_version(){
 cim_aware_system_lisp(){
     for impl in $impls;do
         rm -f "$CIM_HOME/bin/${impl}-system"
-        if lisp_full_name=`PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" which "$impl"` ;then
+        if lisp_full_name=`PATH="/bin:/usr/bin:/usr/local/bin:/opt/bin" which "$impl" 2> /dev/null` ;then
 	    ln -s "$lisp_full_name" "$CIM_HOME/bin/${impl}-system"
 	    [ -s "$CIM_HOME/config/default" ] || echo "LISP_IMPL=${impl}-system" > "$CIM_HOME/config/default"
         fi
@@ -112,9 +112,9 @@ cim_choose_one_version(){
 
 cim_register_all_impls(){
     for impl in $impls; do
-        installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';'`
+        installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';' 2> /dev/null `
         if [ -n "$installed" ];then
-            for config in `find "$CIM_HOME/config/" -mindepth 1`; do
+            for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `; do
                 if ! grep "^$impl" "$config" > /dev/null 2>&1; then
                     echo "$impl=`cim_choose_one_version "$impl" "$installed"`" >> "$config"
                 fi

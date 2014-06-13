@@ -13,7 +13,7 @@ if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
     export SBCL_HOME
 fi
 
-if tput=`which tput` 2>&1;then
+if tput=`which tput 2> /dev/null` 2>&1;then
     COLUMNS=`$tput cols`
     export COLUMNS
 fi

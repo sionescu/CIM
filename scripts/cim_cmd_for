@@ -8,7 +8,7 @@ if [ "$1" = "all" ];then
     impls=`cim list use`
     shift
 elif [ "$1" = "impls" ];then
-    impls=`find "$CIM_HOME/bin" -mindepth 1 ! -name '*-*' ! -name 'cl' ! -name 'ql' ! -name 'cim' -exec basename '{}' ';' | sort`
+    impls=`find "$CIM_HOME/bin" -mindepth 1 ! -name '*-*' ! -name 'cl' ! -name 'ql' ! -name 'cim' -exec basename '{}' ';'  2> /dev/null | sort`
     shift
 else
     installed=`cim list use`

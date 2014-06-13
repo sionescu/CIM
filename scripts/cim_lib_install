@@ -251,11 +251,11 @@ __sbcl_ensure_impl(){
         echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif which clisp > /dev/null 2>&1;then
         echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
-    elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1` ; [ -n "$run_sbcl" ];};then
+    elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 2> /dev/null` ; [ -n "$run_sbcl" ];};then
         echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { url=`__get_download_path sbcl-bin`; [ -n "$url" ]; };then
         cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
-        echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
+        echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh 2> /dev/null | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
         echo "No CL implementation for compiling SBCL found. Please install another implementation first." >&2
         exit 1
@@ -292,7 +292,7 @@ __ccl_rebuild_full(){
     if uname -m | grep -F 64 > /dev/null 2>&1;then
         logic=
     fi
-    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'` ||
+    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'2> /dev/null ` ||
     return 1
     cim_with_output_control "$1-$2" "build" "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
     if [ "$?" != "0" ]; then

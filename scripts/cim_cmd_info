@@ -28,6 +28,6 @@ for impl in $impls; do
     fi
 done
 echo 
-for impl in `find $CIM_HOME/bin/ -name '*-system' -exec basename '{}' ';'`;do
+for impl in `find $CIM_HOME/bin/ -name '*-system' -exec basename '{}' ';'  2> /dev/null `;do
     printf "%-12s = %s\n" "$impl" `PATH=/bin:/usr/bin:/usr/local/bin which ${impl%-system} 2> /dev/null`
 done

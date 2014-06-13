@@ -22,7 +22,7 @@ while [ $# -gt 0 ]; do
     rm -rf "$CIM_HOME/impls/$target"
     rm -f  "$CIM_HOME/bin/$target"
     rm -f "$CIM_HOME/tmp/resume-$target"
-    for config in `find "$CIM_HOME/config/" -mindepth 1`; do
+    for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `; do
         __sed_i "/$target/d" "$config"
     done
     impl="${target%-*}"

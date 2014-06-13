@@ -59,7 +59,7 @@ for link in abcl alisp ccl clisp ecl gcl sbcl;do
        ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1;then
 	full_name=`ls -l "$CIM_HOME/bin/$link" | grep -o "$CIM_HOME/bin/\(.*-.*\)"`
 	impl=${full_name%-*}
-	for config in `find "$CIM_HOME/config/" -mindepth 1`;do
+	for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `;do
 	    echo "$impl=$full_name" >> "$config"
 	done
     fi
