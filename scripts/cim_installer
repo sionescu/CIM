@@ -6,22 +6,22 @@ set -e
 export CIM_HOME
 umask 077
 download(){
-    if which curl > /dev/null 2>&1;then
+    if which curl > /dev/null 2>&1; then
 	curl -L "$1" > "$2"
-    elif which wget > /dev/null 2>&1 ;then
+    elif which wget > /dev/null 2>&1; then
 	wget  -O "$2" "$1"
-    elif which fetch > /dev/null 2>&1;then
+    elif which fetch > /dev/null 2>&1; then
 	fetch -o "$2" "$1"
-    elif which tclsh > /dev/null > 2&1;then
+    elif which tclsh > /dev/null > 2&1; then
 	echo 'package require http ; if {"[lindex $argv 2]" == "-"} {set chan stdout} else {set chan [file open "[lindex $argv 2]"]} ; ::http::geturl "[lindex $argv 1]" -channel $chan' | tclsh - "$1" "$2"
-    elif which ruby > /dev/null 2>&1;then
+    elif which ruby > /dev/null 2>&1; then
 	ruby -ropen-uri -e "out = ARGV[1] == '-' ? STDOUT : open('ARGV[1]');out.write open(ARGV[0]).read" "$1" "$2"
 fi
 }
 
 mkdir -p "$CIM_HOME/tmp"
 lockfile="$CIM_HOME/tmp/installer.lock"
-if [ -e "$lockfile" ];then
+if [ -e "$lockfile" ]; then
     echo "Another install process is running."
     exit 1
 else
@@ -35,7 +35,7 @@ gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_H
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
-for dir in bin config log impls src archives;do
+for dir in bin config log impls src archives; do
     mkdir -p "$CIM_HOME/$dir"
 done
 
@@ -44,28 +44,28 @@ ln -s "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/scripts/cim_list_reinsta
 ln -s "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_quickload"
 ln -s "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
 
-for executable in cl ql cim;do
+for executable in cl ql cim; do
     rm -f "$CIM_HOME/bin/$executable"
     ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 
-for link in abcl alisp ccl clisp ecl gcl sbcl;do
+for link in abcl alisp ccl clisp ecl gcl sbcl; do
     rm -f "$CIM_HOME/bin/$link"
     ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
     chmod u+x "$CIM_HOME/scripts/$link"
     # if it is older system
     if [ -L "$CIM_HOME/bin/$link" ] &&
-       ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1;then
+       ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1; then
 	full_name=`ls -l "$CIM_HOME/bin/$link" | grep -o "$CIM_HOME/bin/\(.*-.*\)"`
 	impl=${full_name%-*}
-	for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `;do
+	for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `; do
 	    echo "$impl=$full_name" >> "$config"
 	done
     fi
 done
 
-if expr "$SHELL" : '.*csh' > /dev/null 2>&1 ;then
+if expr "$SHELL" : '.*csh' > /dev/null 2>&1; then
     rc="set CIM_HOME $CIM_HOME
 if (-r '$CIM_HOME/init.csh' ) then
    source '$CIM_HOME/init.csh'
@@ -74,7 +74,7 @@ fi"
 	*/csh)  rcfile="$HOME/.cshrc";;
 	*/tcsh) rcfile="$HOME/.tcshrc";;
     esac
-elif expr "$SHELL" : '.*sh' > /dev/null 2>&1 ;then
+elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
     rc="CIM_HOME=$CIM_HOME; [ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
     case "$SHELL" in
 	*/bash) rcfile="$HOME/.bashrc";;
@@ -83,12 +83,12 @@ elif expr "$SHELL" : '.*sh' > /dev/null 2>&1 ;then
     esac
 fi
 
-if [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2>&1 ;then
+if [ -n "$rcfile" ] && [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2>&1; then
     echo "It seems cim initialization has been added to $rcfile."
     CIM_HAS_INSTALLED="true"
 fi
 
-if [ -z "$CIM_HAS_INSTALLED" ];then
+if [ -z "$CIM_HAS_INSTALLED" ]; then
     cat <<EOM
 Adding to your $rcfile
 '$rc'
@@ -96,10 +96,10 @@ EOM
     echo "$rc" >> "$rcfile"
 fi
 
-if [ -d "$HOME/.emacs.d/eshell" ];then
+if [ -d "$HOME/.emacs.d/eshell" ]; then
     rc="(load (expand-file-name \"$CIM_HOME/init.esh\")) > /dev/null"
     rcfile="$HOME/.emacs.d/eshell/profile"
-    if grep -F "$rc" "$rcfile" > /dev/null 2>&1;then
+    if grep -F "$rc" "$rcfile" > /dev/null 2>&1; then
 	echo "It seems cim initialization has been added to $rcfile."
     else
 	cat <<EOF
