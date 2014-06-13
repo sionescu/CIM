@@ -9,6 +9,9 @@
 	   :opt
            :short-opt-p
            :long-opt-p
+           :combined-opt-p
+           :make-option
+           :explode-combined-opts
            :parse-clause
            :clause-options
            :clause-short-options

@@ -27,23 +27,47 @@
   (is (not (combined-opt-p "-")))
   (is (not (combined-opt-p "a-"))))
 
+(test make-option
+  (is (string= (make-option "c") "-c"))
+  (is (string= (make-option "c" t) "--c"))
+  (signals error (make-option "cim"))
+  (is (string= (make-option "cim" t) "--cim"))
+  (is (string= (make-option #\c) "-c"))
+  (is (string= (make-option #\c t) "--c")))
+
+(test explode-combined-opts
+  (is (every #'string= (explode-combined-opts "c") '("-c")))
+  (is (every #'string= (explode-combined-opts "cim") '("-c" "-i" "-m")))
+  (is (every #'string= (explode-combined-opts "-c") '("-c")))
+  (is (every #'string= (explode-combined-opts "-cim") '("-c" "-i" "-m"))))
+
 (test parse-clause
+  ;; basic structure
   (finishes
-    (parse-clause
-     '(("-h" "--help") ()
-       (return))))
-  (let ((help (parse-clause
-                 '(("-h" "--help") ()
-                   (return)))))
-    (is (equal (clause-doc help) ""))
-    (is (null (clause-lambda-list help)))
-    (is (member "--help" (clause-long-options help)))
-    (is (member "-h" (clause-short-options help)))
-    (is (equal (clause-aux-options help) nil))
-    (is (eval `(let ((flag "-h"))
-                 ,(clause-flag-match-condition 'flag help))))
-    (is (not (eval `(let ((flag "-a"))
-                      ,(clause-flag-match-condition 'flag help)))))))
+    (parse-clause '(("-h" "--help") () (return))))
+
+  ;; ;; docstring on
+  ;; (finishes
+  ;;   (parse-clause '(("-h" "--help") () "giving a help" (return))))
+
+  ;; ;; no combined options in the option definition
+  ;; (signals error
+  ;;   (parse-clause '(("-cim") () (return))))
+
+
+
+  ;; (let ((help (parse-clause '(("-h" "--help") () (return)))))
+  ;;   (is (equal (clause-doc help) ""))
+  ;;   (is (null (clause-lambda-list help)))
+  ;;   (is (member "--help" (clause-long-options help)))
+  ;;   (is (member "-h" (clause-short-options help)))
+  ;;   (is (null (clause-aux-options help)))
+
+  ;;   (let ((condition (clause-flag-match-condition 'flag help)))
+  ;;     ;; a form that checks if the variable `flag' matches the definition in help
+  ;;     (is (eval `(let ((flag "-h")) ,condition)))
+  ;;     (is (not (eval `(let ((flag "-a")) ,condition))))))
+  )
 
 (defparameter *sample*
   '((("-a") ()

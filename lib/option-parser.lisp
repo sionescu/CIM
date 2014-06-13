@@ -1,20 +1,24 @@
 (in-package :cim.impl)
 
 (defun short-opt-p (opt-string)
+  "input: \"-c\" result: t"
   (and (= (length opt-string) 2)
        (char= (aref opt-string 0) #\-)
        (char/= (aref opt-string 1) #\-)))
 
 (defun long-opt-p (opt-string)
+  "input: \"--cim\" result: t"
   (and (> (length opt-string) 2)
        (string= opt-string "--" :end1 2)))
 
 (defun combined-opt-p (opt-string)
+  "input: \"-cim\" result: t"
   (and (> (length opt-string) 2)
        (char= (aref opt-string 0) #\-)
        (char/= (aref opt-string 1) #\-)))
 
 (defun make-option (string-or-char &optional long)
+  "returns a new option string such as \"-c\" from the input #\c or \"c\"."
   (symbol-macrolet ((sc string-or-char))
     (if long
         (concatenate 'string "--" (string sc))
@@ -25,11 +29,15 @@
           (character
            (let ((s (make-string 2)))
              (setf (aref s 0) #\-)
-             (setf (Aref s 1) c)
+             (setf (aref s 1) sc)
              s))))))
 
-(defun explode-combined-opts (optstring)
-  (map 'list #'make-option optstring))
+(defun explode-combined-opts (opt-string)
+  "returns a list of short options like '(\"-c\" \"-i\" \"-m\") from \"-cim\" or \"cim\""
+  (map 'list #'make-option
+       (if (char= #\- (aref opt-string 0))
+           (subseq opt-string 1)
+           opt-string)))
 
 (defstruct (clause (:constructor clause))
   (long-options nil :type list)
@@ -48,8 +56,16 @@
     (assert (notany #'combined-opt-p options) (options)
             "option specification in the definition do not accept combined short options. ~% ~a." options)
     (clause :long-options (remove-if-not #'long-opt-p options)
-            :short-options (remove-if-not #'short-opt-p options)
-            :aux-options (remove-if (lambda (o) (or (long-opt-p o) (short-opt-p o)))
+            :short-options (reduce (lambda (o prev)
+                                     (cond ((short-opt-p o) (cons o prev))
+                                           ((combined-opt-p o)
+                                            ;; here, prev is always a flesh value, so it is safe to use nconc
+                                            (nconc (explode-combined-opts o) prev))
+                                           (t prev)))
+                                   options :from-end t :initial-value nil)
+            :aux-options (remove-if (lambda (o) (or (long-opt-p o)
+                                                    (short-opt-p o)
+                                                    (combined-opt-p o)))
                                     options)
             :lambda-list lambda-list
             :doc (if (stringp (car body)) (car body) "")
