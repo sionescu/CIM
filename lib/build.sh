@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sources=$(echo packages.lisp cim.lisp option-parser.lisp repl.lisp process-args.lisp mains.lisp run.lisp)
+sources=$(echo packages.lisp no-debug.lisp cim.lisp option-parser.lisp repl.lisp process-args.lisp mains.lisp run.lisp)
 
 if [ ! -e script.lisp ]
 then

@@ -17,6 +17,7 @@
 			:serial t
 			:components
 			((:file :packages)
+                         (:file :debug)
                          (:file :cim)
                          (:file :option-parser)
                          (:file :repl)

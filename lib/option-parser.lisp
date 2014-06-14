@@ -106,19 +106,43 @@
      (block nil
        (cond
          ((combined-opt-p ,head)
+          ,(when *cim-option-match-verbose*
+                 `(format *trace-output*
+                          "~&In make-dispatcher-function: Found a combined option ~a. ~
+                             Explode it into ~a and continue.~&"
+                          ,head
+                          (explode-combined-opts ,head)))
           (values (nconc (explode-combined-opts ,head) ,rest) t))
+         ((string= ,head "--")
+          ,(when *cim-option-match-verbose*
+                 `(format *trace-output*
+                          "~&In make-dispatcher-function: Found a option terminater --. ~
+                             All options are processed. remaining: ~a~&"
+                          ,rest))
+          (values ,rest nil))
          ,@(mapcar
             (lambda (c)
               `(,(clause-flag-match-condition head c)
                  ,(if (clause-lambda-list c)
                       `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
+                         ,(when *cim-option-match-verbose*
+                                `(format *trace-output*
+                                         "~&In make-dispatcher-function: Option ~a : ~:@{~a=~a~^, ~}~&"
+                                         ',(clause-options c)
+                                         ,@(mapcar (lambda (sym) `(list ',sym ,sym))
+                                                   (clause-lambda-list c))))
                          ,@(clause-body c)
                          (values ,crest t))
                       `(progn
                          ,@(clause-body c)
                          (values ,rest t)))))
             clauses)
-         ((string= ,head "--") (values ,rest nil)))))))
+         (t
+          ,(when *cim-option-match-verbose*
+                 `(format *trace-output*
+                          "~&In make-dispatcher-function: All options processed. remaining: ~a~&"
+                          (cons ,head ,rest)))
+          (values (cons ,head ,rest) nil)))))))
 
 ;; help message aggregation
 
