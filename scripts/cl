@@ -1,9 +1,9 @@
 #!/bin/sh -
+. "$CIM_HOME/scripts/cim_utils"
 if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
     export LISP_IMPL
 else
-    . "$CIM_HOME/scripts/cim_utils"
     LISP_IMPL=`cim_normarize_impl_version "$LISP_IMPL"`
 fi
 
