@@ -10,12 +10,14 @@
     ((opt :eval)
      ;; then the command is:
      ;; cl ... -e "(dosomething)" -- [args]...
-     ;; then the options are already treated.
+     ;; then the options are already treated in #'main
+     ;; by (mapc #'funcall hooks)
      :already-treated)
-    ((and (not (opt :eval)) (consp *argv*))
+    ((consp *argv*)
      ;; then the command is:
      ;; cl ... -- X.lisp [args]...
-     (load (remove-shebang (open (car *argv*) :if-does-not-exist :error))))
+     (with-open-file (in (car *argv*) :if-does-not-exist :error)
+       (load (remove-shebang in))))
     (t
      (signal 'repl-entered)
      (let ((*package* #.(find-package :common-lisp-user)))
