@@ -47,11 +47,48 @@
       (fresh-main (list "-C" *test-root*
                         "-f" "scripts/load.lisp"
                         "-e" "nil"))))
+
   ;; file not found
   (signals file-error
     (fresh-main (list "-f" "no-such-file.lisp"
                       "-e" "nil") ;; specify the nonexistent value
                 )))
+
+(test --terminating
+  (is (string=
+       "T"
+       (with-stdout-to-string
+         (with-input-from-string (*standard-input* "")
+           (fresh-main (list "-e" "(princ (null cim:*argv*))"))))))
+  (is (string=
+       "T"
+       (with-stdout-to-string
+         (with-input-from-string (*standard-input* "")
+           (fresh-main (list "-e" "(princ (null cim:*argv*))" "--"))))))
+  (is (string=
+       "-d"
+       (with-stdout-to-string
+         (with-input-from-string (*standard-input* "")
+           (fresh-main (list "-e" "(princ (first cim:*argv*))" "--" "-d")))))))
+
+(test shebang
+  ;; shebang
+  (is (string=
+       "T"
+       (with-stdout-to-string
+         (with-input-from-string (*standard-input* "")
+           ;; This input should not be read.
+           ;; Otherwise it means that the stdin-stdout mode is initiated.
+           (fresh-main (list "-C" *test-root* "--" "scripts/shebang.lisp"))))))
+  ;; without --
+  (handler-case 
+      (is (string=
+           "T"
+           (with-stdout-to-string
+             (with-input-from-string (*standard-input* "")
+               (fresh-main (list "-C" *test-root* "scripts/shebang.lisp"))))))
+    (repl-entered (c)
+      (5am:fail "repl is entered, which is not expected to happen."))))
 
 (test verbose
   ;; test the verbosity

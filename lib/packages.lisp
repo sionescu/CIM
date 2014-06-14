@@ -35,6 +35,7 @@
            :main
            :main-core
            :process-in-place
+           :repl-entered
 
            :process-args
 
