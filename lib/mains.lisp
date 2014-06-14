@@ -16,8 +16,8 @@
     ((consp *argv*)
      ;; then the command is:
      ;; cl ... -- X.lisp [args]...
-     (with-open-file (in (car *argv*) :if-does-not-exist :error)
-       (load (remove-shebang in))))
+     ;; and X.lisp is a shebang
+     (shebang-load (car *argv*)))
     (t
      (signal 'repl-entered)
      (let ((*package* #.(find-package :common-lisp-user)))

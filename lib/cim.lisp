@@ -77,6 +77,10 @@
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
+(defun shebang-load (path)
+  (with-open-file (in path :if-does-not-exist :error)
+    (load (remove-shebang in))))
+
 ;; partly copied from @fukamachi 's shelly.util:terminate
 (defun exit (&optional (status 0))
   #+ccl (ccl:quit status)

@@ -11,6 +11,8 @@
            :exit
            :cim_home
            :ql_home
+           :remove-shebang
+           :shebang-load
 
            :short-opt-p
            :long-opt-p
