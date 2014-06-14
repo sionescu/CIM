@@ -9,6 +9,11 @@
      (asdf:system-source-directory :cim-test)))))
 (print *test-root*)
 
+
+(defmacro with-stdout-to-string (&body body)
+  `(with-output-to-string (*standard-output*)
+     ,@body))
+
 (defun fresh-main (argv)
   (let ((*options* (make-hash-table)))
     (let ((fdefinition (symbol-function 'exit)))
@@ -24,13 +29,13 @@
 (test eval
   (is (string=
        "ABABAP"
-       (with-output-to-string (*standard-output*)
+       (with-stdout-to-string
          (fresh-main (list "-e" "(princ :ababap)"))))))
 
 (test directory
   (is (string=
        *test-root*
-       (with-output-to-string (*standard-output*)
+       (with-stdout-to-string
          (fresh-main (list "-C" *test-root*
                            "-e" "(princ *default-pathname-defaults*)"))))))
 
@@ -100,12 +105,12 @@
 
 (test package
   (is (string= "1COMMON-LISP-USER"
-               (with-output-to-string (*standard-output*)
+               (with-stdout-to-string
                  (fresh-main (list "-C" *test-root*
                                    "-e" "(princ 1)"
                                    "-e" "(princ (package-name *package*))")))))
   (is (string= "CIM"
-               (with-output-to-string (*standard-output*)
+               (with-stdout-to-string
                  (fresh-main (list "-C" *test-root*
                                    "-p" "cim"
                                    "-e" "(princ (package-name *package*))"))))))
@@ -113,7 +118,7 @@
 (test main1
   (is (string=
        "HELLO!"
-       (with-output-to-string (*standard-output*)
+       (with-stdout-to-string
          (fresh-main (list "-C" *test-root*
                            "-f" "scripts/main1.lisp"
                            "-e" "(main1)"))))))
@@ -129,7 +134,7 @@
                                   :fill-pointer t)))
              (setf (fill-pointer seq) (read-sequence seq stream))
              seq)))
-       (with-output-to-string (*standard-output*)
+       (with-stdout-to-string
          (handler-case 
              (fresh-main (list "--version"))
            (warning (c)))))))
