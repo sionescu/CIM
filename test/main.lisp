@@ -2,11 +2,7 @@
 (in-suite :cim)
 
 (defparameter *test-root*
-  (load-time-value
-   (princ-to-string
-    (merge-pathnames
-     "test/"
-     (asdf:system-source-directory :cim-test)))))
+  (cim_home "test/"))
 (print *test-root*)
 
 
