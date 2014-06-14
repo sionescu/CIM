@@ -13,4 +13,5 @@ ln -s shunit2/src/shunit2 loader
 
 ./install.sh
 source ~/.bashrc
+./easy-update.sh # ensures the latest lib/ is used
 cim install ccl

@@ -35,6 +35,10 @@ testReturnCode(){
     ${_ASSERT_EQUALS_} 1 $?
 }
 
+testCIMASDF(){
+    cl -C $(readlink -f ../)/ -e '(print *default-pathname-defaults*)'
+    cl -C $(readlink -f ../)/ test/cim-asdf-test.lisp
+}
 
 # loading shunit2.
 . loader
