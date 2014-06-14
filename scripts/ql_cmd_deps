@@ -1,4 +1,5 @@
 #!/usr/bin/env cl --no-init --
+;;;; -*- mode : lisp -*-
 (in-package :cim)
 (defvar quicklisp-path ".quicklisp-path")
 (defvar setup "")
