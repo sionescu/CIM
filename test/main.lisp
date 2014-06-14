@@ -105,11 +105,12 @@
   ;; check the verbosity
   (is (string= "1"
                (with-output-to-string (*error-output*)
-                 (fresh-main (list "-C" *test-root*
-                                   "-f" "scripts/verbose.lisp"
-                                   "-v"
-                                   "-p" "cim"
-                                   "-e" "(princ (opt :verbosity) *error-output*)")))))
+                 (handler-bind ((warning #'muffle-warning))
+                   (fresh-main (list "-C" *test-root*
+                                     "-f" "scripts/verbose.lisp"
+                                     "-v"
+                                     "-p" "cim"
+                                     "-e" "(princ (opt :verbosity) *error-output*)"))))))
 
   ;; verbosity = 2
   (finishes
@@ -121,11 +122,12 @@
   ;; check the verbosity
   (is (string= "2"
                (with-output-to-string (*error-output*)
-                 (fresh-main (list "-C" *test-root*
-                                   "-f" "scripts/verbose.lisp"
-                                   "-v" "-v"
-                                   "-p" "cim"
-                                   "-e" "(princ (opt :verbosity) *error-output*)")))))
+                 (handler-bind ((warning #'muffle-warning))
+                   (fresh-main (list "-C" *test-root*
+                                     "-f" "scripts/verbose.lisp"
+                                     "-v" "-v"
+                                     "-p" "cim"
+                                     "-e" "(princ (opt :verbosity) *error-output*)"))))))
 
   ;; use the combined args, v = 2
   (finishes
@@ -137,11 +139,12 @@
   (finishes
     (is (string= "2"
                  (with-output-to-string (*error-output*)
-                   (fresh-main (list "-C" *test-root*
-                                     "-f" "scripts/verbose.lisp"
-                                     "-vv"
-                                     "-p" "cim"
-                                     "-e" "(princ (opt :verbosity) *error-output*)")))))))
+                   (handler-bind ((warning #'muffle-warning))
+                     (fresh-main (list "-C" *test-root*
+                                       "-f" "scripts/verbose.lisp"
+                                       "-vv"
+                                       "-p" "cim"
+                                       "-e" "(princ (opt :verbosity) *error-output*)"))))))))
 
 
 (test package
