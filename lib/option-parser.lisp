@@ -159,10 +159,12 @@
 ;; runtime dispatch
 
 (defun %parse-options-rec (argv dispatcher)
-  (multiple-value-bind (result dispatched-p) (apply dispatcher argv)
-    (if (and result dispatched-p)
-        (%parse-options-rec result dispatcher)
-        result)))
+  (if (null argv)
+      nil
+      (multiple-value-bind (result dispatched-p) (apply dispatcher argv)
+        (if dispatched-p
+            (%parse-options-rec result dispatcher)
+            result))))
 
 (defun make-parse-options (argv clauses)
   (let ((parsed-clauses (mapcar #'parse-clause clauses)))

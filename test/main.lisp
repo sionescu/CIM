@@ -32,6 +32,10 @@
        (with-stdout-to-string
          (fresh-main (list "-e" "(princ :ababap)"))))))
 
+(test null
+  (signals repl-entered
+    (fresh-main nil)))
+
 (test directory
   (is (string=
        *test-root*
