@@ -2,11 +2,11 @@
 ;;;; -*- mode : lisp -*-
 (in-package :cim)
 (defvar quicklisp-path ".quicklisp-path")
-(defvar setup "")
-(defvar path (or (when (probe-file (merge-pathnames quicklisp-path))
-		   (with-open-file (in (merge-pathnames quicklisp-path))
-		     (read-line in)))
-		 (cim_home "/quicklisp/")))
+(defparameter setup "")
+(defparameter path (or (when (probe-file (merge-pathnames quicklisp-path))
+                         (with-open-file (in (merge-pathnames quicklisp-path))
+                           (read-line in)))
+                       (cim_home "/quicklisp/")))
 (setf *argv*
       (or (parse-options *argv*
 			 (("--path") (arg)
@@ -18,7 +18,6 @@
 					       :if-does-not-exist :create)
 			    (write-string path out))))
 	  (exit)))
-(unless *argv* (return))
 (unless (char= #\/ (aref path (1- (length path))))
   (setf path (concatenate 'string path "/")))
 (setf path (merge-pathnames path (pathname (concatenate  'string (getenv "PWD") "/"))))

@@ -4,7 +4,9 @@
 (define-condition repl-entered (condition)
   ())
 
-(defun main-core ()
+(defun main-core (hooks)
+  ;; run the stored hooks if any
+  (mapc #'funcall hooks)
   (cond
     ((opt :repl) (repl))
     ((opt :eval)
@@ -17,21 +19,21 @@
      ;; then the command is:
      ;; cl ... -- X.lisp [args]...
      ;; and X.lisp is a shebang
-     (shebang-load (car *argv*)))
+     (destructuring-bind (filename . *argv*) *argv*
+       (shebang-load filename)))
     (t
      (signal 'repl-entered)
      (let ((*package* #.(find-package :common-lisp-user)))
        (loop (eval (read)))))))
 
-(defun process-in-place (ext)
+(defun process-in-place (ext hooks)
   (dolist (file (if (opt :eval) *argv* (cdr *argv*)))
     (with-open-file (*standard-input* file :if-does-not-exist :error)
       (if (zerop (length ext))
           (delete-file file)
           (rename-file file (concatenate 'string file ext)))
       (with-open-file (*standard-output* file :direction :output :if-exists :supersede)
-        (main-core)))))
-
+        (main-core hooks)))))
 
 (defun main (&optional (exit-status 0) (raw-argv (get-raw-argv)))
   ;; read the *raw-argv* and store the hooks
@@ -51,9 +53,6 @@
       (unless (opt :no-init)
         (load (cim_home "/init.lisp")))
 
-      ;; run the stored hooks if any
-      (mapc #'funcall hooks))
-
-    (let ((ext (opt :in-place-backup-extention)))
-      (if ext (process-in-place ext) (main-core)))
+      (let ((ext (opt :in-place-backup-extention)))
+        (if ext (process-in-place ext hooks) (main-core hooks))))
     (exit exit-status)))

@@ -180,7 +180,12 @@
                             :long-options '("--help")
                             :doc "Print this help"
                             :body `((format nil "~A~2%~A~%~A~%"
-                                            "Usage: cl [switchs] [--] [programfile] [arguments]"
+                                            "
+Usage: cl [switchs-sans-e] [--] [programfile] [arguments]
+Usage: cl [switchs] -e form [--] [arguments]
+Usage: cl [switchs] -i OLD-EXT [--] [programfile] [files]
+Usage: cl [switchs] -i OLD-EXT -e form [--] [files]
+"
                                             ,(generate-help-message parsed-clauses)
                                             "
 If neither programfile, -e (--eval) or -r (--repl) are specified,
