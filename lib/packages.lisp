@@ -56,6 +56,7 @@
 	   :parse-options
 	   :opt
            :main
+           :exit
 
            :cim_home
            :ql_home
