@@ -9,6 +9,8 @@
 	   :opt
            :*options*
            :exit
+           :cim_home
+           :ql_home
 
            :short-opt-p
            :long-opt-p
@@ -54,6 +56,9 @@
 	   :parse-options
 	   :opt
            :main
+
+           :cim_home
+           :ql_home
 
            :*history*
 	   :print-prompt
