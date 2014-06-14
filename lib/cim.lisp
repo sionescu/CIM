@@ -42,14 +42,17 @@
    default))
 
 (defun cim_home (path)
-  (concatenate 'string
-               (getenv "CIM_HOME"
-                       (load-time-value
-                        (princ-to-string
-                         (merge-pathnames
-                          ".."
-                          *default-pathname-defaults*))))
-               path))
+  "string -> string"
+  (assert (stringp path))
+  (let ((raw-home (getenv "CIM_HOME" #+asdf (princ-to-string (asdf:system-source-directory :cim)))))
+    (if (char= #\/ (aref raw-home (1- (length raw-home)))) ; trailing slash
+        (if (char= #\/ (aref path 0))                      ; slash in the beginning
+            (concatenate 'string raw-home (subseq path 1)) ; xxx..xx/ + /yyy/yy...
+            (concatenate 'string raw-home path))           ; xxx..xx/ + ttt/tt...
+        (if (char= #\/ (aref path 0))                      ; slash in the beginning
+            (concatenate 'string raw-home path)            ; xxx..xx + /yyy/yy...
+            (concatenate 'string raw-home "/" path)))))    ; xxx..xx + ttt/tt...
+
 (defun ql_home (path)
   (concatenate 'string (cim_home "/quicklisp") path))
 

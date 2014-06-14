@@ -1,6 +1,5 @@
 
 (in-package :cim.test)
-(def-suite :cim)
 (in-suite :cim)
 
 (test short-opt-p
