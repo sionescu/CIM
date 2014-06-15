@@ -13,6 +13,7 @@
            :ql_home
            :remove-shebang
            :shebang-load
+           :pathname-as-directory
 
            :short-opt-p
            :long-opt-p
@@ -59,6 +60,7 @@
 	   :opt
            :main
            :exit
+           :pathname-as-directory
 
            :cim_home
            :ql_home

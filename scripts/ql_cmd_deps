@@ -11,19 +11,21 @@
                            (read-line in)))
                        (cim_home "/quicklisp/")))
 (setf *argv*
-      (or (parse-options *argv*
-			 (("--path") (arg)
-			  "Where quicklisp is."
-			  (setf path arg)
-			  (with-open-file (out quicklisp-path
-					       :direction :output
-					       :if-exists :supersede
-					       :if-does-not-exist :create)
-			    (write-string path out))))
-	  (exit)))
-(unless (char= #\/ (aref path (1- (length path))))
-  (setf path (concatenate 'string path "/")))
-(setf path (merge-pathnames path (pathname (concatenate  'string (getenv "PWD") "/"))))
+      (parse-options *argv*
+        (("--path") (arg)
+         "Where quicklisp is."
+         (setf path arg)
+         (with-open-file (out quicklisp-path
+                              :direction :output
+                              :if-exists :supersede
+                              :if-does-not-exist :create)
+           (write-string path out)))))
+
+(setf path 
+      (merge-pathnames
+       (pathname-as-directory path)
+       (pathname-as-directory (getenv "PWD"))))
+
 (setf setup (merge-pathnames #p"setup.lisp" path))
 
 (if (probe-file setup) 
@@ -34,6 +36,6 @@
 
 (if (car *argv*)
     (progn
-      (push (pathname (concatenate  'string (getenv "PWD") "/")) asdf:*central-registry*)
+      (push (pathname-as-directory (getenv "PWD")) asdf:*central-registry*)
       (ql:quickload (intern (car *argv*))))
     (format t "Quicklisp installed to ~a" path))

@@ -41,6 +41,15 @@
    #+abcl (java:jstatic "getenv" "java.lang.System" name)
    default))
 
+(defun pathname-as-directory (pathname)
+  (assert (null (pathname-type pathname)) ()
+          "This pathname is not suitable for converting into a directory pathname")
+  (if (pathname-name pathname)
+      (make-pathname :name nil
+                     :directory (append (pathname-directory pathname)
+                                        (list (pathname-name pathname))))
+      pathname))
+
 (defun cim_home (path)
   "string -> string"
   (assert (stringp path))
