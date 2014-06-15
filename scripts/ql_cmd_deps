@@ -2,6 +2,9 @@
 ;;;; -*- mode : lisp -*-
 (in-package :cim)
 (defvar quicklisp-path ".quicklisp-path")
+;; this is intentionally a `defparameter' for testing.
+;; multiple evaluation of this file, during fiveam-based testing,
+;; causes a complecated error.
 (defparameter setup "")
 (defparameter path (or (when (probe-file (merge-pathnames quicklisp-path))
                          (with-open-file (in (merge-pathnames quicklisp-path))
