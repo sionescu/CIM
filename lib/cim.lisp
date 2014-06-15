@@ -50,7 +50,7 @@
                                         (list (pathname-name pathname))))
       pathname))
 
-(defun cim_home (path)
+(defun cim_home (&optional (path "/"))
   "string -> string"
   (assert (stringp path))
   (let ((raw-home (getenv "CIM_HOME" #+asdf (princ-to-string (asdf:system-source-directory :cim)))))

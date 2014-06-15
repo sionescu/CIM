@@ -11,7 +11,7 @@
                                                (file-error-pathname c))))
                                  (return))))
       (fresh-main `("--no-init"
-                    "-C" ,(cim_home "/")
+                    "-C" ,(cim_home)
                     "--"
                     "scripts/ql_cmd_deps"
                     "--path" "quicklisp/")))))
