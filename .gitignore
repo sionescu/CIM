@@ -11,7 +11,7 @@
 /log/*
 /.cache/*
 memo
-/.quicklisp-path
+*.quicklisp-path
 /lib/quicklisp.lisp
 /res/ql_help_quickload
 /res/ql_help_system-apropos

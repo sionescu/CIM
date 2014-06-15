@@ -8,10 +8,9 @@ then
     ln -s $dist shunit2
 fi
 
-# load shunit2
+# make a shortcut to shunit2
 ln -s shunit2/src/shunit2 loader
 
 ./install.sh
 source ~/.bashrc
 ./easy-update.sh # ensures the latest lib/ is used
-cim install ccl
