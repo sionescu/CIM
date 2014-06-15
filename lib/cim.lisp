@@ -92,9 +92,39 @@
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
-(defun shebang-load (path)
+#+ccl
+(defun copy-without-shebang (path)
+  (print (merge-pathnames path) *error-output*)
   (with-open-file (in path :if-does-not-exist :error)
-    (load (remove-shebang in))))
+    (let ((tmp-path (merge-pathnames
+                     (concatenate 'string (princ-to-string path) "__tmp"))))
+
+      (with-open-file (tmp tmp-path
+                           :direction :output
+                           :if-does-not-exist :create
+                           :if-exists :supersede)
+        (handler-case
+            (tagbody
+             start
+               (let ((line (read-line in)))
+                 (if (shebang-p line)
+                     (terpri tmp)
+                     (write-line line tmp)))
+               (go start))
+          (end-of-file (c)
+            (declare (ignore c))
+            ;; copy finished
+            tmp-path))))))
+
+(defun shebang-load (path)
+  #-ccl
+  (with-open-file (in path :if-does-not-exist :error)
+    (load (remove-shebang in)))
+  #+ccl
+  (let ((new-path (copy-without-shebang path)))
+    (assert (probe-file (merge-pathnames new-path)) ()
+            "path ~a does not exist" (merge-pathnames new-path))
+    (load new-path)))
 
 ;; partly copied from @fukamachi 's shelly.util:terminate
 (defun exit (&optional (status 0))
