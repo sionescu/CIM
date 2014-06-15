@@ -17,3 +17,8 @@ memo
 /res/ql_help_system-apropos
 /scripts/cim_list_reinstall
 *~
+/scripts/GPATH
+/scripts/GRTAGS
+/scripts/GSYMS
+/scripts/GTAGS
+/scripts/TAGS
