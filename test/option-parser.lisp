@@ -58,8 +58,8 @@
   (let ((help (parse-clause '(("-h" "--help") () (return)))))
     (is (equal (clause-doc help) ""))
     (is (null (clause-lambda-list help)))
-    (is (member "--help" (clause-long-options help)))
-    (is (member "-h" (clause-short-options help)))
+    (is (member "--help" (clause-long-options help) :test #'string=))
+    (is (member "-h" (clause-short-options help) :test #'string=))
     (is (null (clause-aux-options help)))
 
     (let ((condition (clause-flag-match-condition 'flag help)))
