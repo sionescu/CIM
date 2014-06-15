@@ -14,3 +14,9 @@
   (is (not (scan "//" (cim_home "aaa"))))
   (is (not (scan "//" (ql_home "/aaa"))))
   (is (not (scan "//" (ql_home "aaa")))))
+
+(test shebang-p
+  (is (shebang-p "#!aaaa aa aa"))
+  (is (not (shebang-p "  #!aaaa aa aa")))
+  (is (not (shebang-p "# !aaaa aa aa")))
+  (is (shebang-p "#! perl")))

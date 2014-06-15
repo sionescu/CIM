@@ -13,6 +13,7 @@
            :ql_home
            :remove-shebang
            :shebang-load
+           :shebang-p
            :pathname-as-directory
 
            :short-opt-p

@@ -81,11 +81,14 @@
 (defsetf opt (key) (obj)
   `(setf (gethash ,key *options*) ,obj))
 
+(defun shebang-p (line)
+  (and (> (length line) 1)
+       (string= line "#!" :end1 2)))
+
 (defun remove-shebang (in)
   (let ((line (read-line in nil "#!")))
     (cond
-      ((and (> (length line) 1) (string= line "#!" :end1 2))
-       in)
+      ((shebang-p line) in)
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
