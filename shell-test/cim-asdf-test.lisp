@@ -1,4 +1,4 @@
-#! /usr/bin/env cl
+#! /usr/bin/env cl --
 
 (require :asdf)
 (push *default-pathname-defaults*

@@ -37,7 +37,7 @@ testReturnCode(){
 
 testCIMASDF(){
     cl -C $(readlink -f ../)/ -e '(print *default-pathname-defaults*)'
-    cl -C $(readlink -f ../)/ test/cim-asdf-test.lisp
+    cl -C $(readlink -f ../)/ shell-test/cim-asdf-test.lisp
 }
 
 # loading shunit2.
