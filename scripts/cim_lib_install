@@ -200,7 +200,7 @@ __install(){
     return $?
 }
 __link(){
-    cim_message "Making link."
+    cim_message "Making symlink."
     rm -f  "$CIM_HOME/bin/$1-$2"
     ln -s "$CIM_HOME/impls/$1-$2/bin/$1" "$CIM_HOME/bin/$1-$2"
     [ -e "$CIM_HOME/bin/$1" ] || ln -s "$CIM_HOME/scripts/$1" "$CIM_HOME/bin/$1"
@@ -292,7 +292,7 @@ __ccl_rebuild_full(){
     if uname -m | grep -F 64 > /dev/null 2>&1;then
         logic=
     fi
-    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64'2> /dev/null ` ||
+    executable=`find "$CIM_HOME/src/$1-$2/" -maxdepth 1 -perm +111 -type f $logic -name '*64' 2> /dev/null ` ||
     return 1
     cim_with_output_control "$1-$2" "build" "$executable" --no-init --eval '(rebuild-ccl :full t)' --eval '(quit)'
     if [ "$?" != "0" ]; then
@@ -308,7 +308,7 @@ __ccl_install(){
     find "$CIM_HOME/impls/$1-$2/scripts/" -maxdepth 1 -name 'ccl*' \
          -exec sed -i".sample" -e "/CCL_DEFAULT_DIRECTORY=/ s;=/.*\$;=\"$CIM_HOME/impls/$1-$2\";" '{}' ';'
     mkdir -p "$CIM_HOME/impls/$1-$2/bin"
-    if uname -m | grep -F 64;then
+    if uname -m | grep -F 64 > /dev/null 2>&1 ;then
         ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl64" "$CIM_HOME/impls/$1-$2/bin/$1"
     else
         ln -s  "$CIM_HOME/impls/$1-$2/scripts/ccl" "$CIM_HOME/impls/$1-$2/bin/$1"
