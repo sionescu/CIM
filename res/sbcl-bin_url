@@ -1,11 +1,13 @@
 OS	Arch	URL
 Linux	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.58-x86-linux-binary.tar.bz2
-Linux	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.0-x86-64-linux-binary.tar.bz2
+Linux	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.1-x86-64-linux-binary.tar.bz2
 Linux	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-powerpc-linux-binary.tar.bz2
 Linux	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-sparc-linux-binary.tar.bz2
 Linux	alpha	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-alpha-linux-binary.tar.bz2
 Linux	mipsbe	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-mips-linux-binary.tar.bz2
 Linux	mipsle	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-mipsel-linux-binary.tar.bz2
+Linux	armel	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.0-armel-linux-binary.tar.bz2
+Linux	armhf	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.0-armhf-linux-binary.tar.bz2
 Darwin	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.6-x86-darwin-binary.tar.bz2
 Darwin	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.8-x86-64-darwin-binary.tar.bz2
 Darwin	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.47-powerpc-darwin-binary.tar.bz2
@@ -13,6 +15,8 @@ Darwin	sparc
 Darwin	alpha	
 Darwin	mipsbe	
 Darwin	mipsle	
+Darwin  armel	
+Darwin  armhf	
 Solaris	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-solaris-binary.tar.bz2
 Solaris	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-solaris-binary.tar.bz2
 Solaris	ppc	
@@ -20,6 +24,8 @@ Solaris	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-sparc-solaris-
 Solaris	alpha	
 Solaris	mipsbe	
 Solaris	mipsle	
+Solaris	armel	
+Solaris	armhf
 FreeBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-x86-freebsd-binary.tar.bz2
 FreeBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-64-freebsd-binary.tar.bz2
 FreeBSD	ppc	
@@ -27,6 +33,8 @@ FreeBSD	sparc
 FreeBSD	alpha	
 FreeBSD	mipsbe	
 FreeBSD	mipsle	
+FreeBSD	armel	
+FreeBSD	armhf	
 NetBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-netbsd-binary.tar.bz2
 NetBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-64-netbsd-binary.tar.bz2
 NetBSD	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-powerpc-netbsd-binary.tar.bz2
@@ -34,6 +42,8 @@ NetBSD	sparc
 NetBSD	alpha	
 NetBSD	mipsbe	
 NetBSD	mipsle	
+NetBSD	armel	
+NetBSD	armhf	
 OpenBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-x86-openbsd50-binary.tar.bz2
 OpenBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-x86-64-openbsd50-binary.tar.bz2
 OpenBSD	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.14-powerpc-openbsd50-binary.tar.bz
@@ -41,3 +51,5 @@ OpenBSD	sparc
 OpenBSD	alpha	
 OpenBSD	mipsbe	
 OpenBSD	mipsle	
+OpenBSD	armel	
+OpenBSD	armhf	
