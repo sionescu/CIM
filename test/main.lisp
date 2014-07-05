@@ -96,7 +96,7 @@
   (finishes
     (fresh-main (list "-C" *test-root*
                       "-f" "scripts/verbose.lisp"
-                      "-v"
+                      "-V"
                       "-e" "nil")))
   ;; check the verbosity
   (is (string= "1"
@@ -104,7 +104,7 @@
                  (handler-bind ((warning #'muffle-warning))
                    (fresh-main (list "-C" *test-root*
                                      "-f" "scripts/verbose.lisp"
-                                     "-v"
+                                     "-V"
                                      "-p" "cim"
                                      "-e" "(princ (opt :verbosity) *error-output*)"))))))
 
@@ -112,7 +112,7 @@
   (finishes
     (fresh-main (list "-C" *test-root*
                       "-f" "scripts/verbose.lisp"
-                      "-v" "-v"
+                      "-V" "-V"
                       "-p" "cim"
                       "-e" "(princ (opt :verbosity))")))
   ;; check the verbosity
@@ -121,7 +121,7 @@
                  (handler-bind ((warning #'muffle-warning))
                    (fresh-main (list "-C" *test-root*
                                      "-f" "scripts/verbose.lisp"
-                                     "-v" "-v"
+                                     "-V" "-V"
                                      "-p" "cim"
                                      "-e" "(princ (opt :verbosity) *error-output*)"))))))
 
@@ -129,7 +129,7 @@
   (finishes
     (fresh-main (list "-C" *test-root*
                       "-f" "scripts/verbose.lisp"
-                      "-vv"
+                      "-VV"
                       "-e" "nil")))
   ;; check the verbosity
   (finishes
@@ -138,7 +138,7 @@
                    (handler-bind ((warning #'muffle-warning))
                      (fresh-main (list "-C" *test-root*
                                        "-f" "scripts/verbose.lisp"
-                                       "-vv"
+                                       "-VV"
                                        "-p" "cim"
                                        "-e" "(princ (opt :verbosity) *error-output*)"))))))))
 
@@ -177,4 +177,18 @@
        (with-stdout-to-string
          (handler-case 
              (fresh-main (list "--version"))
+           (warning (c))))))
+  (is (string=
+       (with-open-file (stream (asdf:system-relative-pathname
+                                :cim
+                                #p"VERSION"))
+         (when stream
+           (let ((seq (make-array (file-length stream)
+                                  :element-type 'character
+                                  :fill-pointer t)))
+             (setf (fill-pointer seq) (read-sequence seq stream))
+             seq)))
+       (with-stdout-to-string
+         (handler-case 
+             (fresh-main (list "-v"))
            (warning (c)))))))

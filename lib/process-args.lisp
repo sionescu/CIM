@@ -124,12 +124,12 @@ so it is called in the same environment as -e option does."
      "do not use color. This is effective only when --repl is specified"
      (setf (opt :no-color) t))
 
-    (("--version") ()
+    (("--version" "-v") ()
      "print the version of cim"
      (write-line (version))
      (exit))
 
-    (("-v") ()
+    (("-V") ()
      "Specify the verbosity while loading files.
 A fixnum verbosity value is stored in (opt :verbosity), if specified.
 If it is specified once, the value is 1.
