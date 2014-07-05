@@ -179,31 +179,33 @@ input: \"--cim=\" result: NIL,T"
             result))))
 
 (defun make-parse-options (argv clauses)
-  (let ((parsed-clauses (mapcar #'parse-clause clauses)))
+  (let* ((parsed-clauses (mapcar #'parse-clause clauses))
+         (help-messages (generate-help-message parsed-clauses)))
     `(let ((*hooks* nil))
        (values
         (%parse-options-rec
          ,argv
-         ,(make-dispatcher-function
-           (append parsed-clauses
-                   (list
-                    ;; default help format
-                    (clause :short-options '("-h")
-                            :long-options '("--help")
-                            :doc "Print this help"
-                            :body `((format nil "~A~2%~A~%~A~%"
-                                            "
+         (let ((generated-help ,help-messages))
+           ,(make-dispatcher-function
+             (append parsed-clauses
+                     (list
+                      ;; default help format
+                      (clause :short-options '("-h")
+                              :long-options '("--help")
+                              :doc "Print this help"
+                              :body `((format nil "~A~2%~A~%~A~%"
+                                              "
 Usage: cl [switchs-sans-e] [--] [programfile] [arguments]
 Usage: cl [switchs] -e form [--] [arguments]
 Usage: cl [switchs] -i OLD-EXT [--] [programfile] [files]
 Usage: cl [switchs] -i OLD-EXT -e form [--] [files]
 "
-                                            ,(generate-help-message parsed-clauses)
-                                            "
+                                              ,help-messages
+                                              "
 If neither programfile, -e (--eval) or -r (--repl) are specified,
 cl reads scripts from the standard input and then evaluate them.")
-                                    (setf (opt :help) t)
-                                    (exit)))))))
+                                      (setf (opt :help) t)
+                                      (exit))))))))
         (nreverse *hooks*)))))
 
 (defmacro parse-options (argv &body clauses)
