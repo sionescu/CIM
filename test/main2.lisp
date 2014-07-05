@@ -15,3 +15,10 @@
                     "--"
                     "scripts/ql_cmd_deps"
                     "--path" "quicklisp/")))))
+
+(test eval-with-incomplete-form
+  (is (string=
+       "ABABAP"
+       (with-stdout-to-string
+         (fresh-main (list "-e" "(princ"
+                           "-e" " :ababap)"))))))
