@@ -12,7 +12,7 @@
         (setf (fill-pointer seq) (read-sequence seq stream))
         seq)))
   :author "keens"
-  :license "LLGPL"
+  :license "BSD"
   :components ((:module "lib"
 			:serial t
 			:components
