@@ -40,10 +40,7 @@
                     (read echo)))))))))))
 
 (defun process-args (argv)
-  "Parse the args, stores the processing hooks into *hooks*.
-Hooks (zero-arg lambda) should be run later, individually.
-If some operations needs immediate execution while parsing,
-then write it directly here, not within hooks."
+  "Default argument processor in CIM."
   (parse-options argv
     ;;
     (("-c" "--compile") (file)

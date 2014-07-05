@@ -207,25 +207,29 @@ cl reads scripts from the standard input and then evaluate them.")
         (nreverse *hooks*)))))
 
 (defmacro parse-options (argv &body clauses)
-  "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
+  "PROCESS-ARGS ARGV -> NEW-ARGV, HOOKS
+
+Parse `ARGV' according to `CLAUSES' specifying the options and stores the
+processing hooks while parsing.  Returns the remaining argv after the processing.
+The secondary value is a list of hooks.
+
+The clauses should take the form
  ((options) (parameters)
-   \"docstring \"
-    body)
+  [docstring]
+  body)
 where
 `OPTIONS'    are either strings which start with \"-\" followed by a single
              character (short option) or \"--\" followed by string (long option).
 `PARAMETERS' are symbols which will be bound given arguments.
-`DOCSTRING'  is string which explain the option. This is used for `--help'.
+`DOCSTRING'  is a string which explain the option. This is used for `--help'.
 `BODY'       is evaluated as an implicit progn under the environment where
              `PARAMETERS' are bound to the values given in the command arguments.
 
 If \"--\" is found, immidiately exit from this macro.
 
-It returns two values, one is the rest of `ARGV' sans `--'.
-The secondary value is a list of hooks to be run later.
-Each hook is a zero-arg closure of `BODY' which stores the information
-of `PARAMETER'. Hooks are stored in the order the given options are specified.
-To actually process the arguments, users should call each closure.
+To store hooks, call (add-hook FN) within `CLAUSES', where FN is a
+ closure (zero-arg lambda) which should be run later, individually.  If some
+ operations needs immediate execution, then write it directly, not within hooks.
 
 You can override \"-h\" and \"--help\" to controll help message."
   (make-parse-options argv clauses))
