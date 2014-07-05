@@ -54,7 +54,8 @@
 
       ;; load the init script
       (unless (opt :no-init)
-        (load (cim_home "/init.lisp")))
+        (with-protected-package ()
+          (load (cim_home "/init.lisp"))))
 
       (let ((ext (opt :in-place-backup-extention)))
         (if ext (process-in-place ext hooks) (main-core hooks))))
