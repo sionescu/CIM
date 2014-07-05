@@ -72,3 +72,12 @@
 	   :with-handle-conditions
 	   :strf
            :repl))
+
+(defpackage cim.repl
+  (:use :cl)
+  (:import-from :cim.impl
+                :*history*
+                :print-prompt
+                :with-handle-conditions
+                :strf
+                :repl))
