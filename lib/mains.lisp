@@ -1,8 +1,12 @@
 
 (in-package :cim.impl)
 
-(define-condition repl-entered (condition)
-  ())
+(define-condition read-from-stdin (simple-warning)
+  ()
+  (:documentation "Signalled in order to tell the user that
+the implementation is not just freezed, rather waiting for some input.
+It might also be used by the testing scripts.")
+  (:report "~&Reading from stdin...~&"))
 
 (defun main-core (hooks)
   ;; run the stored hooks if any
@@ -14,7 +18,7 @@
     ((opt :eval)
      ;; then the command is:
      ;; cl ... -e "(dosomething)" -- [args]...
-     ;; then the options are already treated in #'main
+     ;; then the options are already treated
      ;; by (mapc #'funcall hooks)
      :already-treated)
     ((consp *argv*)
@@ -25,9 +29,12 @@
        (with-protected-package ()
          (shebang-load filename))))
     (t
-     (signal 'repl-entered)
+     (warn 'read-from-stdin)
      (with-protected-package ()
-       (loop (eval (read)))))))
+       (handler-case
+           (loop (eval (read)))
+         (end-of-file (c)
+           (declare (ignore c))))))))
 
 (defun process-in-place (ext hooks)
   (dolist (file (if (opt :eval) *argv* (cdr *argv*)))

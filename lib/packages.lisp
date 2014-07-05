@@ -42,7 +42,7 @@
            :main
            :main-core
            :process-in-place
-           :repl-entered
+           :read-from-stdin
 
            :process-args
 

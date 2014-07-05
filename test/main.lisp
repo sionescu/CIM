@@ -29,8 +29,14 @@
          (fresh-main (list "-e" "(princ :ababap)"))))))
 
 (test null
-  (signals repl-entered
-    (fresh-main nil)))
+  ;; read from stdin
+  (signals read-from-stdin
+    (fresh-main nil))
+  (is (string=
+       "1"
+       (with-stdout-to-string
+         (with-input-from-string (*standard-input* "(princ 1)")
+           (fresh-main nil))))))
 
 (test directory
   (is (string=
@@ -87,7 +93,7 @@
            (with-stdout-to-string
              (with-input-from-string (*standard-input* "")
                (fresh-main (list "-C" *test-root* "scripts/shebang.lisp"))))))
-    (repl-entered (c)
+    (read-from-stdin (c)
       (5am:fail "repl is entered, which is not expected to happen."))))
 
 (test verbose
