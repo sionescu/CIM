@@ -13,8 +13,6 @@
 
 (defun process-args (argv)
   (parse-options argv
-    ;; parse the args, stores the processing hooks into *hooks*.
-    ;; hooks (zero-arg lambda) should later be run individually.
     ;;
     (("-c" "--compile") (file)
      "compile FILE."
@@ -41,6 +39,10 @@ i.e. changes to the package is not saved among the processing.
 The default package can be modified via -p option.
 "
      (setf (opt :eval) t)
+  "Parse the args, stores the processing hooks into *hooks*.
+Hooks (zero-arg lambda) should be run later, individually.
+If some operations needs immediate execution while parsing,
+then write it directly here, not within hooks."
      (add-hook
       (lambda ()
         (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
@@ -101,7 +103,7 @@ so it is called in the same environment as -e option does."
           (use-package (string-upcase library))))))
 
     (("-r" "--repl") ()
-     "run repl"
+     "Run the REPL. The default package is affected by -p option."
      (setf (opt :repl) t))
 
     (("-q" "--no-init") ()
