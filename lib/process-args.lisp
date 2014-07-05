@@ -131,10 +131,15 @@ so it is called in the same environment as -e option does."
 
     (("-V") ()
      "Specify the verbosity while loading files.
-A fixnum verbosity value is stored in (opt :verbosity), if specified.
+A verbosity is a fixnum if specified. Otherwise it is NIL. It is stored in (opt :verbosity).
 If it is specified once, the value is 1.
-Using duplicate options (e.g. -vvv) increases the verbosity value.
-Otherwise it is NIL."
+Using duplicate options (e.g. -vvv) increases the verbosity value."
      (if (opt :verbosity)
          (incf (opt :verbosity))
-         (setf (opt :verbosity) 1)))))
+         (setf (opt :verbosity) 1)))
+
+    (("--verbose") (n)
+     "Specify the verbosity while loading files. Unlike -V, it specifies the verbosity directly."
+     (setf (opt :verbosity) n))))
+
+
