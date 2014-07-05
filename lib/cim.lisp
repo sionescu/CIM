@@ -1,28 +1,39 @@
 
 (in-package :cim.impl)
 
-(defun get-raw-argv ()
-  #+allegro  (cdr (system:command-line-arguments))
-  #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
-                (list var var))
-               ((or (null list)
-                    (string= (car list) "--"))
-                (return (cdr list))))
-  #+clisp ext:*args*
-  #+ecl (do*  ((var (si:command-args) (cdr list))
-               (list var var))
-              ((or (null list)
-                   (string= (car list) "--")) (return (cdr list))))
-  #+abcl extensions:*command-line-argument-list*
-  #+gcl (do*  ((var si::*command-args* (cdr list))
-               (list var var))
-              ((or (null list)
-                   (string= (car list) "--")) (return (cdr list))))
-  #+cmu ext:*command-line-words*
-  #+ccl ccl:*unprocessed-command-line-arguments*
-  #+lispworks system:*line-arguments-list*)
+(let (cache (first t))
+  (defun get-raw-argv ()
+    (if first
+        (setf first nil
+              cache
+              #+allegro  (cdr (system:command-line-arguments))
+              #+sbcl (do*  ((var sb-ext:*posix-argv* (cdr list))
+                            (list var var))
+                           ((or (null list)
+                                (string= (car list) "--"))
+                            (return (cdr list))))
+              #+clisp ext:*args*
+              #+ecl (do*  ((var (si:command-args) (cdr list))
+                           (list var var))
+                          ((or (null list)
+                               (string= (car list) "--")) (return (cdr list))))
+              #+abcl extensions:*command-line-argument-list*
+              #+gcl (do*  ((var si::*command-args* (cdr list))
+                           (list var var))
+                          ((or (null list)
+                               (string= (car list) "--")) (return (cdr list))))
+              #+cmu ext:*command-line-words*
+              #+ccl ccl:*unprocessed-command-line-arguments*
+              #+lispworks system:*line-arguments-list*)
+        cache)))
 
-(defvar *argv*)
+(defvar *argv* nil
+  "list of arguments after CIM's default handling procedure.")
+(define-symbol-macro *raw-argv* (copy-list (get-raw-argv)))
+
+(setf (documentation '*raw-argv* 'variable)
+      "Implementation-independent interface to the list of posix arguments.
+It is not processed by CIM, and always returns a fresh list.")
 
 (defun getenv (name &optional default)
   #+CMU
