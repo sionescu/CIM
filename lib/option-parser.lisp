@@ -42,6 +42,18 @@
            (subseq opt-string 1)
            opt-string)))
 
+(defun long-opt-value-p (opt-string)
+  "input: \"--cim\" result: NIL,NIL
+input: \"--cim=value\" result: \"value\",T
+input: \"--cim=\" result: NIL,T"
+  (and (long-opt-p opt-string)
+       (let ((pos (position #\= opt-string :test #'char=)))
+         (when pos
+           (let ((value (subseq opt-string (1+ pos))))
+             (if (plusp (length value))
+                 (values value t)
+                 (values nil t)))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; clauses
 

@@ -21,6 +21,7 @@
            :combined-opt-p
            :make-option
            :explode-combined-opts
+           :long-opt-value-p
 
            :parse-clause
            :clause-options

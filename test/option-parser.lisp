@@ -40,6 +40,23 @@
   (is (every #'string= (explode-combined-opts "-c") '("-c")))
   (is (every #'string= (explode-combined-opts "-cim") '("-c" "-i" "-m"))))
 
+(test long-opt-value-p
+  (multiple-value-bind (value value-p) (long-opt-value-p "--help=XXX")
+    (is-true value)
+    (is (string= "XXX" value))
+    (is-true value-p))
+  (multiple-value-bind (value value-p) (long-opt-value-p "--help")
+    (is-false value)
+    (is-false value-p))
+  (multiple-value-bind (value value-p) (long-opt-value-p "--help=")
+    (is-false value)
+    (is-true value-p))
+  (is-false (long-opt-value-p "-a"))
+  (is-false (long-opt-value-p "-avl"))
+  (is-false (long-opt-value-p "--"))
+  (is-false (long-opt-value-p "-"))
+  (is-false (long-opt-value-p "a-")))
+
 (test parse-clause
   ;; basic structure
   (finishes
