@@ -9,4 +9,4 @@
 ;; and with no-debug.lisp instead.
 ;; It affects the compilation of option-parser.
 
-(defvar *cim-option-match-verbose* t)
+(pushnew :cim-option-match-verbose *features*)

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sources="packages.lisp no-debug.lisp cim.lisp option-parser.lisp repl.lisp process-args.lisp mains.lisp run.lisp"
+sources="packages.lisp cim.lisp option-parser.lisp repl.lisp process-args.lisp mains.lisp run.lisp"
 
 run(){
     cat > script.lisp <<EOF
