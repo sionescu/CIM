@@ -20,23 +20,24 @@
 (defparameter *eval-stream* (make-string-input-stream ""))
 (defun make-eval-closure (string)
   (lambda ()
-    (with-protected-package ()
-      (with-input-from-string (s string)
-        (let ((in (make-concatenated-stream *eval-stream* s)))
-          (loop
-             (eval
-              (let* ((read (make-string-output-stream))
-                     (echo (make-echo-stream in read)))
-                ;; The characters which are read from `in' are
-                ;; automatically copied to the stream `read'
-                (handler-bind ((end-of-file
-                                (lambda (c)
-                                  (declare (ignore c))
-                                  (setf *eval-stream*
-                                        (make-string-input-stream
-                                         (get-output-stream-string read)))
-                                  (return-from make-eval-closure))))
-                  (read echo))))))))))
+    (block closure
+      (with-protected-package ()
+        (with-input-from-string (s string)
+          (let ((in (make-concatenated-stream *eval-stream* s)))
+            (loop
+               (eval
+                (let* ((read (make-string-output-stream))
+                       (echo (make-echo-stream in read)))
+                  ;; The characters which are read from `in' are
+                  ;; automatically copied to the stream `read'
+                  (handler-bind ((end-of-file
+                                  (lambda (c)
+                                    (declare (ignore c))
+                                    (setf *eval-stream*
+                                          (make-string-input-stream
+                                           (get-output-stream-string read)))
+                                    (return-from closure))))
+                    (read echo)))))))))))
 
 (defun process-args (argv)
   "Parse the args, stores the processing hooks into *hooks*.
