@@ -8,7 +8,9 @@
   ;; run the stored hooks if any
   (mapc #'funcall hooks)
   (cond
-    ((opt :repl) (repl))
+    ((opt :repl)
+     (with-protected-package ()
+       (repl)))
     ((opt :eval)
      ;; then the command is:
      ;; cl ... -e "(dosomething)" -- [args]...
@@ -20,10 +22,11 @@
      ;; cl ... -- X.lisp [args]...
      ;; and X.lisp is a shebang
      (destructuring-bind (filename . *argv*) *argv*
-       (shebang-load filename)))
+       (with-protected-package ()
+         (shebang-load filename))))
     (t
      (signal 'repl-entered)
-     (let ((*package* #.(find-package :common-lisp-user)))
+     (with-protected-package ()
        (loop (eval (read)))))))
 
 (defun process-in-place (ext hooks)

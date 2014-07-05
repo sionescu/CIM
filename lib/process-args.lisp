@@ -11,7 +11,38 @@
 
 ;; the stored closures should be manually executed afterwards.
 
+(defmacro with-protected-package ((&key) &body body)
+  ;; the package is protected and do not interfere the later evaluation
+  `(let ((*package* (or (opt :package)
+                        #.(find-package :common-lisp-user))))
+     ,@body))
+
+(defparameter *eval-stream* (make-string-input-stream ""))
+(defun make-eval-closure (string)
+  (lambda ()
+    (with-protected-package ()
+      (with-input-from-string (s string)
+        (let ((in (make-concatenated-stream *eval-stream* s)))
+          (loop
+             (eval
+              (let* ((read (make-string-output-stream))
+                     (echo (make-echo-stream in read)))
+                ;; The characters which are read from `in' are
+                ;; automatically copied to the stream `read'
+                (handler-bind ((end-of-file
+                                (lambda (c)
+                                  (declare (ignore c))
+                                  (setf *eval-stream*
+                                        (make-string-input-stream
+                                         (get-output-stream-string read)))
+                                  (return-from make-eval-closure))))
+                  (read echo))))))))))
+
 (defun process-args (argv)
+  "Parse the args, stores the processing hooks into *hooks*.
+Hooks (zero-arg lambda) should be run later, individually.
+If some operations needs immediate execution while parsing,
+then write it directly here, not within hooks."
   (parse-options argv
     ;;
     (("-c" "--compile") (file)
@@ -39,15 +70,8 @@ i.e. changes to the package is not saved among the processing.
 The default package can be modified via -p option.
 "
      (setf (opt :eval) t)
-  "Parse the args, stores the processing hooks into *hooks*.
-Hooks (zero-arg lambda) should be run later, individually.
-If some operations needs immediate execution while parsing,
-then write it directly here, not within hooks."
      (add-hook
-      (lambda ()
-        (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
-          ;; the package is protected and do not interfere the later evaluation
-          (eval (read-from-string sexp))))))
+      (make-eval-closure sexp)))
 
     (("-p" "--package") (package)
      "Modifies the default package, initially cl-user.
@@ -61,7 +85,7 @@ i.e. only the last -p is processed."
 The file is loaded under the default package specified by -p, defaulted to `cl-user'."
      (add-hook
       (lambda ()
-        (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
+        (with-protected-package ()
           (load (merge-pathnames file))))))
 
     (("-i") (ext)
@@ -99,7 +123,7 @@ so it is called in the same environment as -e option does."
      ;; use-package accepts string designator
      (add-hook
       (lambda ()
-        (let ((*package* (or (opt :package) #.(find-package :common-lisp-user))))
+        (with-protected-package ()
           (use-package (string-upcase library))))))
 
     (("-r" "--repl") ()
