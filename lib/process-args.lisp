@@ -146,7 +146,7 @@ so it is called in the same environment as -e option does."
 
     (("--no-rl") ()
      "do not use rlwrap. This is effective only when --repl is specified"
-     )
+     (setf (opt :no-rl) t))
 
     (("--no-right") ()
      "do not display right prompt. This is effective only when --repl is specified"
