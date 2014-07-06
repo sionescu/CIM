@@ -52,4 +52,4 @@ test%.out: test%.sh run-test.sh loader all
 	./run-test.sh $< | tee $@
 
 clean:
-	rm *.out
+	rm -r .cache *.out
