@@ -89,7 +89,10 @@ input: \"--cim=\" result: NIL,T"
                                                     (combined-opt-p o)))
                                     options)
             :lambda-list lambda-list
-            :doc (if (stringp (car body)) (car body) "")
+            :doc (if (stringp (car body))
+                     ;; remove linefeed, rubout, newline etc.
+                     (remove-if-not #'graphic-char-p (car body))
+                     "")
             :body (if (stringp (car body)) (cdr body) body))))
 
 (defun clause-options (clause)
@@ -163,10 +166,21 @@ input: \"--cim=\" result: NIL,T"
          (max (reduce #'max titles :key #'length))
          (docs (mapcar #'clause-doc clauses)))
     (with-output-to-string (s)
-      (loop
-         for title in titles
-         for doc in docs
-         do (format s "~VA ~A~%" max title doc)))))
+      (pprint-logical-block (s nil)
+        (loop
+           for title in titles
+           for doc in docs
+           do
+             (pprint-tab :line 0 0 s)
+             (write-string title s)
+             (pprint-tab :line (1+ max) 0 s)
+             (loop for c of-type character across doc
+                do (write-char c s)
+                  (when (char= #\Space c)
+                    (pprint-newline :fill s)
+                    (pprint-tab :line (1+ max) 0 s)))
+             (pprint-newline :mandatory s)
+             (pprint-newline :mandatory s))))))
 
 ;; runtime dispatch
 
@@ -194,7 +208,7 @@ input: \"--cim=\" result: NIL,T"
                       (clause :short-options '("-h")
                               :long-options '("--help")
                               :doc "Print this help"
-                              :body `((format nil "~A~2%~A~%~A~%"
+                              :body `((format t "~A~2%~A~%~A~%"
                                               "
 Usage: cl [switchs-sans-e] [--] [programfile] [arguments]
 Usage: cl [switchs] -e form [--] [arguments]
