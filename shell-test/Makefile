@@ -9,7 +9,7 @@ head=$(shell git symbolic-ref HEAD --short)
 
 shunit2=shunit2-2.1.6
 
-all: cimtest/lib cimtest/scripts $(shell ls cimtest/init*)
+all: cimtest/lib cimtest/scripts cimtest/test $(shell ls cimtest/init*)
 
 cimtest:
 	mkdir -p cimtest
@@ -42,14 +42,36 @@ allclean:
 ################################################################
 #### test
 
+#  $(IMPL) might be ""
+
+ifndef IMPL
+	IMPL=sbcl-system
+endif
+
+$(info $(IMPL))
+
 test: all loader all_test_results
 
 all_test_results: testCL.out testInstallQuicklisp.out
 
-
-
 test%.out: test%.sh run-test.sh loader all
-	./run-test.sh $< | tee $@
+	./run-test.sh $< $(IMPL) | tee $@
 
 clean:
 	rm -rf .cache *.out
+
+################################################################
+#### alter the testing implementation
+
+sbcl:
+	IMPL=sbcl $(MAKE) test
+ccl:
+	IMPL=ccl $(MAKE) test
+clisp:
+	IMPL=clisp $(MAKE) test
+abcl:
+	IMPL=abcl $(MAKE) test
+ecl:
+	IMPL=ecl $(MAKE) test
+
+all_impls: sbcl ccl clisp abcl ecl
