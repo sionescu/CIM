@@ -56,9 +56,13 @@
      (add-hook
       (lambda ()
         (setf *default-pathname-defaults*
-              (if (char= #\/ (elt dir 0))
-                  (pathname dir)
-                  (merge-pathnames (pathname dir)))))))
+              (pathname-as-directory
+               (if (char= #\/ (elt dir 0))
+                   (pathname dir)
+                   (merge-pathnames
+                    (pathname dir)
+                    (pathname-as-directory
+                     *default-pathname-defaults*))))))))
 
     (("-d" "--debug") ()
      "set debugging flags (push :debug into *features*)"

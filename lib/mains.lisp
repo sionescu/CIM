@@ -57,7 +57,7 @@ It might also be used by the testing scripts.")
     ;; defaulting the current directory
     (if (equal *default-pathname-defaults* #p"")
         (setf *default-pathname-defaults*
-              (pathname (getenv "PWD"))))
+              (pathname-as-directory (pathname (getenv "PWD")))))
 
     ;; modify the verbosity
     (let ((*load-print* (>= (or (opt :verbosity) 0) 1))

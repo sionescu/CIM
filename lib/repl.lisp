@@ -125,6 +125,11 @@
 	(/) (//) (///)
 	;; previous values
 	(*) (**) (***))
+    (declare (ignorable +eof+ +bol+ +sexps+
+                        - -- ---
+                        + ++ +++
+                        / // ///
+                        * ** ***))
     (loop :for continue := nil :do
        (block iter
 	 (incf *history*)

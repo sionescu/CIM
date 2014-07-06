@@ -1,12 +1,18 @@
 #!/bin/bash
 
 source .bashrc
-export HOME=$(readlink -f ./)
-export CIM_HOME=cimtest/
+export HOME=$(readlink -f $(dirname $0))
+# export CIM_HOME=cimtest/
+
+cim info
 
 echorun(){
     echo $@
     $@
+}
+
+echocl(){
+    echorun cl $@
 }
 
 echorun rm -f cimtest/lib/script*
@@ -18,7 +24,7 @@ echo w/ quicklisp
 time {
 for i in {1..5}
 do
-    cl -e "(print $i)"
+    echocl -e "(print $i)"
 done
 }
 
@@ -26,16 +32,16 @@ echo w/o quicklisp with --no-init option
 time {
 for i in {1..5}
 do
-    cl --no-init -e "(print $i)"
+    echocl --no-init -e "(print $i)"
 done
 }
 
 echo w/o quicklisp, script.lisp compiled
-echorun cl --no-init -c "cimtest/lib/script.lisp" -Q
+echocl --no-init -c "cimtest/lib/script.lisp" -Q
 
 time {
 for i in {1..5}
 do
-    cl --no-init -e "(print $i)"
+    echocl --no-init -e "(print $i)"
 done
 }
