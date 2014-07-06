@@ -91,7 +91,7 @@ input: \"--cim=\" result: NIL,T"
             :lambda-list lambda-list
             :doc (if (stringp (car body))
                      ;; remove linefeed, rubout, newline etc.
-                     (remove-if-not #'graphic-char-p (car body))
+                     (substitute-if-not #\Space #'graphic-char-p (car body))
                      "")
             :body (if (stringp (car body)) (cdr body) body))))
 
