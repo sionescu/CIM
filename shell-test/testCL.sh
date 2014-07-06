@@ -41,5 +41,9 @@ testCIMASDF(){
     cl -C $(readlink -f ../)/ shell-test/testLispCIM.lisp
 }
 
+testCombined(){
+    cl -e '(defun fac (n) (if (<= n 1) 1 (* n (fac (1- n)))))' -L iterate -e '(iter (for i to 8) (print (fac i)))'
+}
+
 # loading shunit2.
 . loader
