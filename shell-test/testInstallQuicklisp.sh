@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ~/.bashrc
-./easy-update.sh # ensures the latest lib/ is used
-
 testDownloadQuicklisp(){
 
     . "$CIM_HOME/scripts/cim_utils"

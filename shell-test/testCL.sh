@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ~/.bashrc
-./easy-update.sh # ensures the latest lib/ is used
-
 # usage of shunit2 : 
 
 # write a function whose name start with 'test'.

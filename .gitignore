@@ -23,3 +23,7 @@ memo
 /scripts/GTAGS
 /scripts/TAGS
 *__tmp
+/shell-test/.bashrc
+/shell-test/*.out
+
+/shell-test/.subversion/*
