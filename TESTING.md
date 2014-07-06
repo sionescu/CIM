@@ -9,6 +9,8 @@ To test the lisp part, put CIM in somewhere asdf recognizes and evaluate:
 
 To test the shell-script part and its integration with lisp, run:
 
-    cd shell-test; make testImpl.out test
+    cd shell-test; make all_impls
+
+The test is exhaustive; it runs several tests on all implementations!
 
 Enjoy!
