@@ -37,7 +37,17 @@ for ARG;do
     esac
 done
 
-load_file="$CIM_HOME/lib/script.lisp"
+
+LISP_IMPL_SANS_DOT=$(echo $LISP_IMPL | sed -e "s/\./_/g")
+if [ -e "$CIM_HOME/lib/script.$LISP_IMPL_SANS_DOT" ]
+then
+    # for sbcl: complains if pathname-type contains any dots
+    load_file="$CIM_HOME/lib/script.$LISP_IMPL_SANS_DOT"
+    chmod a+x $load_file
+else
+    load_file="$CIM_HOME/lib/script.lisp"
+fi
+
 if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`__which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -q \" -r "
 fi

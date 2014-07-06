@@ -1,2 +1,3 @@
 #!/usr/bin/env cl --
+;;;; -*- mode : lisp -*-
 (ql:system-apropos (car *argv*))

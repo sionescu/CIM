@@ -1,0 +1,6 @@
+cimtest*
+shunit2*
+loader
+.quicklisp-path
+tmp/*
+.cache

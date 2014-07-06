@@ -22,9 +22,14 @@ To change install path, set `CIM_HOME`.
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
 
+
+## TESTING
+
+Too test CIM on your system, see [TESTING.md](TESTING.md)
+
 ## USAGE
 
-Most of commands are designed refering to rvm.
+Most commands are designed to be somewhat compatible with rvm.
 
 `cim help <command>` or `cim list <command>` will also help you.
 
@@ -65,35 +70,35 @@ SBCL 1.1.10
 ### Executing a lisp file
 Use `cl`.
 
-```
-$ cat hello.lisp
-#!/usr/bin/env cl
-(format t "Hello, CIM")
-$ cl hello.lisp
-Hello, CIM
-$ chmod +x hello.lisp
-$ ./hello.lisp
-Hello, CIM
-$ cl -h     # most of options are import of ruby's.
-Usage: cl [switchs] [--] [programfile] [argumensts]
 
--C DIR          set *default-pathname-defaults* DIR.
--d, --debug     set debugging flags (push :debug into *features*)
--e, --eval SEXP one line of script. Several -e's are allowed. Omit [programfile]
--f, --load FILE load the FILE
--i EXT          edit *argv* files in place and make backup with the extension .EXT
--l LIBRARY      quickload the LIBRARY
--L LIBRARY      quickload and use-package the LIBRARY
--r, --repl      run repl
--q, --no-init   do not load $CIM_HOME/init.lisp
---no-rl         do not use rlwrap. This is effective only when --repl is specified
---no-right      do not display right prompt. This is effective only when --repl is specified
---no-color      do not use color. This is effective only when --repl is specified
--h, --help      print this help
--v, --version   print the version
+    $ cat hello.lisp
+    #!/usr/bin/env cl
+    (format t "Hello, CIM")
+    $ cl hello.lisp
+    Hello, CIM
+    $ chmod +x hello.lisp
+    $ ./hello.lisp
+    Hello, CIM
+    $ cl -h     # most options are imported from ruby.
+    Usage: cl [switchs] [--] [programfile] [arguments]
+ 
+    -C DIR          set *default-pathname-defaults* DIR.
+    -d, --debug     set debugging flags (push :debug into *features*)
+    -e, --eval SEXP one line of script. Several -e's are allowed. Omit [programfile]
+    -f, --load FILE load the FILE
+    -i EXT          edit *argv* files in place and make backup with the extension .EXT
+    -l LIBRARY      quickload the LIBRARY
+    -L LIBRARY      quickload and use-package the LIBRARY
+    -r, --repl      run repl
+    -q, --no-init   do not load $CIM_HOME/init.lisp
+    --no-rl         do not use rlwrap. This is effective only when --repl is specified
+    --no-right      do not display right prompt. This is effective only when --repl is specified
+    --no-color      do not use color. This is effective only when --repl is specified
+    -h, --help      print this help
+    -v, --version   print the version
 
-If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them.
-```
+    If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them.
+
 
 ### Running REPL
 Use `cl` with `--repl` or `-r` in short.
@@ -146,20 +151,18 @@ Evaluation took:
 ### Managing lisp systems
 Use `ql`.
 
-```
-$ ql install alexandria # alias of quickload
-$ ql search xml         # alias of system-apropos
-$ ql update             # alias of update-all-dists
-$ ql update client      # update quicklisp itself.
-$ ql list remote
-
-<many systems>
-
-$ ql list local
-alexandria
-$ ql deps --path ./quicklisp myapp.asd
-# myapp dependencies are installed to ./quicklisp.
-```
+    $ ql install alexandria # alias of quickload
+    $ ql search xml         # alias of system-apropos
+    $ ql update             # alias of update-all-dists
+    $ ql update client      # update quicklisp itself.
+    $ ql list remote
+    ...
+    <many systems>
+    ...
+    $ ql list local
+    alexandria
+    $ ql deps --path ./quicklisp myapp.asd
+    # myapp dependencies are installed to ./quicklisp.
 
 ### Upgrading cim itself
 Use `cim get`.

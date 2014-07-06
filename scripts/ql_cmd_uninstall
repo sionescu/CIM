@@ -1,3 +1,4 @@
 #!/usr/bin/env cl --
+;;;; -*- mode : lisp -*-
 (dolist (sys *argv*)
   (ql:uninstall sys))

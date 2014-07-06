@@ -1,92 +1,254 @@
-(defmacro parse-options (argv &rest clauses)
-  "Parse `ARGV' follwoing `CLAUSES'. The clauses should be
-((options) (parameters)
-  \"docstring \"
-   body)
-where
-`OPTIONS' are strings which start with \"-\" followed by single char (shot option) or \"--\" followed by string (long option).
-`PARAMETERS' are symbols which will be bound given arguments.
-`DOCSTRING' is string which explain the option. This is used for `--help'.
-`BODY' is forms doing with `PARAMETERS'.
-If \"--\" is found, immidiately exit from this macro.
-The return value is the rest of `ARGV'.
-You can access to the variable `GENERATED-HELP' which contains help string.
-Example:
-(defvar foo)
-(parse-options *argv*
-  ((\"--foo\" \"-f\") ()
-   \"set foo\"
-   (setf foo t))
-  ((\"--bar\") (arg)
-   \"do something with `ARG'\"
-   (do-something-with arg)))
+(in-package :cim.impl)
 
-The predefined option is
-((\"-h\" \"--help\") ()
-\"\"
- (write-string generated-help)
- (return)).
-You can override \"-h\" and \"--help\" to controll help printing.
- "
-  (let ((long-cond ()) (short-case ())
-	(helpgiven nil) (help ()) (help-max 0)
-	(generated-help "")
-	(argv-sym (gensym "argv"))
-	(param (gensym "param"))
-	(flags (gensym "flags"))
-	(flag (gensym "flag")))
-    (flet ((short-opt-p (opt)
-	     (and (= (length opt) 2) (char= (aref opt 0) #\-) (char/= (aref opt 1) #\-)))
-	   (long-opt-p (opt)
-	     (and (> (length opt) 2) (string= opt "--" :end1 2))))
-      (loop :for (opts lambda-list doc . proc) :in clauses :do
-	 (let ((short ())
-	       (lprocess `(let* ,(loop :for p :in lambda-list :collect `(,p (pop ,argv-sym)))
-			    ,@proc))
-	       (sprocess `(let* ,(loop :for p :in lambda-list :collect `(,p (if ,flags
-										(prog1
-										    (coerce ,flags 'string)
-										  (setf ,flags nil))
-										(pop ,argv-sym))))
-			    ,@proc)))
-	   (push (list (format nil "~{~A~^, ~} ~{~A~^ ~}" opts lambda-list) doc) help)
-	   (setf help-max (max help-max (length (caar help))))
-	   (loop :for opt :in opts :do
-	      (cond
-		((short-opt-p opt)
-		 (push (aref opt 1) short)
-		 (when (string= opt "-h") (setf helpgiven t)))
-		((long-opt-p opt)
-		 (push `((string= ,param ,opt) ,lprocess ) long-cond)
-		 (when (string= opt "--help")  (setf helpgiven t)))))
-	   (when short (push (list short sprocess) short-case))))
-      (setf generated-help
-	    (with-output-to-string (str)
-	      (loop :for (opt doc) :in (nreverse help) :do
-		 (format str "~VA ~A~%" help-max opt doc))))
-      `(let ((,argv-sym ,argv)
-	     (generated-help ,generated-help))
-	 (do ((,param (pop ,argv-sym) (pop ,argv-sym))) (nil)
-	   (cond
-	     ((string= "--" ,param) (return ,argv-sym))
-	     ,@(nreverse long-cond)
-	     ,(if helpgiven
-		  '(nil nil)
-		  `((string= "--help" ,param)
-		    (write-string generated-help)
-		    (return)))
-	     ,(if
-	       short-case
-	       `((and (>= (length ,param) 2) (char= (aref ,param 0) #\-) (char/= (aref ,param 1) #\-))
-		 (let ((,flags (cdr (coerce ,param 'list))))
-		   (do ((,flag (pop ,flags) (pop ,flags))) (nil)
-		     (case ,flag
-		       ,@(nreverse short-case)
-		       ,(if helpgiven
-			    '(nil nil)
-			    `((#\h)
-			      (write-string generated-help)
-			      (return))))
-		     (unless ,flags (return-from nil)))))
-	       '(nil nil))
-	     (t (push ,param ,argv-sym) (return ,argv-sym))))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; predicates and options
+
+(defun short-opt-p (opt-string)
+  "input: \"-c\" result: t"
+  (and (= (length opt-string) 2)
+       (char= (aref opt-string 0) #\-)
+       (char/= (aref opt-string 1) #\-)))
+
+(defun long-opt-p (opt-string)
+  "input: \"--cim\" result: t"
+  (and (> (length opt-string) 2)
+       (string= opt-string "--" :end1 2)))
+
+(defun combined-opt-p (opt-string)
+  "input: \"-cim\" result: t"
+  (and (> (length opt-string) 2)
+       (char= (aref opt-string 0) #\-)
+       (char/= (aref opt-string 1) #\-)))
+
+(defun make-option (string-or-char &optional long)
+  "returns a new option string such as \"-c\" from the input #\c or \"c\"."
+  (symbol-macrolet ((sc string-or-char))
+    (if long
+        (concatenate 'string "--" (string sc))
+        (typecase sc
+          (string
+           (assert (= (length sc) 1))
+           (concatenate 'string "-" sc))
+          (character
+           (let ((s (make-string 2)))
+             (setf (aref s 0) #\-)
+             (setf (aref s 1) sc)
+             s))))))
+
+(defun explode-combined-opts (opt-string)
+  "returns a list of short options like '(\"-c\" \"-i\" \"-m\") from \"-cim\" or \"cim\""
+  (map 'list #'make-option
+       (if (char= #\- (aref opt-string 0))
+           (subseq opt-string 1)
+           opt-string)))
+
+(defun long-opt-value-p (opt-string)
+  "input: \"--cim\" result: NIL,NIL
+input: \"--cim=value\" result: \"value\",T
+input: \"--cim=\" result: NIL,T"
+  (and (long-opt-p opt-string)
+       (let ((pos (position #\= opt-string :test #'char=)))
+         (when pos
+           (let ((value (subseq opt-string (1+ pos))))
+             (if (plusp (length value))
+                 (values value t)
+                 (values nil t)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; clauses
+
+(defstruct (clause (:constructor clause))
+  (long-options nil :type list)
+  (short-options nil :type list)
+  (aux-options nil :type list)
+  (lambda-list nil :type list)
+  (doc "" :type string)
+  (body nil :type list))
+
+(defun parse-clause (clause)
+  (destructuring-bind (options lambda-list . body) clause
+    (dolist (designator '(&rest &optional &key &allow-other-keys
+                          &aux &body &whole &environment))
+      (assert (not (member designator lambda-list)) (lambda-list)
+              "option lambda-list should not contain ~a." designator))
+    (assert (notany #'combined-opt-p options) (options)
+            "option specification in the definition do not accept combined short options. ~% ~a." options)
+    (clause :long-options (remove-if-not #'long-opt-p options)
+            :short-options (reduce (lambda (o prev)
+                                     (cond ((short-opt-p o) (cons o prev))
+                                           ((combined-opt-p o)
+                                            ;; here, prev is always a fresh value, so it is safe to use nconc
+                                            (nconc (remove-duplicates
+                                                    (explode-combined-opts o)
+                                                    :test #'string=)
+                                                   prev))
+                                           (t prev)))
+                                   options :from-end t :initial-value nil)
+            :aux-options (remove-if (lambda (o) (or (long-opt-p o)
+                                                    (short-opt-p o)
+                                                    (combined-opt-p o)))
+                                    options)
+            :lambda-list lambda-list
+            :doc (if (stringp (car body))
+                     ;; remove linefeed, rubout, newline etc.
+                     (substitute-if-not #\Space #'graphic-char-p (car body))
+                     "")
+            :body (if (stringp (car body)) (cdr body) body))))
+
+(defun clause-options (clause)
+  (append (clause-long-options clause)
+          (clause-short-options clause)
+          (clause-aux-options clause)))
+
+(defun clause-help-title (clause)
+  (format nil "~{~A~^, ~} ~{~A~^ ~}"
+          (clause-options clause)
+          (clause-lambda-list clause)))
+
+;; dispatcher compilation
+
+(defun clause-flag-match-condition (flag-var clause)
+  (assert (symbolp flag-var) nil)
+  `(or ,@(mapcar (lambda (opt) `(string= ,opt ,flag-var)) (clause-options clause))))
+
+(defvar *hooks* nil)
+(defun add-hook (fn) (push fn *hooks*))
+(defun make-dispatcher-function (clauses)
+  (let ((head (gensym "HEAD"))
+        (rest (gensym "REST"))
+        (crest (gensym "CREST")))
+  `(lambda (,head &rest ,rest)
+     (block nil
+       (cond
+         ((combined-opt-p ,head)
+          #+CIM-OPTION-MATCH-VERBOSE
+          (format *trace-output*
+                  "~&In make-dispatcher-function: Found a combined option ~a. ~
+                             Explode it into ~a and continue.~&"
+                  ,head
+                  (explode-combined-opts ,head))
+          (values (nconc (explode-combined-opts ,head) ,rest) t))
+         ((string= ,head "--")
+          #+CIM-OPTION-MATCH-VERBOSE
+          (format *trace-output*
+                  "~&In make-dispatcher-function: Found a option terminater --. ~
+                             All options are processed. remaining: ~a~&"
+                  ,rest)
+          (values ,rest nil))
+         ,@(mapcar
+            (lambda (c)
+              `(,(clause-flag-match-condition head c)
+                 ,(if (clause-lambda-list c)
+                      `(destructuring-bind (,@(clause-lambda-list c) . ,crest) ,rest
+                         #+CIM-OPTION-MATCH-VERBOSE
+                         (format *trace-output*
+                                 "~&In make-dispatcher-function: Option ~a : ~:@{~a=~a~^, ~}~&"
+                                 ',(clause-options c)
+                                 ,@(mapcar (lambda (sym) `(list ',sym ,sym))
+                                           (clause-lambda-list c)))
+                         ,@(clause-body c)
+                         (values ,crest t))
+                      `(progn
+                         ,@(clause-body c)
+                         (values ,rest t)))))
+            clauses)
+         (t
+          #+CIM-OPTION-MATCH-VERBOSE
+          (format *trace-output*
+                  "~&In make-dispatcher-function: All options processed. remaining: ~a~&"
+                  (cons ,head ,rest))
+          (values (cons ,head ,rest) nil)))))))
+
+;; help message aggregation
+
+(defun generate-help-message (clauses)
+  (let* ((titles (mapcar #'clause-help-title clauses))
+         (max (reduce #'max titles :key #'length))
+         (docs (mapcar #'clause-doc clauses)))
+    (with-output-to-string (s)
+      (pprint-logical-block (s nil)
+        (loop
+           for title in titles
+           for doc in docs
+           do
+             (pprint-tab :line 0 0 s)
+             (write-string title s)
+             (pprint-tab :line (1+ max) 0 s)
+             (loop for c of-type character across doc
+                do (write-char c s)
+                  (when (char= #\Space c)
+                    (pprint-newline :fill s)
+                    (pprint-tab :line (1+ max) 0 s)))
+             (pprint-newline :mandatory s)
+             (pprint-newline :mandatory s))))))
+
+;; runtime dispatch
+
+(defun %parse-options-rec (argv dispatcher)
+  (if (null argv)
+      nil
+      (multiple-value-bind (result dispatched-p) (apply dispatcher argv)
+        (if dispatched-p
+            (%parse-options-rec result dispatcher)
+            result))))
+
+(defun make-parse-options (argv clauses)
+  (let* ((parsed-clauses (mapcar #'parse-clause clauses))
+         (help-messages (generate-help-message parsed-clauses)))
+    `(let ((*hooks* nil))
+       (values
+        (%parse-options-rec
+         ,argv
+         (let ((generated-help ,help-messages))
+           (declare (ignorable generated-help))
+           ,(make-dispatcher-function
+             (append parsed-clauses
+                     (list
+                      ;; default help format
+                      (clause :short-options '("-h")
+                              :long-options '("--help")
+                              :doc "Print this help"
+                              :body `((format t "~A~2%~A~%~A~%"
+                                              "
+Usage: cl [switchs-sans-e] [--] [programfile] [arguments]
+Usage: cl [switchs] -e form [--] [arguments]
+Usage: cl [switchs] -i OLD-EXT [--] [programfile] [files]
+Usage: cl [switchs] -i OLD-EXT -e form [--] [files]
+"
+                                              ,help-messages
+                                              "
+If neither programfile, -e (--eval) or -r (--repl) are specified,
+cl reads scripts from the standard input and then evaluate them.")
+                                      (setf (opt :help) t)
+                                      (exit))))))))
+        (nreverse *hooks*)))))
+
+(defmacro parse-options (argv &body clauses)
+  "PROCESS-ARGS ARGV -> NEW-ARGV, HOOKS
+
+Parse `ARGV' according to `CLAUSES' specifying the options and stores the
+processing hooks while parsing.  Returns the remaining argv after the processing.
+The secondary value is a list of hooks.
+
+The clauses should take the form
+ ((options) (parameters)
+  [docstring]
+  body)
+where
+`OPTIONS'    are either strings which start with \"-\" followed by a single
+             character (short option) or \"--\" followed by string (long option).
+`PARAMETERS' are symbols which will be bound given arguments.
+`DOCSTRING'  is a string which explain the option. This is used for `--help'.
+`BODY'       is evaluated as an implicit progn under the environment where
+             `PARAMETERS' are bound to the values given in the command arguments.
+
+If \"--\" is found, immidiately exit from this macro.
+
+To store hooks, call (add-hook FN) within `CLAUSES', where FN is a
+ closure (zero-arg lambda) which should be run later, individually.  If some
+ operations needs immediate execution, then write it directly, not within hooks.
+
+You can override \"-h\" and \"--help\" to controll help message."
+  (make-parse-options argv clauses))
+
+

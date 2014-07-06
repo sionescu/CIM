@@ -1,0 +1,11 @@
+
+Test Dependency:
+
+1. internet connection (to install dependency)
+2. Make
+3. wget
+
+To run a test described in testXXX.sh, call
+
+make testXXX.out
+

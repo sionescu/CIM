@@ -1,4 +1,5 @@
 #!/usr/bin/env cl
+;;;; -*- mode : lisp -*-
 (in-package :cim)
 (if (string= (car *argv*) "client")
     (ql:update-client)

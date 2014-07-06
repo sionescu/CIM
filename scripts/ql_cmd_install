@@ -1,5 +1,5 @@
 #!/usr/bin/env cl --
+;;;; -*- mode : lisp -*-
 (in-package :cim)
-(if (car *argv*)
-    (dolist (sys *argv*)
-      (ql:quickload (intern sys))))
+(dolist (sys *argv*)
+  (ql:quickload sys))
