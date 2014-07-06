@@ -39,7 +39,6 @@ done
 
 
 LISP_IMPL_SANS_DOT=$(echo $LISP_IMPL | sed -e "s/\./_/g")
-echo $LISP_IMPL_SANS_DOT
 if [ -e "$CIM_HOME/lib/script.$LISP_IMPL_SANS_DOT" ]
 then
     # for sbcl: complains if pathname-type contains any dots
