@@ -27,3 +27,4 @@ memo
 /shell-test/*.out
 
 /shell-test/.subversion/*
+/system-index.txt
