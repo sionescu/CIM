@@ -52,7 +52,9 @@ $(info $(IMPL))
 
 test: all loader all_test_results
 
-all_test_results: testCL.out testInstallQuicklisp.out
+all_test_results: testCL.out
+
+testCL.out: testInstallQuicklisp.out
 
 test%.out: test%.sh run-test.sh loader all
 	./run-test.sh $< $(IMPL) | tee $@
