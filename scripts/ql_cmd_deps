@@ -13,7 +13,7 @@
 (setf *argv*
       (parse-options *argv*
         (("--path") (arg)
-         "Where quicklisp is."
+         "Specify the quicklisp repository."
          (setf path arg)
          (with-open-file (out quicklisp-path
                               :direction :output
@@ -34,7 +34,7 @@
       (load (cim_home "/lib/quicklisp.lisp"))
       (funcall (intern "INSTALL" :quicklisp-quickstart) :path path)))
 
-(if (car *argv*)
+(if (consp *argv*)
     (progn
       (push (pathname-as-directory (getenv "PWD")) asdf:*central-registry*)
       (ql:quickload (intern (car *argv*))))
