@@ -22,6 +22,11 @@ To change install path, set `CIM_HOME`.
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
 
+
+## TESTING
+
+Too test CIM on your system, see [TESTING.md](TESTING.md)
+
 ## USAGE
 
 Most commands are designed to be somewhat compatible with rvm.
