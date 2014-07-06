@@ -16,7 +16,7 @@ cimtest:
 	HOME=$(HOME) CIM_HOME=$(HOME)/cimtest CIM_INSTALL_BRANCH=$(head) /bin/sh ../scripts/cim_installer git ../
 
 ../lib:
-	rm ../lib/script.lisp
+	rm -f ../lib/script.lisp
 	cd ../lib ; ./build.sh
 
 cimtest/%: ../% cimtest
@@ -52,4 +52,4 @@ test%.out: test%.sh run-test.sh loader all
 	./run-test.sh $< | tee $@
 
 clean:
-	rm -r .cache *.out
+	rm -rf .cache *.out
