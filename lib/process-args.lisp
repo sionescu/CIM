@@ -44,15 +44,21 @@
   (parse-options argv
     ;;
     (("-c" "--compile") (file)
-     "compile FILE."
-     (compile-file file))
+     "compile FILE = `filename.lisp' and save it into `filename.$LISP_IMPL' ."
+     (add-hook
+      (lambda ()
+        (let ((p (pathname file)))
+          (let ((fasl (merge-pathnames (fasl-pathname p))))
+            (compile-file p :output-file fasl))))))
 
     (("-C") (dir)
      "set *default-pathname-defaults* to DIR."
-     (setf *default-pathname-defaults*
-           (if (char= #\/ (elt dir 0))
-               (pathname dir)
-               (merge-pathnames (pathname dir)))))
+     (add-hook
+      (lambda ()
+        (setf *default-pathname-defaults*
+              (if (char= #\/ (elt dir 0))
+                  (pathname dir)
+                  (merge-pathnames (pathname dir)))))))
 
     (("-d" "--debug") ()
      "set debugging flags (push :debug into *features*)"

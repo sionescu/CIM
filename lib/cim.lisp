@@ -36,6 +36,8 @@
 It is not processed by CIM, and always returns a fresh list.")
 
 (defun getenv (name &optional default)
+  "Returns the value of environment variable NAME if they present.
+Return NIL otherwise."
   #+CMU
   (let ((x (assoc name ext:*environment-list*
 		  :test #'string=)))
@@ -136,6 +138,14 @@ It is not processed by CIM, and always returns a fresh list.")
     (assert (probe-file (merge-pathnames new-path)) ()
             "path ~a does not exist" (merge-pathnames new-path))
     (load new-path)))
+
+(defun fasl-pathname (lispfile)
+  "Take a lisp file pathname and returns a fasl pathname whose
+extension is generated based on shell environmental variable LISP_IMPL.
+If LISP_IMPL is not present, use `fasl' instead."
+  (make-pathname :defaults lispfile
+                 :type (or (getenv "LISP_IMPL") "fasl")))
+
 
 ;; partly copied from @fukamachi 's shelly.util:terminate
 (defun exit (&optional (status 0))

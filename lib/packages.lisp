@@ -14,6 +14,7 @@
            :remove-shebang
            :shebang-load
            :shebang-p
+           :fasl-pathname
            :pathname-as-directory
 
            :short-opt-p

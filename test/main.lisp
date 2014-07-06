@@ -60,6 +60,32 @@
                       "-e" "nil") ;; specify the nonexistent value
                 )))
 
+(test compile
+  (let* ((lisp (merge-pathnames "scripts/compile.lisp" *test-root*))
+         (fasl (fasl-pathname lisp)))
+    (print lisp)
+    (print fasl)
+    (when (probe-file fasl)
+      (delete-file fasl))
+    (is-false (probe-file fasl))
+    (print lisp)
+    (print fasl)
+    (finishes
+      ;; compile successful no matter what value
+      ;; *default-pathname-defaults* is bound to.
+      (let ((*default-pathname-defaults* (pathname "/")))
+        (fresh-main (list "-C" *test-root*
+                          "-c" "scripts/compile.lisp"
+                          "-e" "nil"))))
+    (is-true (probe-file fasl)))
+
+  ;; file not found
+  (signals file-error
+    (fresh-main (list "-c" "no-such-file.lisp"
+                      "-e" "nil") ;; specify the nonexistent value
+                )))
+
+
 (test --terminating
   (is (string=
        "T"

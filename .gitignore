@@ -28,3 +28,4 @@ memo
 
 /shell-test/.subversion/*
 /system-index.txt
+*.fasl
