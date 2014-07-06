@@ -9,7 +9,7 @@ head=$(shell git symbolic-ref HEAD --short)
 
 shunit2=shunit2-2.1.6
 
-all: cimtest/lib cimtest/scripts
+all: cimtest/lib cimtest/scripts $(shell ls cimtest/init*)
 
 cimtest:
 	mkdir -p cimtest

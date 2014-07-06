@@ -186,6 +186,7 @@ input: \"--cim=\" result: NIL,T"
         (%parse-options-rec
          ,argv
          (let ((generated-help ,help-messages))
+           (declare (ignorable generated-help))
            ,(make-dispatcher-function
              (append parsed-clauses
                      (list
