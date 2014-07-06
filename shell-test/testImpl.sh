@@ -16,11 +16,11 @@ testInstallECL(){
 }
 
 testInstallAlisp(){
-    cim install alispecl
+    cim install alisp
 }
 
 testInstallClisp(){
-    cim install ecl
+    cim install clisp
 }
 
 testInstallGcl(){
