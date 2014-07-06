@@ -37,7 +37,15 @@ for ARG;do
     esac
 done
 
-load_file="$CIM_HOME/lib/script.lisp"
+
+if [ -e "$CIM_HOME/lib/script.$LISP_IMPL" ]
+then
+    load_file="$CIM_HOME/lib/script.$LISP_IMPL"
+    chmod a+x $load_file
+else
+    load_file="$CIM_HOME/lib/script.lisp"
+fi
+
 if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`__which rlwrap`;then
     rlwrap="$rlwrap -c -H $HOME/.lisp_history -i -q \" -r "
 fi
