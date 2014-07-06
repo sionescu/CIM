@@ -6,7 +6,9 @@
   (:documentation "Signalled in order to tell the user that
 the implementation is not just freezed, rather waiting for some input.
 It might also be used by the testing scripts.")
-  (:report "~&Reading from stdin...~&"))
+  (:report (lambda (c s)
+             (declare (ignore c))
+             (format s "~&Reading from stdin...~&"))))
 
 (defun main-core (hooks)
   ;; run the stored hooks if any
@@ -21,6 +23,8 @@ It might also be used by the testing scripts.")
      ;; then the options are already treated
      ;; by (mapc #'funcall hooks)
      :already-treated)
+    ((opt :quit)
+     (return-from main-core))
     ((consp *argv*)
      ;; then the command is:
      ;; cl ... -- X.lisp [args]...

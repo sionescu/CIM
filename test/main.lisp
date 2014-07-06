@@ -10,6 +10,10 @@
   `(with-output-to-string (*standard-output*)
      ,@body))
 
+(define-condition exit-condition (warning)
+  ()
+  (:report "exited!"))
+
 (defun fresh-main (argv)
   (let ((*options* (make-hash-table)))
     (let ((fdefinition (symbol-function 'exit)))
@@ -18,7 +22,7 @@
              (setf (symbol-function 'exit)
                    (lambda (&rest args)
                      (declare (ignore args))
-                     (warn "exited!")))
+                     (warn 'exit-condition)))
              (main 0 argv))
         (setf (symbol-function 'exit) fdefinition)))))
 
@@ -209,7 +213,7 @@
        (with-stdout-to-string
          (handler-case 
              (fresh-main (list "--version"))
-           (warning (c))))))
+           (exit-condition (c))))))
   (is (string=
        (with-open-file (stream (asdf:system-relative-pathname
                                 :cim
@@ -223,4 +227,11 @@
        (with-stdout-to-string
          (handler-case 
              (fresh-main (list "-v"))
-           (warning (c)))))))
+           (exit-condition (c)))))))
+
+(test quit
+  (signals exit-condition
+    (with-input-from-string (*standard-input*
+                             "(error \"This form should not be evaluated\")")
+      (fresh-main (list "-C" *test-root* "-Q")))))
+
