@@ -38,9 +38,12 @@ for ARG;do
 done
 
 
-if [ -e "$CIM_HOME/lib/script.$LISP_IMPL" ]
+LISP_IMPL_SANS_DOT=$(echo $LISP_IMPL | sed -e "s/\./_/g")
+echo $LISP_IMPL_SANS_DOT
+if [ -e "$CIM_HOME/lib/script.$LISP_IMPL_SANS_DOT" ]
 then
-    load_file="$CIM_HOME/lib/script.$LISP_IMPL"
+    # for sbcl: complains if pathname-type contains any dots
+    load_file="$CIM_HOME/lib/script.$LISP_IMPL_SANS_DOT"
     chmod a+x $load_file
 else
     load_file="$CIM_HOME/lib/script.lisp"

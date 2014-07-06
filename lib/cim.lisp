@@ -144,7 +144,9 @@ Return NIL otherwise."
 extension is generated based on shell environmental variable LISP_IMPL.
 If LISP_IMPL is not present, use `fasl' instead."
   (make-pathname :defaults lispfile
-                 :type (or (getenv "LISP_IMPL") "fasl")))
+                 :type (or (substitute #\_ #\. (getenv "LISP_IMPL")
+                                       :test #'char=)
+                           "fasl")))
 
 
 ;; partly copied from @fukamachi 's shelly.util:terminate
