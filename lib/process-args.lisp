@@ -112,21 +112,23 @@ For exammple, 'cl ... -i .old ... x.data' results in two files named
      (ensure-quicklisp)
      ;; speed does not matter.
      ;; ideally use of (intern ...) should be avoided.
-     (funcall (symbol-function
-               (read-from-string "ql:quickload"))
-              library))
+     (add-hook
+      (lambda ()
+        (funcall (symbol-function
+                  (read-from-string "ql:quickload"))
+                 library))))
 
     (("-L") (library)
      "quickload and use-package the LIBRARY.
 use-package is affected by -p,
 so it is called in the same environment as -e option does."
-     (ensure-quicklisp)
-     (funcall (symbol-function
-               (read-from-string "ql:quickload"))
-              library)
      ;; use-package accepts string designator
      (add-hook
       (lambda ()
+        (ensure-quicklisp)
+        (funcall (symbol-function
+                  (read-from-string "ql:quickload"))
+                 library)
         (with-protected-package ()
           (use-package (string-upcase library))))))
 
