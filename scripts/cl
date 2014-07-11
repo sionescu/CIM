@@ -23,13 +23,10 @@ for ARG;do
 	--repl) use_repl=true ;;
 	--no-rl) no_rl=true ;;
 	--debug) debug=true;;
-	--*)
-            while getopts :a: OPT "$ARG"; do
-                case "$OPT" in
-                    core) lisp_core_file=$OPTARG;;
-                esac
-            done
-            ;;
+	--core)
+	    lisp_core_file=$2
+	    shift 2
+	    ;;
 	-*)
 	    OPTIND=1
 	    while getopts :rd OPT "$ARG"; do
