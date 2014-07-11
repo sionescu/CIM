@@ -118,7 +118,7 @@
 			  (push `(progn
 				   (ensure-quicklisp)
 				   (funcall (intern "QUICKLOAD" :ql) ,sys)
-				   (use-package  ,sys))
+				   (use-package ,sys :cim))
 				sexps)))
 		       (("-r" "--repl") ()
 			"run repl"
