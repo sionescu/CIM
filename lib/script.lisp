@@ -167,7 +167,8 @@
 		    ((opt :repl)
 		     (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
 		    ((opt :sexp)
-		     (let ((+eof+ (gensym "eof")))
+		     (let ((+eof+ (gensym "eof"))
+               (*package* (find-package :cl)))
                        (with-input-from-string (in (opt :sexp))
                          (loop :for sexp := (read in nil +eof+)
                             :until (eq sexp +eof+) :do
