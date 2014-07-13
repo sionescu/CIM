@@ -19,11 +19,16 @@ if tput=`__which tput`;then
 fi
 
 for ARG;do
+    # if `use_core` is set
+    if ${use_core+:} false && ${lisp_core_file+false} true;then
+        lisp_core_file="$ARG"
+        continue
+    fi
     case "$ARG" in
 	--repl) use_repl=true ;;
 	--no-rl) no_rl=true ;;
-	--debug) debug=true ;;
-	--*) ;;
+	--debug) debug=true;;
+	--core) use_core=true ;;
 	-*)
 	    OPTIND=1
 	    while getopts :rd OPT "$ARG"; do
@@ -36,6 +41,10 @@ for ARG;do
 	    
     esac
 done
+if ${use_core+:} false && ${lisp_core_file+false} true;then
+    cim_error "You must specify core file"
+    exit 1
+fi
 
 load_file="$CIM_HOME/lib/script.lisp"
 if [ "$use_repl" = true ] && [ ! "$no_rl" = true ] && rlwrap=`__which rlwrap`;then
@@ -48,33 +57,32 @@ run_lisp(){
 
 case "$LISP_IMPL" in
     sbcl*)
-	run_lisp --noinform --no-sysinit --no-userinit --non-interactive --load "$load_file" -- "$@"
-	;;
+        run_lisp ${use_core+--core} ${use_core+"$lisp_core_file"} --noinform --no-sysinit --no-userinit --non-interactive --load "$load_file" -- "$@"
+        ;;
     clisp*)
-	run_lisp -norc --quiet --silent -on-error exit -i "$load_file" -- "$@"
-	;;
+        run_lisp ${use_core+-M} ${use_core+"$lisp_core_file"} -norc --quiet --silent -on-error exit -i "$load_file" -- "$@"
+        ;;
     ecl*)
-	run_lisp -norc -q -shell "$load_file" -- "$@"
-	;;
+        run_lisp -norc -q -shell "$load_file" -- "$@"
+        ;;
     ccl*)
-	run_lisp --no-init --quiet --batch --load "$load_file" -- "$@"
-	;;
+        run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} --no-init --quiet --batch --load "$load_file" -- "$@"
+        ;;
     gcl*)
-	run_lisp -batch -load "$load_file" -- "$@"
-	;;
+        run_lisp -batch -load "$load_file" -- "$@"
+        ;;
     abcl*)
-	run_lisp --noinform --noinit --nosystem --batch --load "$load_file" -- "$@"
-	;;
+        run_lisp --noinform --noinit --nosystem --batch --load "$load_file" -- "$@"
+        ;;
     alisp*)
-	run_lisp --qq -L "$load_file" --kill -- "$@"
-	;;
+        run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} --qq -L "$load_file" --kill -- "$@"
+        ;;
     "")
-	echo "\$LISP_IMPL is not set. Have you initialized cim?" >&2
-	exit 1
-	;;
+        echo "\$LISP_IMPL is not set. Have you initialized cim?" >&2
+        exit 1
+        ;;
     *)
-	echo "Unknown lisp implementation $LISP_IMPL. Exit." >&2
-	exit 1
-	;;
+        echo "Unknown lisp implementation $LISP_IMPL. Exit." >&2
+        exit 1
+        ;;
 esac
-
