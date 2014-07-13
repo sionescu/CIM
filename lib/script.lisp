@@ -146,7 +146,11 @@
 					     "If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them."))
 			(setf (opt :help) t))
 		       (("-v" "--version") ()
-			"print the version" (setf (opt :version) t))))
+			"print the version" (setf (opt :version) t))
+           (("--core") (file)
+            "use the specified core file"
+            (declare (ignore file))
+            nil)))
 
   (if (equal *default-pathname-defaults* #p"")
       (setf *default-pathname-defaults*
