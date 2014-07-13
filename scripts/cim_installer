@@ -36,6 +36,8 @@ gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_H
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
+# Now you can access all the cim's scripts
+
 for dir in bin config log impls src archives; do
     mkdir -p "$CIM_HOME/$dir"
 done
@@ -51,10 +53,10 @@ for executable in cl ql cim; do
     chmod u+x "$CIM_HOME/scripts/$executable"
 done
 
+. "$CIM_HOME/scripts/cim_utils"
+
+cim_aware_system_lisp
 for link in abcl alisp ccl clisp ecl gcl sbcl; do
-    rm -f "$CIM_HOME/bin/$link"
-    ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
-    chmod u+x "$CIM_HOME/scripts/$link"
     # if it is older system
     if [ -L "$CIM_HOME/bin/$link" ] &&
        ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1; then
@@ -64,7 +66,14 @@ for link in abcl alisp ccl clisp ecl gcl sbcl; do
 	    echo "$impl=$full_name" >> "$config"
 	done
     fi
+    chmod u+x "$CIM_HOME/scripts/$link"
+    rm -f "$CIM_HOME/bin/$link"
+    installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';' 2> /dev/null `
+    if [ -n "$installed" ];then
+        ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
+    fi
 done
+cim_register_all_impls
 
 if expr "$SHELL" : '.*csh' > /dev/null 2>&1; then
     rc="set CIM_HOME $CIM_HOME
