@@ -29,6 +29,7 @@ for ARG;do
 	--no-rl) no_rl=true ;;
 	--debug) debug=true;;
 	--core) use_core=true ;;
+        --*);;
 	-*)
 	    OPTIND=1
 	    while getopts :rd OPT "$ARG"; do
