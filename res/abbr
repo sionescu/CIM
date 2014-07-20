@@ -1,5 +1,4 @@
 clisp	GNU CLISP
-gcl	GNU Common Lisp
 ecl	Embeddable Common Lisp
 sbcl	Steel Bank Common Lisp
 ccl	Clozure CL

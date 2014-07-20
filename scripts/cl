@@ -69,9 +69,6 @@ case "$LISP_IMPL" in
     ccl*)
         run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} --no-init --quiet --batch --load "$load_file" -- "$@"
         ;;
-    gcl*)
-        run_lisp -batch -load "$load_file" -- "$@"
-        ;;
     abcl*)
         run_lisp --noinform --noinit --nosystem --batch --load "$load_file" -- "$@"
         ;;

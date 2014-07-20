@@ -1,6 +1,6 @@
 #!/bin/sh -
 CIM_UTILS=true
-impls="abcl alisp ccl clisp ecl gcl sbcl"
+impls="abcl alisp ccl clisp ecl sbcl"
 
 cim_black(){
     echo "[0;30m$@[0;39m"

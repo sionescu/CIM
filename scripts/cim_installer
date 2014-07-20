@@ -56,7 +56,7 @@ for executable in cl ql cim; do
 done
 
 cim_aware_system_lisp
-for link in abcl alisp ccl clisp ecl gcl sbcl; do
+for link in $impls; do
     chmod u+x "$CIM_HOME/scripts/$link"
     # if it is older system
     if [ -L "$CIM_HOME/bin/$link" ] &&

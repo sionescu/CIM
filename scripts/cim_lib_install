@@ -6,7 +6,6 @@
 __get_download_path(){
     case "$1" in
         clisp) echo "http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz" ;;
-        gcl) echo "ftp://ftp.gnu.org/pub/gnu/gcl/gcl-$2.tar.gz" ;;
         ecl) echo "http://downloads.sourceforge.net/project/ecls/ecls/${2%.*}/ecl-${2}.tgz" ;;
         abcl) echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz" ;;
         sbcl) echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2" ;;
@@ -142,13 +141,12 @@ __expand(){
         exit 1
     fi
     
-    if [ "$1" = gcl ] || [ "$1" = ccl ];then
+    if  [ "$1" = ccl ];then
         mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
     fi
 }
 __configure(){
     [ -n "$IN_RESUME" ] && rm -f "$CIM_HOME/src/$1-$2/src/confg.cache"
-    [ "$1" = "gcl" ]    && flags="$flags --enable-ansi --mandir=$CIM_HOME/share/man"
     [ "$1" = "ecl" ]    && flags="$flags --mandir=$CIM_HOME/share/man"
     [ "$1" = "clisp" ]  && flags="$flags --mandir=$CIM_HOME/share/man"
     cim_message "Configueing $1-$2"

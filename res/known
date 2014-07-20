@@ -3,11 +3,6 @@
 2	clisp	2.47
 3	clisp	2.48
 4	clisp	2.49	latest
-0	gcl	2.6.6
-1	gcl	2.6.7
-2	gcl	2.6.8
-3	gcl	2.6.9
-4	gcl	2.6.10	latest
 0	ecl	11.1.1
 1	ecl	12.2.1
 2	ecl	12.7.1

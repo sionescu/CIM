@@ -14,7 +14,7 @@ while [ $# -gt 0 ];do
     fi
     if [ -d "$CIM_HOME/impls/$target" ];then
 	case "$1" in
-	    ecl*|gcl*)
+	    ecl*)
 		(cd "$CIM_HOME/src/$target" && make clean)
 		;;
 	    clisp*)

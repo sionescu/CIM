@@ -21,7 +21,8 @@ if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
     exit 1
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
-for var in $abcl $alisp $ccl $clisp $ecl $gcl $sbcl;do
+for var in $impls;do
+    eval var=$var
     if [ "${var%-*}" = "$impl" ];then
 	echo "${var%-*}=$lisp_full_name"
     else

@@ -73,7 +73,7 @@ set -e
 set  --  `cim_split_impl_version "$target"` "$@"
 
 case "$target" in
-    clisp*|gcl*|ecl*)
+    clisp*|ecl*)
 	processes="$cim_install_full"
 	;;
     abcl*)
