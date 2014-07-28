@@ -1,6 +1,6 @@
 OS	Arch	URL
 Linux	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.58-x86-linux-binary.tar.bz2
-Linux	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.1-x86-64-linux-binary.tar.bz2
+Linux	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.2-x86-64-linux-binary.tar.bz2
 Linux	ppc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-powerpc-linux-binary.tar.bz2
 Linux	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-sparc-linux-binary.tar.bz2
 Linux	alpha	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.28-alpha-linux-binary.tar.bz2
