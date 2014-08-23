@@ -1,0 +1,11 @@
+#!/bin/sh
+
+SBCL_LATEST=1.2.2
+
+run_tests(){
+    . shunit2/src/shunit2 
+}
+
+cim_test_full_p(){
+    [ ! "${CIM_TEST_SHORT}" = true ]
+}
