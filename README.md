@@ -168,10 +168,14 @@ Currently, `cim get` fetch `master` branch.
 $ cim get
 ```
 
+## See Also
++ [snmsts/lsp](https://github.com/snmsts/lsp) : A project that aims to rewrite CIM with C to run everywhere including non-Unix platforms.
++ [fukamachi/qlot](https://github.com/fukamachi/qlot) : A project-local library installer using Quicklisp facility.
+
 ## License
 BSD
 
 ## Author
-Sunrim KIM
-Eitarow FUKAMACHI
-Syohei YOSHIDA
++ Sunrim KIM
++ Eitarow FUKAMACHI
++ Syohei YOSHIDA
