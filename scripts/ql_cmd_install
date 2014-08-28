@@ -2,4 +2,7 @@
 (in-package :cim)
 (if (car *argv*)
     (dolist (sys *argv*)
-      (ql::recursively-install sys)))
+      (handler-case
+          (ql::recursively-install sys)
+        (simple-error (e)
+          (format *error-output* "Failed to install ~A: ~A~%" sys e)))))
