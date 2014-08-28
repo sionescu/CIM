@@ -2,4 +2,4 @@
 (in-package :cim)
 (if (car *argv*)
     (dolist (sys *argv*)
-      (ql:quickload (intern sys))))
+      (ql::recursively-install sys)))
