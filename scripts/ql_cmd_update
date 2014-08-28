@@ -1,4 +1,4 @@
-#!/usr/bin/env cl
+;;
 (in-package :cim)
 (if (string= (car *argv*) "client")
     (ql:update-client)

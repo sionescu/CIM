@@ -1,4 +1,4 @@
-#!/usr/bin/env cl --
+;;
 (in-package :cim)
 (cond
   ((string= (car *argv*) "remote")

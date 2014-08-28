@@ -1,2 +1,2 @@
-#!/usr/bin/env cl --
+;;
 (ql:system-apropos (car *argv*))
