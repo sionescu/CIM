@@ -19,6 +19,19 @@ download(){
 fi
 }
 
+download_from_git(){
+    git archive --remote "$1" -o "$2" --prefix="CIM-$CIM_INSTALL_BRANCH/" "$CIM_INSTALL_BRANCH"
+}
+
+show_news(){
+    if ! diff -q "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old" > /dev/null 2>&1; then
+        echo "NEWS: "
+        diff -LTYPE-line-format="%<" "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old" | sed '1d;s/^< /  /'
+        echo "--"
+        rm  "$CIM_HOME/NEWS.old"
+    fi
+}
+
 mkdir -p "$CIM_HOME/tmp"
 lockfile="$CIM_HOME/tmp/installer.lock"
 if [ -e "$lockfile" ]; then
@@ -29,10 +42,20 @@ else
     trap "exit 1" HUP INT PIPE QUIT TERM
     trap "rm -f $lockfile" EXIT
 fi
-rm -rf "CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
-download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
-# :FIXME: check checksum
-gzip -cd  "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" | tar xf - -C "$CIM_HOME/tmp/"
+
+rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
+touch "$CIM_HOME/NEWS"
+mv "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old"
+if [  $# -ne 0 ];then
+      archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar"
+      download_from_git "$1" "$archive" ;
+      tar xf "$archive" -C "$CIM_HOME/tmp/"
+else
+     archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+     download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$archive"
+     # :FIXME: check checksum
+     gzip -cd "$archive" | tar xf - -C "$CIM_HOME/tmp/"
+fi
 cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
 rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
 
@@ -128,6 +151,8 @@ echo
 
 if [ "$CIM_HAS_INSTALLED" = "true" ];then
     echo "Install done. Thank you for using cim."
+    echo
+    show_news
 else
     echo "Install done. Please reload your *rc file. Enjoy your Lisp life."
 fi
