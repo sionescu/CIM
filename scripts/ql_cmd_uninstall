@@ -1,3 +1,4 @@
 ;; -*- mode: common-lisp -*-
+(in-package :cim)
 (dolist (sys *argv*)
   (ql:uninstall sys))
