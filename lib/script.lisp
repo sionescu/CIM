@@ -2,9 +2,11 @@
 (defpackage cim
   (:use :CL)
   (:export :*argv*
+           :*interrupt-condition*
            :getenv
            :parse-options
-           :opt))
+           :opt
+           :exit))
 (in-package :cim)
 (defvar *raw-argv*
   #+allegro  (cdr (system:command-line-arguments))
@@ -31,6 +33,7 @@
     (if x (cdr x) default))
   #-CMU
   (or
+   #+abcl (java:jstatic "getenv" "java.lang.System" name)
    #+allegro (sys:getenv name)
    #+clisp (ext:getenv name)
    #+ccl (ccl:getenv name)
@@ -38,7 +41,6 @@
    #+gcl (si::getenv name)
    #+sbcl (sb-unix::posix-getenv name)
    #+lispworks (lispworks:environment-variable name)
-   #+abcl (java:jstatic "getenv" "java.lang.System" name)
    default))
 
 (defun cim_home (path)
@@ -48,6 +50,15 @@
 
 (defvar *help*)
 (defvar *options* (make-hash-table))
+
+(defvar *interrupt-condition*
+  ;; It seems abcl does not raise any conditions
+  #+allegro 'excl:interrupt-signal
+  #+ccl 'ccl:interrupt-signal-condition
+  #+clisp 'system::simple-interrupt-condition
+  #+ecl 'ext:interactive-interrupt
+  #+sbcl 'sb-sys:interactive-interrupt
+  #-(or allegro ccl clisp ecl sbcl) 'no-conditon-known)
 (setf *load-verbose* nil)
 
 (let ((v))
@@ -163,31 +174,35 @@
     (t
      (unless (opt :no-init) (load (cim_home "/init.lisp") :verbose nil :print nil))
      (in-package :cl)
-     (dolist (sexp (nreverse cim::sexps)) 
-       (eval sexp))
+     (handler-case
+      (dolist (sexp (nreverse cim::sexps)) 
+        (eval sexp))
+       (#.*interrupt-condition* () (exit)))
      (in-package :cim)
      (macrolet ((main ()
-                  '(cond
-                    ((opt :repl)
-                     (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
-                    ((opt :sexp)
-                     (let ((+eof+ (gensym "eof"))
-                           (*package* (find-package :cl)))
-                       (with-input-from-string (in (opt :sexp))
-                         (loop :for sexp := (read in nil +eof+)
+                  '(handler-case
+                    (cond
+                      ((opt :repl)
+                       (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
+                      ((opt :sexp)
+                       (let ((+eof+ (gensym "eof"))
+                             (*package* (find-package :cl)))
+                         (with-input-from-string (in (opt :sexp))
+                           (loop :for sexp := (read in nil +eof+)
+                              :until (eq sexp +eof+) :do
+                              (eval sexp)))))
+                      ((car *argv*)
+                       (let ((*load-print* nil))
+                         (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
+                               :verbose nil :print nil)))
+                      (t
+                       (let ((+eof+ (gensym "eof"))
+                             (*package* (find-package :cl)))
+                         (loop
+                            :for sexp := (read *standard-input* nil +eof+)
                             :until (eq sexp +eof+) :do
                             (eval sexp)))))
-                    ((car *argv*)
-                     (let ((*load-print* nil))
-                       (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
-                             :verbose nil :print nil)))
-                    (t
-                     (let ((+eof+ (gensym "eof"))
-                           (*package* (find-package :cl)))
-                       (loop
-                          :for sexp := (read *standard-input* nil +eof+)
-                          :until (eq sexp +eof+) :do
-                          (eval sexp)))))))
+                    (#.*interrupt-condition* () (exit)))))
        (if (opt :extension)
            (let ((files (if (and (not (opt :sexp)) *argv*)
                             (cdr *argv*)

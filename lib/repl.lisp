@@ -15,8 +15,8 @@
   (let ((str (gensym "strings")))
     `(defun ,name (&rest ,str)
        (apply #'concatenate
-		(append '(string)
-		 (list ,(if (opt :no-color) "" before)) ,str (list ,(if (opt :no-color) "" after)))))))
+              (append '(string)
+                      (list ,(if (opt :no-color) "" before)) ,str (list ,(if (opt :no-color) "" after)))))))
 
 (defmacro make-colors ((name before after) &rest clauses)
   `(progn
@@ -59,20 +59,31 @@
 	  (if (null list)
 	      (return (coerce (nreverse result) 'string)))))))
 
+(defun handle-interrupt (condition)
+  (declare (ignore condition))
+  (format *error-output* "~%~A" (red "Interrupt from keybord"))
+  (format *error-output* "~&~A~%" (red "If you want to quit, type 'exit', 'quit', '(exit)', '(quit)', or Ctrl-D"))
+  (force-output *error-output*))
+
 (defun handle-condition (condition)
   (format *error-output*
-	  (str " *~A*~%~A~%")
+	  (str "~& *~A*~%~A~%")
 	  (red (bright (format nil "~A" (class-name (class-of condition)))))
 	  (red (bright (format nil "~A" condition))))
-  (if (string= (class-name (class-of condition)) "INTERACTIVE-INTERRUPT")
-      (format *error-output* "~&~A~%" (red "If you want to quit, type 'exit', 'quit', '(exit)', '(quit)', or Ctrl-D")))
   (force-output *error-output*))
 
 (defmacro with-handle-conditions (&body body)
   `(handler-case
-       (progn ,@body)
-     (condition (c)
-       (handle-condition c))))
+       #-ccl(progn
+              ,@body)
+       #+ccl (let ((ccl:*break-hook* (lambda (condition hook)
+                                       (declare (ignore hook))
+                                       (error condition))))
+               ,@body)
+       (#.*interrupt-condition* (c)
+         (handle-interrupt c))
+       (condition (c)
+         (handle-condition c))))
 
 (defvar *history* 0)
 (defvar *prompt-before* "")
@@ -127,37 +138,37 @@
 	 (cim.repl:with-handle-conditions
 	     ;; repeat until sexps complete. 
 	     (loop :named reader :with form
-		:for input := (read-line *standard-input* nil +eof+) :do
-		(cond
-		  ;; if input is null, go next prompt
-		  ((and (equal input "")  (not continue)) (return-from iter))
-		  ;; if ^D is signaled, exit
-		  ((eq input +eof+) (return-from repl))
-		  (t
-		   (cim.repl:strf form (format nil "~%") input)
-		   (handler-case
-		       ;; repeat over the input sexps
-		       (loop :with in := (make-string-input-stream form)
-			  :for sexp := (read in nil +bol+)
-			  :until (eq sexp +bol+) :collect sexp :into sexps
-			  :finally (return-from reader (setf +sexps+ sexps)))
-		     ;; input was incomplete
-		     (END-OF-FILE ()
-		       (setf continue t)
-		       (cim.repl:print-prompt *query-io* :continuep t))))))
-	   ;; eval part
-	   (when (member + '((quit) quit (exit) exit (bye)) :test (function equal))
-	     (return-from repl))
-	   (format *standard-output* "~A"
-		   (cim.repl::yellow
-		    (with-output-to-string (*standard-output*)
-		      (setf /// //  // /  / (loop :for sexp :in +sexps+ :append
-						 (multiple-value-list (eval sexp))))
-		      (setf *** **  ** *  * (first /))
-		      (setf --- --  -- -  - +sexps+)
-		      (setf +++ ++  ++ +  + (first -)))))
-	   (force-output)
-	   ;; print part
-	   (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
+                :for input := (read-line *standard-input* nil +eof+) :do
+                (cond
+                  ;; if input is null, go next prompt
+                  ((and (equal input "")  (not continue)) (return-from iter))
+                  ;; if ^D is signaled, exit
+                  ((eq input +eof+) (return-from repl))
+                  (t
+                   (cim.repl:strf form (format nil "~%") input)
+                   (handler-case
+                       ;; repeat over the input sexps
+                       (loop :with in := (make-string-input-stream form)
+                          :for sexp := (read in nil +bol+)
+                          :until (eq sexp +bol+) :collect sexp :into sexps
+                          :finally (return-from reader (setf +sexps+ sexps)))
+                     ;; input was incomplete
+                     (END-OF-FILE ()
+                       (setf continue t)
+                       (cim.repl:print-prompt *query-io* :continuep t))))))
+           ;; eval part
+           (when (member + '((quit) quit (exit) exit (bye)) :test (function equal))
+             (return-from repl))
+           (format *standard-output* "~A"
+                   (cim.repl::yellow
+                    (with-output-to-string (*standard-output*)
+                      (setf /// //  // /  / (loop :for sexp :in +sexps+ :append
+                                               (multiple-value-list (eval sexp))))
+                      (setf *** **  ** *  * (first /))
+                      (setf --- --  -- -  - +sexps+)
+                      (setf +++ ++  ++ +  + (first -)))))
+           (force-output)
+           ;; print part
+           (format *error-output* (cim.repl::green "~{~#[; No value~:;;=> ~@{~S~^~&;   ~}~]~:}~%") / )
 	   (force-output *error-output*))))))
 (repl)
