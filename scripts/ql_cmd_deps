@@ -1,4 +1,4 @@
-;;
+;;  -*- mode: common-lisp -*-
 (in-package :cim)
 (defvar quicklisp-path ".quicklisp-path")
 (defvar setup "")

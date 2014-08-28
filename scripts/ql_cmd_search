@@ -1,2 +1,2 @@
-;;
+;; -*- mode: common-lisp -*-
 (ql:system-apropos (car *argv*))
