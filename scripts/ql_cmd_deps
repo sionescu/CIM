@@ -18,8 +18,7 @@
 			    (write-string path out))))
 	  (exit)))
 (unless *argv* (return))
-(unless (char= #\/ (aref path (1- (length path))))
-  (setf path (concatenate 'string path "/")))
+(setf path (canonicalize-path path))
 (setf path (merge-pathnames path (pathname (concatenate  'string (getenv "PWD") "/"))))
 (setf setup (merge-pathnames #p"setup.lisp" path))
 
