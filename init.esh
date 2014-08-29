@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp -*-
 (setenv "CIM_HOME" (directory-file-name (file-name-directory load-file-name)))
 (setenv "PATH" (concat (getenv "CIM_HOME") "/bin/:" (getenv "PATH")))
 ;(setq eshell-path-env (concat (getenv "CIM_HOME") "/bin/:" eshell-path-env))
