@@ -81,10 +81,24 @@
       (t
        (make-concatenated-stream (make-string-input-stream line) in)))))
 
+(defun read-stream-into-string (stream)
+  (let* ((buffer-size 4096)
+         (buffer (make-array buffer-size :element-type 'character)))
+    (with-output-to-string (str)
+     (loop
+        :for bytes-read = (read-sequence buffer stream)
+        :do (write-sequence buffer str :start 0 :end bytes-read)
+        :while (= bytes-read buffer-size)))))
+
 (defun exit ()
   #-(or sbcl allegro) (cl-user::quit)
   #+sbcl (sb-ext::exit)
   #+allegro (cl-user::exit))
+
+(defun canonicalize-path (path)
+  (if (char= #\/ (aref path (1- (length path))))
+      path
+      (concatenate 'string path "/")))
 
 (defun ensure-quicklisp ()
   #-quicklisp
@@ -165,7 +179,7 @@
 
   (if (equal *default-pathname-defaults* #p"")
       (setf *default-pathname-defaults*
-            (pathname (getenv "PWD"))))
+            (pathname (canonicalize-path (getenv "PWD")))))
   (cond
     ((opt :version)
      (write-line (version)))
@@ -192,9 +206,13 @@
                               :until (eq sexp +eof+) :do
                               (eval sexp)))))
                       ((car *argv*)
-                       (let ((*load-print* nil))
-                         (load (remove-shebang (open (pop *argv*) :if-does-not-exist :error))
-                               :verbose nil :print nil)))
+                       (let ((*load-print* nil)
+                             (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
+                         #-ccl(load  stream
+                                    :verbose nil :print nil)
+                         #+ccl(let ((str (read-stream-into-string stream)))
+                                (load (make-string-input-stream str)
+                                      :verbose nil :print nil))))
                       (t
                        (let ((+eof+ (gensym "eof"))
                              (*package* (find-package :cl)))
