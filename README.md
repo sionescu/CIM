@@ -36,6 +36,10 @@ $ cim install sbcl
 $ cim install clisp abcl-1.2.1
 ```
 As you can see, you can install the latest version or specified version if given.
+
+To see the complete list of installable impls and versions, use `cim list install`.
+
+If you have problem, `cim help install` may help you.
 ### Selecting a lisp implementation
 Use `cim use`.
 
@@ -67,7 +71,10 @@ Use `cl`.
 
 ```
 $ cat hello.lisp
-#!/usr/bin/env cl
+#!/bin/sh
+#|
+exec env cl --  "$0" "$@"
+|#
 (format t "Hello, CIM")
 $ cl hello.lisp
 Hello, CIM
@@ -77,20 +84,23 @@ Hello, CIM
 $ cl -h     # most of options are import of ruby's.
 Usage: cl [switchs] [--] [programfile] [argumensts]
 
--C DIR          set *default-pathname-defaults* DIR.
--d, --debug     set debugging flags (push :debug into *features*)
--e, --eval SEXP one line of script. Several -e's are allowed. Omit [programfile]
--f, --load FILE load the FILE
--i EXT          edit *argv* files in place and make backup with the extension .EXT
--l LIBRARY      quickload the LIBRARY
--L LIBRARY      quickload and use-package the LIBRARY
--r, --repl      run repl
--q, --no-init   do not load $CIM_HOME/init.lisp
---no-rl         do not use rlwrap. This is effective only when --repl is specified
---no-right      do not display right prompt. This is effective only when --repl is specified
---no-color      do not use color. This is effective only when --repl is specified
--h, --help      print this help
--v, --version   print the version
+-c, --compile FILE compile FILE.
+-C DIR             set *default-pathname-defaults* DIR.
+-d, --debug        set debugging flags (push :debug into *features*)
+-e, --eval SEXP    one line of script. Several -e's are allowed. Omit [programfile]
+-f, --load FILE    load the FILE
+-i EXT             edit *argv* files in place and make backup with the extension .EXT
+-l LIBRARY         quickload the LIBRARY
+-L LIBRARY         quickload and use-package the LIBRARY
+--core FILE        use the specified core file
+-r, --repl         run repl
+-q, --no-init      do not load $CIM_HOME/init.lisp
+-Q, --quit         quit 
+--no-rl            do not use rlwrap. This is effective only when --repl is specified
+--no-right         do not display right prompt. This is effective only when --repl is specified
+--no-color         do not use color. This is effective only when --repl is specified
+-h, --help         print this help
+-v, --version      print the version
 
 If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them.
 ```
