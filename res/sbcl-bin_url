@@ -53,3 +53,12 @@ OpenBSD	mipsbe
 OpenBSD	mipsle	
 OpenBSD	armel	
 OpenBSD	armhf	
+CYGWIN	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.1-x86-windows-binary.msi
+CYGWIN	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.1-x86-64-windows-binary.msi
+CYGWIN	ppc	
+CYGWIN	sparc
+CYGWIN	alpha	
+CYGWIN	mipsbe	
+CYGWIN	mipsle	
+CYGWIN	armel	
+CYGWIN	armhf	
