@@ -28,7 +28,8 @@ case $command in
 	sh "$CIM_HOME/scripts/ql_cmd_help" "$@"
 	;;
 	*)
-	echo "Unknown command $command. Exit." >&2
+	echo "Unknown command $command." >&2
+        sh "$CIM_HOME/scripts/ql_cmd_help"
 	exit 1
 	;;
 esac
