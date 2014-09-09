@@ -8,7 +8,7 @@ if [ "$1" = "default" ];then
 	. "$CIM_HOME/config/default"
 	set - "$LISP_IMPL"
     else
-	cim_error "Default lisp is not set. Please 'cim use <impl> --default first."
+	cim_error "Default lisp is not set. Please 'cim use <impl> --default' first."
 	exit 1
     fi
 fi
@@ -22,10 +22,10 @@ if [ ! -L "$CIM_HOME/bin/$lisp_full_name" ]; then
 fi
 echo "LISP_IMPL=$lisp_full_name" > "$CIM_HOME/config/current.$CIM_ID"
 for var in $impls;do
-    eval var=$var
+    eval var=$"$var"
     if [ "${var%-*}" = "$impl" ];then
 	echo "${var%-*}=$lisp_full_name"
-    else
+    elif [ -n "$var" ]; then
 	echo "${var%-*}=$var"
     fi
 done >> "$CIM_HOME/config/current.$CIM_ID"
