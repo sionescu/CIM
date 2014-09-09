@@ -1,3 +1,5 @@
+# 2014-09-06
+  + Now versioning policy is changed. We adopt the Unix Time when the last commit is made as cim version
 # 2014-08-28
   + now `ql install` is faster
 # 2014-07-20
