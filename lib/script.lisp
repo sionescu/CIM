@@ -79,7 +79,7 @@
       ((and (> (length line) 1) (string= line "#!" :end1 2))
        in)
       (t
-       (make-concatenated-stream (make-string-input-stream line) in)))))
+       (make-concatenated-stream (make-string-input-stream (format nil "~A~%" line)) in)))))
 
 (defun read-stream-into-string (stream)
   (let* ((buffer-size 4096)
@@ -208,8 +208,8 @@
                       ((car *argv*)
                        (let ((*load-print* nil)
                              (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
-                         #-ccl(load  stream
-                                    :verbose nil :print nil)
+                         #-ccl (load stream
+                                     :verbose nil :print nil)
                          #+ccl(let ((str (read-stream-into-string stream)))
                                 (load (make-string-input-stream str)
                                       :verbose nil :print nil))))
