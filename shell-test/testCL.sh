@@ -31,7 +31,7 @@ testReturnCode(){
     cl -e "(cim:exit 1)"
     ${_ASSERT_EQUALS_} 1 $?
 }
-
+ 
 testLibrary(){
     cl -l iterate -e '(exit)'
 }
@@ -39,6 +39,12 @@ testLibrary(){
 testCIMASDF(){
     cl -C $(readlink -f ../)/ -e '(print *default-pathname-defaults*)'
     cl -C $(readlink -f ../)/ shell-test/testLispCIM.lisp
+}
+
+testPackage(){
+    ${_ASSERT_EQUALS_} 'TEST' \
+        $(cl -e "(defpackage test (:use :cl))" \
+        -p test -e "(print (package-name *package*))")
 }
 
 testCombined(){
