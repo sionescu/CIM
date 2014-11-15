@@ -93,7 +93,7 @@ __bz2distp(){
    [ "$1" = "sbcl" ] || [ "$1" = "alisp" ]
 }
 __download(){
-    cim_message "Donwloading archive."
+    cim_message "Downloading archive."
     if __bz2distp "$1"; then
         impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
     else
