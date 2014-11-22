@@ -10,13 +10,13 @@ __get_download_path(){
         abcl) echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz" ;;
         sbcl) echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2" ;;
         sbcl-bin)
-            { grep "`uname`\\s`uname -m`" "$CIM_HOME/res/sbcl-bin_url" ||
+            { grep "`uname`	`cim_sbcl_arch`" "$CIM_HOME/res/sbcl-bin_url" ||
                 { cim_error "SBCL binary does not support your machine."; return 1;}
             } | cut -f 3
             ;;
         ccl)
-            case "`uname -m`" in
-                x86*|i386|i686)
+            case `cim_arch` in
+                intel/*)
                     echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz"
                     return 0
                     ;;
@@ -26,7 +26,7 @@ __get_download_path(){
                        return 0
                    fi
                     ;;
-                ppc)
+                ppc*)
                    if [ "`uname`" = "Linux" ];then
                     echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz"
                     return 0
@@ -37,7 +37,7 @@ __get_download_path(){
             return 1
             ;;
         alisp)
-            if expr `uname -m` : 'x86.*' > /dev/null 2>&1 ; then
+            if expr `cim_arch` : 'intel/.*' > /dev/null 2>&1 ; then
                 vname=`echo "$2" | tr -d \.`
                 case `uname` in
                     Linux)

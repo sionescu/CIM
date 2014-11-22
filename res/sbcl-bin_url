@@ -17,15 +17,15 @@ Darwin	mipsbe
 Darwin	mipsle	
 Darwin  armel	
 Darwin  armhf	
-Solaris	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-solaris-binary.tar.bz2
-Solaris	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-solaris-binary.tar.bz2
-Solaris	ppc	
-Solaris	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-sparc-solaris-binary.tar.bz2
-Solaris	alpha	
-Solaris	mipsbe	
-Solaris	mipsle	
-Solaris	armel	
-Solaris	armhf
+SunOS	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.1.0-x86-solaris-binary.tar.bz2
+SunOS	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.55-x86-64-solaris-binary.tar.bz2
+SunOS	ppc	
+SunOS	sparc	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-sparc-solaris-binary.tar.bz2
+SunOS	alpha	
+SunOS	mipsbe	
+SunOS	mipsle	
+SunOS	armel	
+SunOS	armhf
 FreeBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.23-x86-freebsd-binary.tar.bz2
 FreeBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.0.22-x86-64-freebsd-binary.tar.bz2
 FreeBSD	ppc	

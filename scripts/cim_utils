@@ -131,6 +131,57 @@ cim_set_sbcl_home_for(){
     fi
 }
 
+cim_arch(){
+    case `uname -m` in
+        x86|i386|i686|i686-AT386)
+            echo intel/32/l ;;
+        x86_64|i686-64|amd64)
+            echo intel/64/l ;;
+        armv6l)
+            echo arm6/32/l;;
+        armv7l)
+            echo arm7/32/l;;
+        ppc|"Power Macintosh"|AIX)
+            echo ppc/32/l;;
+        ppc64)
+            echo ppc/64/l;;
+        sparc)
+            echo sparc/32/l;;
+        sparc64)
+            echo sparc/64/l;;
+        alpha)
+            echo alpha/32/l;;
+        mips|IP22|IP30|IP35)
+            echo mips/32/l;;
+    esac
+}
+
+cim_sbcl_arch(){
+    case `cim_arch` in
+        intel/64/*)
+            echo x86_64 ;;
+        intel/32/*)
+            echo x86 ;;
+        ppc/*)
+            echo ppc ;;
+        sparc/*)
+            echo sparc ;;
+        alpha/*)
+            echo alpha ;;
+        mips/*/l)
+            echo mipsle ;;
+        mips/*/b)
+            echo mipsbe ;;
+        arm*)
+            if [ -z `readelf -A /proc/self/exe|grep Tag_ABI-VFP_args` ]; then
+                echo armel
+            else
+                echo armhf
+            fi
+            ;;
+    esac
+}
+
 __sed_i(){
     sed -e "$1" "$2" > "$CIM_HOME/tmp/`basename $2`.bck.$CIM_ID"
     mv "$CIM_HOME/tmp/`basename $2`.bck.$CIM_ID" "$2"
@@ -139,3 +190,4 @@ __sed_i(){
 __which(){
     command -v "$1" 2> /dev/null
 }
+
