@@ -142,13 +142,13 @@ cim_arch(){
         armv7l)
             echo arm7/32/l;;
         ppc|"Power Macintosh"|AIX)
-            echo ppc/32/l;;
+            echo ppc/32/b;;
         ppc64)
-            echo ppc/64/l;;
+            echo ppc/64/b;;
         sparc)
-            echo sparc/32/l;;
+            echo sparc/32/b;;
         sparc64)
-            echo sparc/64/l;;
+            echo sparc/64/b;;
         alpha)
             echo alpha/32/l;;
         mips|IP22|IP30|IP35)
@@ -173,7 +173,7 @@ cim_sbcl_arch(){
         mips/*/b)
             echo mipsbe ;;
         arm*)
-            if [ -z `readelf -A /proc/self/exe|grep Tag_ABI-VFP_args` ]; then
+            if [ -z `readelf -A /proc/self/exe | grep Tag_ABI_VFP_args` ]; then
                 echo armel
             else
                 echo armhf
