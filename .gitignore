@@ -16,3 +16,4 @@ memo
 /res/ql_help_quickload
 /res/ql_help_system-apropos
 /scripts/cim_list_reinstall
+update_version.sh
