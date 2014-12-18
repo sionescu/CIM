@@ -4,7 +4,7 @@ Usage:
  
 Description:
 
-Remove donwloaded archives and extracted sources of the given lisp implementations.
+Remove downloaded archives and extracted sources of the given lisp implementations.
 If version is not specified, install the latest version.
 If target is 'all', do on all the available targets.
 

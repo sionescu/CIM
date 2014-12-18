@@ -4,7 +4,7 @@ Usage:
  
 Description:
 
-Uninstall the given lisp implementaion(s). It does't remove donwloaded archives and extracted sources.
+Uninstall the given lisp implementation(s). It doesn't remove downloaded archives or extracted sources.
 If version is not specified, install the latest version.
 If target is 'all', do on all the available targets.
 
