@@ -242,22 +242,31 @@ __install_ql_if_need(){
 __sbcl_ensure_impl(){
     cim_message "Finding Lisp impl to build sbcl."
     if __which sbcl > /dev/null;then
+        found=`__which sbcl`
         touch "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif __which lisp > /dev/null;then
+        found=`__which lisp`
         echo "lisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif __which ccl > /dev/null;then
+        found=`__which ccl`
         echo "ccl --batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif __which clisp > /dev/null;then
+        found=`__which clisp`
         echo "clisp -batch" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { run_sbcl=`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh | head -n 1 2> /dev/null` ; [ -n "$run_sbcl" ];};then
+        found="$run_sbcl"
         echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { url=`__get_download_path sbcl-bin`; [ -n "$url" ]; };then
+        found="$url"
+        cim_message "Downloading ${url}"
         cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
         echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh 2> /dev/null | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
         cim_error "No CL implementation for compiling SBCL found. Please install another implementation first."
         exit 1
     fi
+    cim_message "Found: $found"
+    unset found
 
 }
 __sbcl_make(){
