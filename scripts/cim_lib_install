@@ -265,7 +265,7 @@ __sbcl_ensure_impl(){
         cim_error "No CL implementation for compiling SBCL found. Please install another implementation first."
         exit 1
     fi
-    cim_message "Found: $found"
+    cim_message "  Found: $found"
     unset found
 
 }
