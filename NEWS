@@ -1,3 +1,5 @@
+# 2015-01-01
+  + Now the latest sbcl is 1.2.7
 # 2014-12-22
   + [bugfix] Correctly detect your platform/machine
   + [bugfix] Fix a couple of typos. Thanks lulsmbo.
