@@ -62,6 +62,15 @@ DrogonFlyBSD	mipsbe
 DrogonFlyBSD	mipsle	
 DrogonFlyBSD	armel	
 DrogonFlyBSD	armhf
+GNU/kFreeBSD	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.7-x86-debian-kfreebsd-binary.tar.bz2
+GNU/kFreeBSD	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.7-x86-64-debian-kfreebsd-binary.tar.bz2
+GNU/kFreeBSD	ppc	
+GNU/kFreeBSD	sparc
+GNU/kFreeBSD	alpha	
+GNU/kFreeBSD	mipsbe	
+GNU/kFreeBSD	mipsle	
+GNU/kFreeBSD	armel	
+GNU/kFreeBSD	armhf
 CYGWIN	x86	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.7-x86-windows-binary.msi
 CYGWIN	x86_64	http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.7-x86-64-windows-binary.msi
 CYGWIN	ppc	
