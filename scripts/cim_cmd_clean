@@ -13,12 +13,14 @@ while [ $# -gt 0 ];do
         exit 1
     fi
     if ! { [ -e "$CIM_HOME/archives/$target" ] ||
-           [ -e "$CIM_HOME/src/$target" ];}; then
+               [ -e "$CIM_HOME/src/$target" ] ||
+               [ -e "$CIM_HOME/log/$target" ];}; then
         cim_error "$target is not installed"
         exit 1
     fi
 
     rm -rf "$CIM_HOME/archives/$target"
     rm -rf "$CIM_HOME/src/$target"
+    rm -rf "$CIM_HOME/log/$target"
     shift
 done
