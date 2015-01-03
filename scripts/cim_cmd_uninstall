@@ -29,6 +29,6 @@ while [ $# -gt 0 ]; do
     if [ 1 -eq `ls "$CIM_HOME/bin/" | grep -F "$impl" | wc -w` ]; then
         rm -f  "$CIM_HOME/bin/$impl"
     fi
-    cim_register_all_impls
     shift
 done
+cim_register_all_impls

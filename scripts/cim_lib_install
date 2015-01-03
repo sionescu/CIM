@@ -89,16 +89,9 @@ __start(){
     cim_message "$1-$2 installation started."
 }
 
-__bz2distp(){
-   [ "$1" = "sbcl" ] || [ "$1" = "alisp" ]
-}
 __download(){
     cim_message "Downloading archive."
-    if __bz2distp "$1"; then
-        impl_archive="$CIM_HOME/archives/$1-$2.tar.bz2"
-    else
-        impl_archive="$CIM_HOME/archives/$1-$2.tar.gz"
-    fi
+    impl_archive="$CIM_HOME/archives/$1-$2.tar.`cim_distribution_archive_type "$1"`"
     
     url=`__get_download_path "$1" "$2"`
     [ "$?" = 0 ] || exit $?
@@ -124,13 +117,10 @@ cim_expand(){
 }
 __expand(){
     cim_message "Expanding archive."
-    if __bz2distp "$1"; then
-        dist="$1-$2.tar.bz2"
-        type="bz2"
-    else
-        dist="$1-$2.tar.gz"
-        type="gz"
-    fi
+
+    dist="$1-$2.tar.`cim_distribution_archive_type "$1"`"
+    type="`cim_distribution_archive_type "$1"`"
+
     rm -rf  "$CIM_HOME/src/$1-$2"
     mkdir -p "$CIM_HOME/src"
     cim_with_output_control "$1-$2" "expand" cim_expand "$type" "$CIM_HOME/archives/$dist" "$CIM_HOME/src"

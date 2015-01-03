@@ -182,6 +182,15 @@ cim_sbcl_arch(){
     esac
 }
 
+cim_distribution_archive_type(){
+    case $1 in
+        sbcl|alisp) echo bz2;;
+        abcl|ccl|clisp|ecl) echo gz;;
+    esac
+   [ "$1" = "sbcl" ] || [ "$1" = "alisp" ]
+}
+
+
 __sed_i(){
     sed -e "$1" "$2" > "$CIM_HOME/tmp/`basename $2`.bck.$CIM_ID"
     mv "$CIM_HOME/tmp/`basename $2`.bck.$CIM_ID" "$2"
