@@ -1,3 +1,6 @@
+# 2015-01-05
+  + Debian/kFreeBSD suport has been added.
+  + `cim clean` and `cim purge` have been changed to remove downloaded archives too.
 # 2015-01-01
   + Now the latest sbcl is 1.2.7
 # 2014-12-22
