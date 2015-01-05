@@ -186,6 +186,6 @@ $ cim get
 BSD
 
 ## Author
-+ Sunrim KIM
++ Sunrin SHIMURA
 + Eitarow FUKAMACHI
 + Syohei YOSHIDA
