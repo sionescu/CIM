@@ -248,7 +248,6 @@ __sbcl_ensure_impl(){
         echo "$run_sbcl --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     elif { url=`__get_download_path sbcl-bin`; [ -n "$url" ]; };then
         found="$url"
-        cim_message "Downloading ${url}"
         cim_wget "$url" - | bzip2 -dc - | tar -xf - -C "$CIM_HOME/tmp/" &&
         echo "`find $CIM_HOME/tmp/ -maxdepth 2 -name run-sbcl.sh 2> /dev/null | head -n 1 ` --disable-debugger --no-userinit --no-sysinit" > "$CIM_HOME/src/$1-$2/.cim_available_impl"
     else
