@@ -11,16 +11,26 @@ I hope CIM could be to Lisp what RVM is to ruby.
 
 ## INSTALL
 
-CIM has installer. Run command below and you get cim installed to ~/.cim.
-
+CIM has installer. Run command below and you will get cim installed to ~/.cim.
 ```
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
 ```
-To change install path, set `CIM_HOME`.
 
+To change install path, set `CIM_HOME`.
 ```
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
+
+Notice:  
+You are not required to intall `curl`. If you have `wget`, this will do.
+```
+$ wget -O - https://raw.github.com/KeenS/CIM/master/scripts/cim_installer |  /bin/sh
+```
+Or, `fetch`, use
+```
+$ fetch -o - https://raw.github.com/KeenS/CIM/master/scripts/cim_installer |  /bin/sh
+```
+.
 
 ## USAGE
 
@@ -75,7 +85,7 @@ $ cat hello.lisp
 #|
 exec env cl --  "$0" "$@"
 |#
-(format t "Hello, CIM")
+(format t "Hello, CIM~%")
 $ cl hello.lisp
 Hello, CIM
 $ chmod +x hello.lisp
@@ -115,7 +125,7 @@ Hi
 ;=> NIL
 ```
 
-if `rlwrap` is installed, `cl` use it.
+If `rlwrap` (a readline wrapper) is installed, `cl` use it.
 
 ### Executing one liner
 Use `cl` with `-e`.
@@ -173,13 +183,33 @@ $ ql deps --path ./quicklisp myapp.asd
 
 ### Upgrading cim itself
 Use `cim get`.
-Currently, `cim get` fetch `master` branch.
+Currently, `cim get` fetches `master` branch.
 ```
 $ cim get
 ```
 
+## Using CIM in Emacs and SLIME
+Add lines like below to init.el (assuming CIM_HOME is ~/.cim (default)).
+```lisp
+(setq-default slime-lisp-implementations
+              '((sbcl ("~/.cim/bin/sbcl"))
+                (clisp ("~/.cim/bin/clisp"))
+                (ccl ("~/.cim/bin/ccl"))
+                (ecl ("~/.cim/bin/ecl"))))
+```
+
+If you want to do like `M-! cim use sbcl-1.2.3`, add this line
+
+```lisp
+(load (expand-file-name "~/.cim/init.esh") nil t)
+```
+
+## Using CIM in Vim and slimv
+Since I'm not fanimilar with vim script, init script for vim is not present. Even more, it is known that CIM kills vim when used with slimv.
+Current solution is using Emacs and evil, or contribute to CIM.
+
 ## See Also
-+ [snmsts/lsp](https://github.com/snmsts/lsp) : A project that aims to rewrite CIM with C to run everywhere including non-Unix platforms.
++ [snmsts/roswell](https://github.com/snmsts/roswell) : A project that aims to rewrite CIM with C to run everywhere including non-Unix platforms.
 + [fukamachi/qlot](https://github.com/fukamachi/qlot) : A project-local library installer using Quicklisp facility.
 
 ## License
