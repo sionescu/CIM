@@ -4,5 +4,7 @@
 ;(setq eshell-path-env (concat (getenv "CIM_HOME") "/bin/:" eshell-path-env))
 (add-to-list 'exec-path (concat (getenv "CIM_HOME") "/bin"))
 (setenv "CIM_ID" (format "%d" (emacs-pid)))
+(if (shell-command "command -v manpath")
+    (setenv "MANPATH" (shell-command-to-string "manpath 2> /dev/null")))
 (setenv "MANPATH" (concat (getenv "CIM_HOME") "/share/man:" (getenv "MANPATH")))
 (shell-command (format "sh %s/init" (getenv "CIM_HOME")))
