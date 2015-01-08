@@ -5,6 +5,9 @@ set -e
 : ${CIM_HOME:="$HOME/.cim"};
 export CIM_HOME
 umask 077
+
+lockfile="$CIM_HOME/tmp/installer.lock"
+
 download(){
     if command -v curl > /dev/null 2>&1;then
 	curl -L "$1" > "$2"
@@ -23,6 +26,83 @@ download_from_git(){
     git archive --remote "$1" -o "$2" --prefix="CIM-$CIM_INSTALL_BRANCH/" "$CIM_INSTALL_BRANCH"
 }
 
+aquire_lock(){
+    if [ -e "$lockfile" ]; then
+        echo "Another install process is running."
+        exit 1
+    else
+        touch "$lockfile"
+        trap "exit 1" HUP INT PIPE QUIT TERM
+        trap "rm -f $lockfile" EXIT
+    fi
+}
+
+prepare_tmp(){
+    TMPDIR="$CIM_HOME/tmp"
+    mkdir -p "$TMPDIR"
+    export TMPDIR
+}
+
+get_cim(){
+    if [  $# -ne 0 ];then
+        archive="$TMPDIR/CIM-${CIM_INSTALL_BRANCH}.tar"
+        download_from_git "$1" "$archive" ;
+        tar xf "$archive" -C "$TMPDIR/"
+    else
+        archive="$TMPDIR/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
+        download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$archive"
+        # :FIXME: check checksum
+        gzip -cd "$archive" | tar xf - -C "$TMPDIR/"
+    fi
+}
+
+expand_cim(){
+    rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
+    touch "$CIM_HOME/NEWS"
+    mv "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old"
+    cp -rf "$TMPDIR/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
+    rm -rf "$TMPDIR/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$TMPDIR/CIM-${CIM_INSTALL_BRANCH}"
+}
+
+prepare_dirs(){
+    for dir in bin config log impls src archives; do
+        mkdir -p "$CIM_HOME/$dir"
+    done
+}
+
+link_aliases(){
+    ln -sf "$CIM_HOME/scripts/cim_cmd_list_uninstall" "$CIM_HOME/scripts/cim_cmd_list_reinstall"
+    ln -sf "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_quickload"
+    ln -sf "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
+}
+
+prepare_bins(){
+    for executable in cl ql cim; do
+        rm -f "$CIM_HOME/bin/$executable"
+        ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
+        chmod u+x "$CIM_HOME/scripts/$executable"
+    done
+    cim_aware_system_lisp
+    for link in $impls; do
+        chmod u+x "$CIM_HOME/scripts/$link"
+        # if it is older system
+        if [ -L "$CIM_HOME/bin/$link" ] &&
+               ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1; then
+	    full_name=`ls -l "$CIM_HOME/bin/$link" | grep -o "$CIM_HOME/bin/\(.*-.*\)"`
+	    impl=${full_name%-*}
+	    for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `; do
+	        echo "$impl=$full_name" >> "$config"
+	    done
+        fi
+        rm -f "$CIM_HOME/bin/$link"
+        installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';' 2> /dev/null `
+        if [ -n "$installed" ];then
+            ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
+        fi
+    done
+    cim_register_all_impls
+}
+
 show_news(){
     if ! diff -q "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old" > /dev/null 2>&1; then
         echo "NEWS: "
@@ -32,133 +112,82 @@ show_news(){
     fi
 }
 
-mkdir -p "$CIM_HOME/tmp"
-lockfile="$CIM_HOME/tmp/installer.lock"
-if [ -e "$lockfile" ]; then
-    echo "Another install process is running."
-    exit 1
-else
-    touch "$lockfile"
-    trap "exit 1" HUP INT PIPE QUIT TERM
-    trap "rm -f $lockfile" EXIT
-fi
-
-rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
-touch "$CIM_HOME/NEWS"
-mv "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old"
-if [  $# -ne 0 ];then
-      archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar"
-      download_from_git "$1" "$archive" ;
-      tar xf "$archive" -C "$CIM_HOME/tmp/"
-else
-     archive="$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz"
-     download "https://codeload.github.com/KeenS/CIM/tar.gz/${CIM_INSTALL_BRANCH}" "$archive"
-     # :FIXME: check checksum
-     gzip -cd "$archive" | tar xf - -C "$CIM_HOME/tmp/"
-fi
-cp -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
-rm -rf "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}.tar.gz" "$CIM_HOME/tmp/CIM-${CIM_INSTALL_BRANCH}"
-
-# Now you can access all the cim's scripts
-
-. "$CIM_HOME/scripts/cim_utils"
-
-for dir in bin config log impls src archives; do
-    mkdir -p "$CIM_HOME/$dir"
-done
-
-rm -f "$CIM_HOME/scripts/cim_list_reinstall" "$CIM_HOME/res/ql_help_system-apropos" "$CIM_HOME/res/ql_help_search"
-ln -s "$CIM_HOME/scripts/cim_list_uninstall" "$CIM_HOME/scripts/cim_list_reinstall"
-ln -s "$CIM_HOME/res/ql_help_install" "$CIM_HOME/res/ql_help_quickload"
-ln -s "$CIM_HOME/res/ql_help_search" "$CIM_HOME/res/ql_help_system-apropos"
-
-for executable in cl ql cim; do
-    rm -f "$CIM_HOME/bin/$executable"
-    ln -s "$CIM_HOME/scripts/$executable" "$CIM_HOME/bin/$executable"
-    chmod u+x "$CIM_HOME/scripts/$executable"
-done
-
-cim_aware_system_lisp
-for link in $impls; do
-    chmod u+x "$CIM_HOME/scripts/$link"
-    # if it is older system
-    if [ -L "$CIM_HOME/bin/$link" ] &&
-       ! expr "`ls -l "$CIM_HOME/bin/$link"`" : ".*$CIM_HOME/scripts/$link" > /dev/null 2>&1; then
-	full_name=`ls -l "$CIM_HOME/bin/$link" | grep -o "$CIM_HOME/bin/\(.*-.*\)"`
-	impl=${full_name%-*}
-	for config in `find "$CIM_HOME/config/" -mindepth 1 2> /dev/null `; do
-	    echo "$impl=$full_name" >> "$config"
-	done
-    fi
-    rm -f "$CIM_HOME/bin/$link"
-    installed=`find "$CIM_HOME/bin/" -mindepth 1 -name "$impl-*" -exec basename '{}' ';' 2> /dev/null `
-    if [ -n "$installed" ];then
-        ln -s "$CIM_HOME/scripts/$link" "$CIM_HOME/bin/$link"
-    fi
-done
-cim_register_all_impls
-
-if expr "$SHELL" : '.*csh' > /dev/null 2>&1; then
-    rc="set CIM_HOME $CIM_HOME
-if (-r '$CIM_HOME/init.csh' ) then
-   source '$CIM_HOME/init.csh'
-fi"
-    case "$SHELL" in
-	*/csh)  rcfile="$HOME/.cshrc";;
-	*/tcsh) rcfile="$HOME/.tcshrc";;
-        *) UNKNOWN_SHELL=true;;
-    esac
-elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
-    rc="CIM_HOME=$CIM_HOME; [ -s '$CIM_HOME/init.sh' ] && . '$CIM_HOME/init.sh'"
-    case "$SHELL" in
-	*/bash) rcfile="$HOME/.bashrc";;
-	*/zsh)  rcfile="$HOME/.zshrc";;
-	*/sh)   rcfile="$HOME/.profile";;
-        *) UNKNOWN_SHELL=true;;
-    esac
-else
-    UNKNOWN_SHELL=true
-fi
-
-if [ -n "$rcfile" ] && [ -e "$rcfile" ] && grep -F "$rc" "$rcfile" > /dev/null 2>&1; then
-    echo "It seems cim initialization has been added to $rcfile."
-    CIM_HAS_INSTALLED="true"
-fi
-
-if [ "$CIM_HAS_INSTALLED" != "true" ] && [ "$UNKNOWN_SHELL" != "true" ]; then
-    cat <<EOM
-Adding to your $rcfile
-'$rc'
-EOM
-    echo "$rc" >> "$rcfile"
-fi
-
-if [ -d "$HOME/.emacs.d/eshell" ]; then
-    rc="(load (expand-file-name \"$CIM_HOME/init.esh\")) > /dev/null"
-    rcfile="$HOME/.emacs.d/eshell/profile"
-    if grep -F "$rc" "$rcfile" > /dev/null 2>&1; then
-	echo "It seems cim initialization has been added to $rcfile."
+show_config_message(){
+    if expr "$SHELL" : '.*csh' > /dev/null 2>&1; then
+        conf=csh
+        case "$SHELL" in
+	    */csh)  rcfile="$HOME/.cshrc";;
+	    */tcsh) rcfile="$HOME/.tcshrc";;
+            *) rcfile=UNKNOWN;;
+        esac
+    elif expr "$SHELL" : '.*sh' > /dev/null 2>&1; then
+        conf=sh
+        case "$SHELL" in
+	    */bash) rcfile="$HOME/.bashrc";;
+	    */zsh)  rcfile="$HOME/.zshrc";;
+	    */sh)   rcfile="$HOME/.profile";;
+            */ksh)  rcfile="$HOME/.kshrc";;
+            *) rcfile=UNKNOWN;;
+        esac
     else
-	cat <<EOF
-Adding to your $rcfile
-'$rc'
-EOF
-	echo "$rc" >> "$rcfile"
+        conf=UNKNOWN
     fi
-fi
+    if [ "$rcfile" != UNKNOWN ] && [ "$conf" != UNKNOWN  ]; then
+        cat <<EOM
 
-echo
+To setup CIM, run this command (if haven't)
+\`\`\`
+cim config "$conf" >> "$rcfile"
+\`\`\`
 
-if [ "$CIM_HAS_INSTALLED" = "true" ];then
+EOM
+    fi
+
+    
+}
+
+show_messages(){
+
+    show_config_message
+
     echo "Install done. Thank you for using cim."
     echo
     show_news
-else
-    echo "Install done. Please reload your *rc file. Enjoy your Lisp life."
-fi
+    echo
+    echo "If you have any problems or questions, ask keen (@blackenedgold) freely."
+}
 
-echo
-
-cat <<EOF
-If you have some problems or questions, ask keen (@blackenedgold) freely.
+main(){
+    
+    if [ "$1" = "--help" ]; then
+        cat <<EOF
+Usage:
+$0 [git-repo]
 EOF
+        exit
+    fi
+
+    # ensure a writable temp dir exists
+    prepare_tmp
+    # ensure running CIM installation is only one. The lock is automatically freed.
+    aquire_lock
+    # get from github or from local git repository
+    get_cim "$@"
+    # move installed files to CIM_HOME
+    expand_cim
+
+    ## Now you can access all the cim's scripts
+    . "$CIM_HOME/scripts/cim_utils"
+
+    # prepare dirs used by CIM
+    prepare_dirs
+    # `ln` some aliases
+    link_aliases
+    # prepare bins like `cim` `cl` `ql`
+    prepare_bins
+
+    ## CIM installaiton is done
+
+    show_messages
+}
+main "$@"
