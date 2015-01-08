@@ -1,0 +1,25 @@
+#!/bin/sh
+
+: ${CIM_HOME:="$HOME/.cim"};
+
+config_sh(){
+    echo "CIM_HOME=$CIM_HOME; [ -s \"\$CIM_HOME/init.sh\" ] && . \"\$CIM_HOME/init.sh\""
+}
+config_csh(){
+    echo "set CIM_HOME=$CIM_HOME; if (-r \"\$CIM_HOME/init.csh\" ) source \"\$CIM_HOME/init.csh\""
+}
+
+config_emacs(){
+    echo "(load (expand-file-name \"$CIM_HOME/init.esh\")) > /dev/null"
+}
+
+config_error(){
+    echo "'$1' is unsuported config format. See 'cim help config'"
+}
+
+case "$1" in
+    csh) config_csh;;
+    sh)  config_sh;;
+    emacs|eshell) config_emacs;;
+    *) config_error "$1";;
+esac
