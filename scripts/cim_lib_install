@@ -286,7 +286,7 @@ __ccl_rebuild_full(){
     cim_message "Building $1-$2"
 
     case `cim_arch` in
-        */64/*)
+        */32/*)
             logic="!";;
         *)
         ;;
