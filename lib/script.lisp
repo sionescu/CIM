@@ -195,38 +195,46 @@
      (unless (opt :no-init) (load (cim_home "/init.lisp") :verbose nil :print nil))
      (in-package :cl)
      (handler-case
-      (dolist (sexp (nreverse cim::sexps)) 
-        (eval sexp))
-       (#.*interrupt-condition* () (exit)))
+         (dolist (sexp (nreverse cim::sexps)) 
+           (eval sexp))
+       (#.*interrupt-condition* () (exit))
+       (error (e) 
+         (write-line "An error occured while processing command line arguments")
+         (princ 'e)
+         (exit 1)))
      (in-package :cim)
-     (macrolet ((main ()
-                  '(handler-case
-                    (cond
-                      ((opt :repl)
-                       (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
-                      ((opt :sexp)
-                       (let ((+eof+ (gensym "eof"))
-                             (*package* (find-package :cl)))
-                         (with-input-from-string (in (opt :sexp))
-                           (loop :for sexp := (read in nil +eof+)
-                              :until (eq sexp +eof+) :do
-                              (eval sexp)))))
-                      ((car *argv*)
-                       (let ((*load-print* nil)
-                             (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
-                         #-ccl (load stream
-                                     :verbose nil :print nil)
-                         #+ccl(let ((str (read-stream-into-string stream)))
-                                (load (make-string-input-stream str)
-                                      :verbose nil :print nil))))
-                      (t
-                       (let ((+eof+ (gensym "eof"))
-                             (*package* (find-package :cl)))
-                         (loop
-                            :for sexp := (read *standard-input* nil +eof+)
+     (flet ((main ()
+              (handler-case
+                  (cond
+                    ((opt :repl)
+                     (load (cim_home "/lib/repl.lisp") :verbose nil :print nil))
+                    ((opt :sexp)
+                     (let ((+eof+ (gensym "eof"))
+                           (*package* (find-package :cl)))
+                       (with-input-from-string (in (opt :sexp))
+                         (loop :for sexp := (read in nil +eof+)
                             :until (eq sexp +eof+) :do
                             (eval sexp)))))
-                    (#.*interrupt-condition* () (exit)))))
+                    ((car *argv*)
+                     (let ((*load-print* nil)
+                           (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
+                       #-ccl (load stream
+                                   :verbose nil :print nil)
+                       #+ccl(let ((str (read-stream-into-string stream)))
+                              (load (make-string-input-stream str)
+                                    :verbose nil :print nil))))
+                    (t
+                     (let ((+eof+ (gensym "eof"))
+                           (*package* (find-package :cl)))
+                       (loop
+                          :for sexp := (read *standard-input* nil +eof+)
+                          :until (eq sexp +eof+) :do
+                          (eval sexp)))))
+                (#.*interrupt-condition* () (exit))
+                (error (e) 
+                  (write-line "An error occured while processing command line arguments")
+                  (princ e)
+                  (exit 1)))))
        (if (opt :extension)
            (let ((files (if (and (not (opt :sexp)) *argv*)
                             (cdr *argv*)
