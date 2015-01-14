@@ -90,10 +90,16 @@
         :do (write-sequence buffer str :start 0 :end bytes-read)
         :while (= bytes-read buffer-size)))))
 
-(defun exit ()
-  #-(or sbcl allegro) (cl-user::quit)
-  #+sbcl (sb-ext::exit)
-  #+allegro (cl-user::exit))
+(defun exit (&optional (status 0))
+ #+ccl (ccl:quit status)
+ ;; http://www.sbcl.org/manual/#Exit
+ #+sbcl (sb-ext:exit :code status)
+ ;; http://franz.com/support/documentation/9.0/doc/operators/excl/exit.htm
+ #+allegro (excl:exit status :quiet t)
+ #+clisp (ext:quit status)
+ #+cmucl (unix:unix-exit status)
+ #+ecl (ext:quit status)
+ #-(or ccl sbcl allegro clisp cmucl ecl) (cl-user::quit))
 
 (defun canonicalize-path (path)
   (if (char= #\/ (aref path (1- (length path))))
