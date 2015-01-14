@@ -15,26 +15,12 @@ __get_download_path(){
             } | cut -f 3
             ;;
         ccl)
-            case `cim_arch` in
-                intel/*)
-                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz"
-                    return 0
-                    ;;
-                arm*)
-                   if [ "`uname`" = "Linux" ];then
-                       echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxarm.tar.gz"
-                       return 0
-                   fi
-                    ;;
-                ppc*)
-                   if [ "`uname`" = "Linux" ];then
-                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz"
-                    return 0
-                    fi
-                    ;;
-            esac
-            cim_error "CCL does not support your machine."
-            return 1
+            if cim_ccl_arch > /dev/null; then
+                echo  "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`cim_ccl_arch`.tar.gz"
+            else
+                cim_error "CCL does not support your machine."
+                return 1
+            fi
             ;;
         alisp)
             if expr `cim_arch` : 'intel/.*' > /dev/null 2>&1 ; then
@@ -63,6 +49,83 @@ __get_download_path(){
             ;;
     esac
 }
+
+cim_svn_get(){
+    svn checkout "$1" "$2"
+}
+
+cim_hg_get(){
+    hg clone "$1" "$2"
+}
+
+cim_git_get(){
+    git clone "$1" "$2"
+}
+
+cim_svn_up(){
+    svn update
+}
+
+cim_hg_up(){
+    hg pull --update
+}
+
+cim_git_up(){
+    git pull origin master
+}
+
+cim_vcs_checkout(){
+    # :TODO: support branch checkout
+    case "$1" in
+        abcl)
+            cim_svn_get http://abcl.org/svn "$2"
+        ;;
+        ccl)
+            if cim_ccl_arch > /dev/null; then
+                cim_svn_get "http://svn.clozure.com/publicsvn/openmcl/trunk/`cim_ccl_arch`/ccl" "$2"
+            else
+                echo "CCL don't support your machine" >&2
+                exit 1
+            fi
+        ;;
+        clisp)
+            cim_hg_get http://hg.code.sf.net/p/clisp/clisp "$2"
+        ;;
+        ecl)
+            cim_git_get git://git.code.sf.net/p/ecls/ecl "$2"
+        ;;
+        mkcl)
+            cim_git_get git://common-lisp.net/projects/mkcl/mkcl.git "$2"
+        ;;
+        sbcl)
+            cim_git_get git://git.code.sf.net/p/sbcl/sbcl "$2"
+        ;;
+    esac
+}
+
+cim_vcs_up(){
+    case "$1" in
+        abcl)
+            (cd "$2"; cim_svn_up)
+            ;;
+        ccl)
+            (cd "$2"; cim_svn_up)
+            ;;
+        clisp)
+            (cd "$2"; cim_hg_up)
+            ;;
+        ecl)
+            (cd "$2"; cim_git_up)
+            ;;
+        mkcl)
+            (cd "$2"; cim_git_up)
+            ;;
+        sbcl)
+            (cd "$2"; cim_git_up)
+            ;;
+    esac
+}
+
 
 __impl_installed_p(){
     [ -d "$CIM_HOME/impls/$1-$2" ]
