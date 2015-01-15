@@ -154,8 +154,8 @@ __start(){
 
 __download(){
     if [ "$2" = head ];then
-        cim_message "Checking out repository."
         if [ ! -d "$CIM_HOME/src/$1-$2" ]; then
+            cim_message "Checking out repository."
             mkdir -p "$CIM_HOME/src/"
             cim_with_output_control "$1-$2" "checkout" cim_vcs_checkout "$1" "$CIM_HOME/src/$1-$2"
         fi
