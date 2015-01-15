@@ -47,6 +47,10 @@ cim_wget(){
     fi
 }
 
+cim_match(){
+    expr "$1" : "$2" > /dev/null
+}
+
 cim_with_output_control(){
     impl="$1"
     step="$2"
