@@ -234,7 +234,7 @@ __which(){
 }
 
 cim_run_if_installed(){
-    if __which "$1"; then
+    if __which "$1" > /dev/null; then
         "$@"
     else
         cim_error "You need install `$1`"
