@@ -1,0 +1,90 @@
+'\" t
+.\"     Title: cim-for
+.\"    Author: keen(@blackenedgold) 3han5chou7@gmail.com
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2015
+.\"    Manual: CIM Manual
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "CIM\-FOR" "1" "01/17/2015" "\ \&" "CIM Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cim-for \- Run \*(Aqcl\*(Aq command for all specified impls as the backend\&.
+.SH "SYNOPSIS"
+.sp
+.nf
+cim for {<impl[\-version]>\&...| all | impls} do ARGS
+.fi
+.SH "DESCRIPTION"
+.sp
+Execute \fIcl\fR for all the given lisp implementations with ARGS\&. If version is not specified, use the latest version\&. If the target is \fIall\fR, do on all the available targets\&. If the target is \fIimpls\fR run on each impl\&.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+you gets
+\fIHello\fR
+2 times
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim for clisp sbcl do \-e \*(Aq(format t "Hello~%")\*(Aq
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+execute foo\&.lisp with all installed lisp implementations\&.
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim for all do foo\&.lisp
+.fi
+.if n \{\
+.RE
+.\}
+.SH "AUTHOR"
+.PP
+\fBkeen(@blackenedgold) 3han5chou7@gmail\&.com\fR
+.RS 4
+Author.
+.RE

@@ -1,0 +1,67 @@
+'\" t
+.\"     Title: cim-config
+.\"    Author: keen(@blackenedgold) 3han5chou7@gmail.com
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2015
+.\"    Manual: CIM Manual
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "CIM\-CONFIG" "1" "01/17/2015" "\ \&" "CIM Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cim-config \- Genarate config line
+.SH "SYNOPSIS"
+.sp
+.nf
+cim config {sh|csh|emacs}
+.fi
+.SH "DESCRIPTION"
+.sp
+Output CIM setup snippet for given shell to stdout\&. The snippet of \fIsh\fR could be run on POSIX sh and extended POSIX shell like bash and zsh, \fIcsh\fR could be run on csh and tcsh and \fIemacs\fR could be run on Emacs and Eshell\&.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Add CIM setup line to \&.bashrc
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim config sh >> ~/\&.bashrc
+.fi
+.if n \{\
+.RE
+.\}
+.SH "AUTHOR"
+.PP
+\fBkeen(@blackenedgold) 3han5chou7@gmail\&.com\fR
+.RS 4
+Author.
+.RE

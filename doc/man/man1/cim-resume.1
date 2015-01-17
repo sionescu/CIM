@@ -1,0 +1,89 @@
+'\" t
+.\"     Title: cim-resume
+.\"    Author: keen(@blackenedgold) 3han5chou7@gmail.com
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2015
+.\"    Manual: CIM Manual
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "CIM\-RESUME" "1" "01/17/2015" "\ \&" "CIM Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cim-resume \- Resume suspended installation(s) or give it up\&.
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIcim resume\fR <impl[\-version]> | all
+\fIcim resume rm\fR <impl[\-version]> | all
+.fi
+.SH "DESCRIPTION"
+.sp
+Resume interrupted installation of <impl>\&. If <version> is not given, the latest version is used\&. If \fIrm\fR is given, remove <impl> from \fIresume\fR list\&. If target is \fIall\fR, do on all the available target\&.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+resume the installation of clisp with configure flags
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ flags=\*(Aq\-\-with\-libsigsegv\-path=/usr/local\*(Aq cim resume clisp
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+remove all the available target\&.
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim resume rm all
+.fi
+.if n \{\
+.RE
+.\}
+.SH "AUTHOR"
+.PP
+\fBkeen(@blackenedgold) 3han5chou7@gmail\&.com\fR
+.RS 4
+Author.
+.RE

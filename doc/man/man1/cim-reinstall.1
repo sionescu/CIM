@@ -1,0 +1,90 @@
+'\" t
+.\"     Title: cim-reinstall
+.\"    Author: keen(@blackenedgold) 3han5chou7@gmail.com
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2015
+.\"    Manual: CIM Manual
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "CIM\-REINSTALL" "1" "01/17/2015" "\ \&" "CIM Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cim-reinstall \- Reinstall the impl\&.
+.SH "SYNOPSIS"
+.sp
+.nf
+cim reinstall <impl[\-version]> | all
+.fi
+.SH "DESCRIPTION"
+.sp
+Force install already installed implementaion(s)\&. Downloaded archives are resued if available If version is not specified, install the latest version\&. If target is \fIall\fR, do on all the available targets\&.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+reinstall sbcl\-1\&.1\&.14
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim reinstall sbcl\-1\&.1\&.14
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+reinstall all installed lisp impls
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cim reinstall all
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+To show available lisp implementations, type \fIcim list reinstall\fR\&.
+.SH "AUTHOR"
+.PP
+\fBkeen(@blackenedgold) 3han5chou7@gmail\&.com\fR
+.RS 4
+Author.
+.RE

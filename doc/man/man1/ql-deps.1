@@ -1,0 +1,56 @@
+'\" t
+.\"     Title: ql-deps
+.\"    Author: keen(@blackenedgold) 3han5chou7@gmail.com
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2015
+.\"    Manual: CIM Manual
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "QL\-DEPS" "1" "01/17/2015" "\ \&" "CIM Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+ql-deps \- Install dependencies of system\&.
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIql deps\fR [\-\-path <path>] <system>
+.fi
+.SH "DESCRIPTION"
+.sp
+Install dependencies of given system\&. If path is specified, install dependencies there\&. Once you run \fIql \-\-path <path> deps\fR, you don\(cqt need to specify \fI\-\-path\fR because the path is written out to \fI\&.quicklisp\-path\fR in current directory\&. You can run \fIql deps\fR for a local system if \fI\&.asd\fR file is in current directory\&. This command is useful when you want to separate quicklisps for local project\&.
+.SH "EXAMPLES"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ ql deps \-\-path \&./quicklisp my\-project
+.fi
+.if n \{\
+.RE
+.\}
+.SH "AUTHOR"
+.PP
+\fBkeen(@blackenedgold) 3han5chou7@gmail\&.com\fR
+.RS 4
+Author.
+.RE
