@@ -59,7 +59,7 @@ cim_hg_get(){
 }
 
 cim_git_get(){
-    cim_run_if_installed git clone "$1" "$2"
+    cim_run_if_installed git clone --depth 10 "$1" "$2"
 }
 
 cim_svn_up(){
@@ -78,7 +78,7 @@ cim_vcs_checkout(){
     # :TODO: support branch checkout
     case "$1" in
         abcl)
-            cim_svn_get http://abcl.org/svn "$2"
+            cim_svn_get http://abcl.org/svn/trunk/abcl "$2"
         ;;
         ccl)
             if cim_ccl_arch > /dev/null; then
@@ -394,9 +394,34 @@ __ccl_install(){
     esac
 }
 
+__abcl_build(){
+    if [ "$2" = "head" ]; then
+        (cd "$CIM_HOME/src/$1-$2"; cim_with_output_control ant)
+        if [ "$?" != "0" ]; then
+            cim_error "Failed to build."
+            cim_cat_errlog "$1-$2" "build"
+            exit 1
+        fi
+    fi
+}
+
+__abcl_install_head(){
+    mkdir -p "$CIM_HOME/impls/$1-$2/bin"
+    cp "$CIM_HOME/src/$1-$2/dist/abcl.jar" "$CIM_HOME/impls/$1-$2/abcl.jar"
+    cp "$CIM_HOME/src/$1-$2/dist/abcl-contrib.jar" "$CIM_HOME/impls/$1-$2/abcl-contrib.jar"
+}
+
+__abcl_install_bin(){
+    cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
+}
+
 __abcl_install(){
     cim_message "Installing $1-$2"
-    cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
+    if [ "$2" = "head" ]; then
+        __abcl_install_head "$1" "$2"
+    else
+        __abcl_install_bin "$1" "$2"
+    fi
     mkdir -p  "$CIM_HOME/impls/$1-$2/bin"
     cat<<EOF > "$CIM_HOME/impls/$1-$2/bin/abcl"
 #!/bin/sh

@@ -52,6 +52,7 @@ cim_install_abcl_full="
 __start
 __download
 __expand
+__abcl_build
 __abcl_install
 __link
 __config_cim
