@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. "$CIM_HOME/scripts/cim_utils"
+. "$CIM_HOME/scripts/cim_lib_install"
+
+target=`cim_normarize_impl_version "$1"`
+if [ -z "$target" ] || ! cim_match "$target"  ".*-head"; then
+    cim_error "Error: cim_cmd_checkout : Invalid argument '$1'"
+    cim_error "'checkout' is valid only for '*-head's"
+    exit 1
+fi
+if  [ ! -d "$CIM_HOME/src/$target" ] ; then
+    cim_error "$target is not installed"
+    exit 1
+fi
+impl="${target%-*}"
+
+cd "$CIM_HOME/src/$target"
+cim_vcs_up "$impl" "$CIM_HOME/src/$target"
