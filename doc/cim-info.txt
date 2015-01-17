@@ -1,0 +1,24 @@
+cim-info(1)
+===========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-info - Display current state.
+
+SYNOPSIS
+--------
+[verse]
+'cim info'
+
+DESCRIPTION
+-----------
+Display the information of current cim. It includes the environment variables that cim uses, what current and default lisp implementation is, what version of each implementation is used, and where system lisp is.
+
+EXAMPLES
+--------
+* display info
+----
+$ cim info
+----

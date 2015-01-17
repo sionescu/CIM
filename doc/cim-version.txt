@@ -1,0 +1,25 @@
+cim-version(1)
+==============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-version - Show the version
+
+SYNOPSIS
+--------
+[verse]
+cim version
+
+DESCRIPTION
+-----------
+
+Show current cim's version. The version is the Unix time of release point.
+
+EXSAMPLES
+---------
+* show the version
+----
+$ cim version
+----

@@ -1,0 +1,27 @@
+cim-purge(1)
+============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-purge - Just clean and uninstall the impl.
+
+SYNOPSIS
+--------
+[verse]
+cim purge <impl[-version]> | all
+
+DESCRIPTION
+-----------
+Uninstall and clean up downloaded files of the given lisp implementation.
+This command is equivalent to 'clean' and 'uninstall'.
+
+EXAMPLES
+--------
+* purge the latest sbcl
+----
+$ cim purge sbcl
+----
+
+To show available target for 'purge', type 'cim list purge'

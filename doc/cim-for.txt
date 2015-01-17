@@ -1,0 +1,28 @@
+cim-for(1)
+==========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-for - Run 'cl' command for all specified impls as the backend.
+
+SYNOPSIS
+--------
+[verse]
+cim for {<impl[-version]>...| all | impls} do ARGS
+ 
+DESCRIPTION
+-----------
+Execute 'cl' for all the given lisp implementations with ARGS. If version is not specified, use the latest version. If the target is 'all', do on all the available targets. If the target is 'impls' run on each impl.
+
+EXAMPLES
+--------
+*  you gets 'Hello' 2 times
+----
+$ cim for clisp sbcl do -e '(format t "Hello~%")'
+----	
+* execute foo.lisp with all installed lisp implementations.
+----
+$ cim for all do foo.lisp
+----

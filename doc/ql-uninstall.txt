@@ -1,0 +1,23 @@
+ql-uninstall(1)
+===============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+ql-uninstall - Uninstall system.
+
+SYNOPSIS
+--------
+[verse]
+ql uninstall <system>...
+
+DESCRIPTION
+-----------
+Uninstall given system(s).
+
+EXAMPLES
+--------
+----
+$ ql uninstall caveman clack
+----

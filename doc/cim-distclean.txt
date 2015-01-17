@@ -1,0 +1,33 @@
+cim-distclean(1)
+================
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-distclean - Clean built dists.
+
+SYNOPSIS
+--------
+[verse]
+'cim distclean' <impl[-version]> | all
+ 
+DESCRIPTION
+-----------
+Clean built files of the given lisp implementation. It doesn't mean uninstall.
+If version is not specified, install the latest version.
+If target is 'all', do on all the available targets.
+
+EXAMPLES
+--------
+* distclean sbcl-1.1.14
+----
+$ cim distclean sbcl-1.1.14
+----
+	
+* distclean all installed lisp impls
+----
+$ cim distclean all
+----
+
+To show available lisp implementations, type 'cim list distclean'.

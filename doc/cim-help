@@ -4,7 +4,7 @@ Commands currently available
 install <impl[-version]>      ;; Install the impl.
 use <impl[-version]>          ;; Use specified impl as 'cl' command's backend.
 resume [rm] [resume..]        ;; Resume suspended installation(s) or give it up.
-list <command>                ;; List available target of <command>
+list <command>                ;; List available target of <command>.
 reinstall <impl[-version]>    ;; Reinstall the impl.
 clean <impl>|all              ;; Clean downloaded archive and src of the impl.
 distclean <impl>|all          ;; Clean built dists.

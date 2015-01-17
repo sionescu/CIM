@@ -1,0 +1,34 @@
+cim-list(1)
+===========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-list - List available target of command.
+
+SYNOPSIS
+--------
+[verse]
+'cim list' <subcommand>
+
+DESCRIPTION
+-----------
+List available target for subcommand.
+
+EXAMPLES
+--------
+* list available lisp implementation to install
+----
+$ cim list install
+----
+
+* show available target for list
+----
+$ cim list list
+----
+
+* targets for subsubcommands are also available
+----
+$ cim list resume rm
+----

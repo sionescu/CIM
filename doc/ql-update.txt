@@ -1,0 +1,23 @@
+ql-update(1)
+============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+ql-update - Update dist info and systems, or update quiclisp itself.
+
+SYNOPSIS
+--------
+[verse]
+ql update [client]
+
+DESCRIPTION
+-----------
+Update installed systems. If target 'client' is given, update quicklisp itself.
+
+EXAMPLES
+--------
+----
+$ ql update client
+----

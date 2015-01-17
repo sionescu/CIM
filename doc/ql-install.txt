@@ -1,0 +1,24 @@
+ql-install(1)
+=============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+ql-install - Install given system.
+
+SYNOPSIS
+--------
+[verse]
+ql install <system>...
+
+DESCRIPTION
+-----------
+Install given system(s) to $CIM_HOME/quicklisp. 'quickload' is also available as alias.
+
+EXAMPLES
+--------
+* install clack
+----
+$ ql install clack
+----

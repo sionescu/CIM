@@ -1,0 +1,41 @@
+cim-use(1)
+==========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-use -  aaa
+
+SYNOPSIS
+--------
+[verse]
+cim use <impl[-version]> [--default]
+
+DESCRIPTION
+-----------
+
+Use <impl> as background for cl command. It also affects bare lisp command.
+If version is not given, use latest version.
+If --default is given, use the specified implementation at initial state.
+
+EXAMPLES
+--------
+* use the latest sbcl
+----
+$ cim use sbcl
+$ sbcl --version
+SBCL 1.1.14
+----
+
+* use old sbcl
+----
+$ cim use sbcl-1.1.10
+$ sbcl --version
+SBCL 1.1.10
+----
+
+* use ccl-1.9 and set it default
+----
+$ cim use ccl-1.9 --default
+----

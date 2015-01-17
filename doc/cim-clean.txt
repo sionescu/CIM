@@ -1,0 +1,33 @@
+cim-clean(1)
+============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-clean - Clean downloaded archive and src of the impl.
+
+SYNOPSIS
+--------
+[verse]
+'cim clean' <impl[-version]> | all
+ 
+DESCRIPTION
+-----------
+Remove downloaded archives and extracted sources of the given lisp implementations.
+If version is not specified, install the latest version.
+If target is 'all', do on all the available targets.
+
+EXAMPLES
+--------
+* clean sbcl-1.1.14
+----
+$ cim clean sbcl-1.1.14
+----
+
+* clean all installed lisp impls
+----
+$ cim clean all
+----
+
+To show available lisp implementations, type `cim list clean`.

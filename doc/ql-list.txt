@@ -1,0 +1,24 @@
+ql-list(1)
+==========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+ql-list - List available/installed systems.
+
+SYNOPSIS
+--------
+[verse]
+'ql list' {remote | [local]}
+
+DESCRIPTION
+-----------
+
+List installed systems. if 'remote' is given, list all the available systems. 'ql list local' is equivalent to 'ql list'.
+
+EXAMPLES
+--------
+----
+$ ql list remote
+----

@@ -1,14 +1,26 @@
-Usage:
+ql-deps(1)
+==========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
 
-	ql deps [--path <path>] <system>
+NAME
+----
+ql-deps - Install dependencies of system.
 
-Description:
+SYNOPSIS
+--------
+[verse]
+'ql deps' [--path <path>] <system>
 
+DESCRIPTION
+-----------
 Install dependencies of given system. If path is specified, install dependencies there.
 Once you run 'ql --path <path> deps', you don't need to specify '--path' because the path is written out to '.quicklisp-path' in current directory.
 You can run 'ql deps' for a local system if '.asd' file is in current directory.
 This command is useful when you want to separate quicklisps for local project.
 
-Example:
-
-	ql deps --path ./quicklisp my-project
+EXAMPLES
+--------
+----
+$ ql deps --path ./quicklisp my-project
+----

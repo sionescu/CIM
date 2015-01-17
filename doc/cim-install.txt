@@ -1,0 +1,39 @@
+cim-install(1)
+==============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-install - Install the impl.
+
+SYNOPSIS
+--------
+[verse]
+'cim install' <impl[-version]>
+ 
+DESCRIPTION
+-----------
+Install the given lisp implementation to cim directory.
+If version is not specified, install the latest version.
+If you want to pass specific options to 'configure' script,
+prefix 'flags='.
+
+EXAMPLES
+--------
+* install sbcl-1.1.14
+----
+cim install sbcl-1.1.14
+----	
+
+* install the latest sbcl with all the feature enabled
+----
+flags='--fancy' cim install sbcl
+----	
+
+* install latest clisp with option.
+----
+flags='--with-libsigsegv-prefix=/usr/local' cim install clisp
+----
+
+To show available lisp implementations, type 'cim list install'.

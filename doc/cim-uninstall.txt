@@ -1,0 +1,33 @@
+cim-uninstall(1)
+================
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-uninstall - Uninstall the impl.
+
+SYNOPSIS
+--------
+[verse]
+'cim uninstall' <impl[-version]> | all
+ 
+DESCRIPTION
+-----------
+Uninstall the given lisp implementation(s). It doesn't remove downloaded archives or extracted sources.
+If version is not specified, install the latest version.
+If target is 'all', do on all the available targets.
+
+EXAMPLES
+--------
+* uninstall sbcl-1.1.14
+----
+$ cim uninstall sbcl-1.1.14
+----
+
+* uninstall all installed lisp impls
+----
+$ cim uninstall all
+----
+
+To show available lisp implementations, type 'cim list uninstall'.

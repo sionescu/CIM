@@ -1,0 +1,24 @@
+cim-get(1)
+==========
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-get - Upgrade cim itself.
+
+SYNOPSIS
+--------
+[verse]
+'cim get'
+
+DESCRIPTION
+-----------
+Upgrade to the latest cim.
+
+EXAMPLES
+--------
+* Upgrade cim
+----
+$ cim get
+----
