@@ -47,6 +47,10 @@ cim_wget(){
     fi
 }
 
+cim_match(){
+    expr "$1" : "$2" > /dev/null
+}
+
 cim_with_output_control(){
     impl="$1"
     step="$2"
@@ -182,6 +186,39 @@ cim_sbcl_arch(){
     esac
 }
 
+cim_ccl_arch(){
+    # supported are:
+    # + androidarm
+    # + darwinx86
+    # + freebsdx86
+    # + linuxarm
+    # + linuxppc
+    # + linuxx86
+    # + solarisx86
+    # + windows
+    case `cim_arch` in
+        intel/*)
+            echo "`uname | tr A-Z a-z`x86"
+            return 0
+            ;;
+        arm*)
+            if [ "`uname`" = "Linux" ];then
+                echo "linuxarm"
+                return 0
+            fi
+            ;;
+        ppc*)
+            if [ "`uname`" = "Linux" ];then
+                echo "linuxppc"
+                return 0
+            fi
+            ;;
+    esac
+    echo ""
+    return 1
+
+}
+
 cim_distribution_archive_type(){
     case $1 in
         sbcl|alisp) echo bz2;;
@@ -198,5 +235,14 @@ __sed_i(){
 
 __which(){
     command -v "$1" 2> /dev/null
+}
+
+cim_run_if_installed(){
+    if __which "$1" > /dev/null; then
+        "$@"
+    else
+        cim_error "You need install `$1`"
+        return 1
+    fi
 }
 

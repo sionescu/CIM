@@ -200,7 +200,7 @@
        (#.*interrupt-condition* () (exit))
        (error (e) 
          (write-line "An error occured while processing command line arguments")
-         (princ 'e)
+         (princ e)
          (exit 1)))
      (in-package :cim)
      (flet ((main ()
