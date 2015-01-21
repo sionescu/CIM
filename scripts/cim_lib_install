@@ -15,26 +15,12 @@ __get_download_path(){
             } | cut -f 3
             ;;
         ccl)
-            case `cim_arch` in
-                intel/*)
-                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`uname | tr A-Z a-z`x86.tar.gz"
-                    return 0
-                    ;;
-                arm*)
-                   if [ "`uname`" = "Linux" ];then
-                       echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxarm.tar.gz"
-                       return 0
-                   fi
-                    ;;
-                ppc*)
-                   if [ "`uname`" = "Linux" ];then
-                    echo "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-linuxppc.tar.gz"
-                    return 0
-                    fi
-                    ;;
-            esac
-            cim_error "CCL does not support your machine."
-            return 1
+            if cim_ccl_arch > /dev/null; then
+                echo  "ftp://ftp.clozure.com/pub/release/$2/ccl-$2-`cim_ccl_arch`.tar.gz"
+            else
+                cim_error "CCL does not support your machine."
+                return 1
+            fi
             ;;
         alisp)
             if expr `cim_arch` : 'intel/.*' > /dev/null 2>&1 ; then
@@ -64,6 +50,83 @@ __get_download_path(){
     esac
 }
 
+cim_svn_get(){
+    cim_run_if_installed svn checkout "$1" "$2"
+}
+
+cim_hg_get(){
+    cim_run_if_installed hg clone "$1" "$2"
+}
+
+cim_git_get(){
+    cim_run_if_installed git clone --depth 10 "$1" "$2"
+}
+
+cim_svn_up(){
+    cim_run_if_installed svn update
+}
+
+cim_hg_up(){
+    cim_run_if_installed hg pull --update
+}
+
+cim_git_up(){
+    cim_run_if_installed git pull origin master
+}
+
+cim_vcs_checkout(){
+    # :TODO: support branch checkout
+    case "$1" in
+        abcl)
+            cim_svn_get http://abcl.org/svn/trunk/abcl "$2"
+        ;;
+        ccl)
+            if cim_ccl_arch > /dev/null; then
+                cim_svn_get "http://svn.clozure.com/publicsvn/openmcl/trunk/`cim_ccl_arch`/ccl" "$2"
+            else
+                cim_error"CCL don't support your machine"
+                exit 1
+            fi
+        ;;
+        clisp)
+            cim_hg_get http://hg.code.sf.net/p/clisp/clisp "$2"
+        ;;
+        ecl)
+            cim_git_get git://git.code.sf.net/p/ecls/ecl "$2"
+        ;;
+        mkcl)
+            cim_git_get git://common-lisp.net/projects/mkcl/mkcl.git "$2"
+        ;;
+        sbcl)
+            cim_git_get git://git.code.sf.net/p/sbcl/sbcl "$2"
+        ;;
+    esac
+}
+
+cim_vcs_up(){
+    case "$1" in
+        abcl)
+            (cd "$2"; cim_svn_up)
+            ;;
+        ccl)
+            (cd "$2"; cim_svn_up)
+            ;;
+        clisp)
+            (cd "$2"; cim_hg_up)
+            ;;
+        ecl)
+            (cd "$2"; cim_git_up)
+            ;;
+        mkcl)
+            (cd "$2"; cim_git_up)
+            ;;
+        sbcl)
+            (cd "$2"; cim_git_up)
+            ;;
+    esac
+}
+
+
 __impl_installed_p(){
     [ -d "$CIM_HOME/impls/$1-$2" ]
 }
@@ -90,20 +153,33 @@ __start(){
 }
 
 __download(){
-    cim_message "Downloading archive."
-    impl_archive="$CIM_HOME/archives/$1-$2.tar.`cim_distribution_archive_type "$1"`"
-    
-    url=`__get_download_path "$1" "$2"`
-    [ "$?" = 0 ] || exit $?
-    
-    if [ ! -f "$impl_archive" ] || [ -n "$url" ]; then
-        mkdir -p "$CIM_HOME/archives/"
-        cim_with_output_control "$1-$2" "download" cim_wget "$url" "$impl_archive"
-    fi
-    if [ "$?" != "0" ]; then
-        cim_error "Failed to download."
-        cim_cat_errlog "$1-$2" "download"
-        exit 1
+    if [ "$2" = head ];then
+        if [ ! -d "$CIM_HOME/src/$1-$2" ]; then
+            cim_message "Checking out repository."
+            mkdir -p "$CIM_HOME/src/"
+            cim_with_output_control "$1-$2" "checkout" cim_vcs_checkout "$1" "$CIM_HOME/src/$1-$2"
+        fi
+        if [ "$?" != "0" ]; then
+            cim_error "Failed to checkout."
+            cim_cat_errlog "$1-$2" "checkout"
+            exit 1
+        fi
+    else
+        cim_message "Downloading archive."
+        impl_archive="$CIM_HOME/archives/$1-$2.tar.`cim_distribution_archive_type "$1"`"
+        
+        url=`__get_download_path "$1" "$2"`
+        [ "$?" = 0 ] || exit $?
+        
+        if [ ! -f "$impl_archive" ] || [ -n "$url" ]; then
+            mkdir -p "$CIM_HOME/archives/"
+            cim_with_output_control "$1-$2" "download" cim_wget "$url" "$impl_archive"
+        fi
+        if [ "$?" != "0" ]; then
+            cim_error "Failed to download."
+            cim_cat_errlog "$1-$2" "download"
+            exit 1
+        fi
     fi
 }
 
@@ -116,23 +192,25 @@ cim_expand(){
     $cmd -dc "$2" | tar -xf - -C "$3"
 }
 __expand(){
-    cim_message "Expanding archive."
+    if [ "$2" != head ]; then
+        cim_message "Expanding archive."
 
-    dist="$1-$2.tar.`cim_distribution_archive_type "$1"`"
-    type="`cim_distribution_archive_type "$1"`"
+        dist="$1-$2.tar.`cim_distribution_archive_type "$1"`"
+        type="`cim_distribution_archive_type "$1"`"
 
-    rm -rf  "$CIM_HOME/src/$1-$2"
-    mkdir -p "$CIM_HOME/src"
-    cim_with_output_control "$1-$2" "expand" cim_expand "$type" "$CIM_HOME/archives/$dist" "$CIM_HOME/src"
+        rm -rf  "$CIM_HOME/src/$1-$2"
+        mkdir -p "$CIM_HOME/src"
+        cim_with_output_control "$1-$2" "expand" cim_expand "$type" "$CIM_HOME/archives/$dist" "$CIM_HOME/src"
 
-    if [ "$?" != "0" ]; then
-        cim_error "Failed to expand."
-        cim_cat_errlog "$1-$2" "expand"
-        exit 1
-    fi
-    
-    if  [ "$1" = ccl ];then
-        mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
+        if [ "$?" != "0" ]; then
+            cim_error "Failed to expand."
+            cim_cat_errlog "$1-$2" "expand"
+            exit 1
+        fi
+        
+        if  [ "$1" = ccl ];then
+            mv "$CIM_HOME/src/$1" "$CIM_HOME/src/$1-$2"
+        fi
     fi
 }
 __configure(){
@@ -316,9 +394,34 @@ __ccl_install(){
     esac
 }
 
+__abcl_build(){
+    if [ "$2" = "head" ]; then
+        (cd "$CIM_HOME/src/$1-$2"; cim_with_output_control ant)
+        if [ "$?" != "0" ]; then
+            cim_error "Failed to build."
+            cim_cat_errlog "$1-$2" "build"
+            exit 1
+        fi
+    fi
+}
+
+__abcl_install_head(){
+    mkdir -p "$CIM_HOME/impls/$1-$2/bin"
+    cp "$CIM_HOME/src/$1-$2/dist/abcl.jar" "$CIM_HOME/impls/$1-$2/abcl.jar"
+    cp "$CIM_HOME/src/$1-$2/dist/abcl-contrib.jar" "$CIM_HOME/impls/$1-$2/abcl-contrib.jar"
+}
+
+__abcl_install_bin(){
+    cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
+}
+
 __abcl_install(){
     cim_message "Installing $1-$2"
-    cp -R "$CIM_HOME/src/$1-bin-$2" "$CIM_HOME/impls/$1-$2"
+    if [ "$2" = "head" ]; then
+        __abcl_install_head "$1" "$2"
+    else
+        __abcl_install_bin "$1" "$2"
+    fi
     mkdir -p  "$CIM_HOME/impls/$1-$2/bin"
     cat<<EOF > "$CIM_HOME/impls/$1-$2/bin/abcl"
 #!/bin/sh

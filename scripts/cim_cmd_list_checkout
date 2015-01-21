@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find "$CIM_HOME/src/" -name '*-head' -mindepth 1 -maxdepth 1 -exec basename '{}' ';'
