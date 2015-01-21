@@ -2,10 +2,10 @@
 . "$CIM_HOME/scripts/cim_utils"
 case "$1" in
     "")
-	cat "$CIM_HOME/res/cim_help" ;;
+	cat "$CIM_HOME/doc/cim-help" ;;
     *)
-	if [ -s "$CIM_HOME/res/cim_help_$1" ];then
-	    cat "$CIM_HOME/res/cim_help_$1"
+	if [ -s "$CIM_HOME/doc/man/man1/cim-$1.1" ];then
+            man "$CIM_HOME/doc/man/man1/cim-$1.1"
 	else
 	    cim_error "Help for '$1' is not prepared, sorry."
 	    return 1

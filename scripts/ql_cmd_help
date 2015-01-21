@@ -1,10 +1,10 @@
 #!/bin/sh -
 case "$1" in
     "")
-	cat "$CIM_HOME/res/ql_help" ;;
+	cat "$CIM_HOME/doc/ql-help" ;;
     *)
-	if [ -s "$CIM_HOME/res/ql_help_$1" ];then
-	    cat "$CIM_HOME/res/ql_help_$1"
+	if [ -s "$CIM_HOME/doc/man/man1/ql-$1.1" ];then
+	    man "$CIM_HOME/doc/man/man1/ql-$1.1"
 	else
 	    echo "Help for '$1' is not prepared, sorry." >&2
 	    return 1
