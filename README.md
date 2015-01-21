@@ -21,7 +21,7 @@ To change install path, set `CIM_HOME`.
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | CIM_HOME=/path/to/cim /bin/sh
 ```
 
-Notice:  
+Notice1:  
 You are not required to intall `curl`. If you have `wget`, this will do.
 ```
 $ wget -O - https://raw.github.com/KeenS/CIM/master/scripts/cim_installer |  /bin/sh
@@ -32,6 +32,11 @@ $ fetch -o - https://raw.github.com/KeenS/CIM/master/scripts/cim_installer |  /b
 ```
 .
 
+Notice1:  
+To setup CIM, you need to run following command (or something like it) and reload the init file (the installer will guide you).
+```
+cim config sh >> ~/.bashrc
+```
 ## USAGE
 
 Most of commands are designed refering to rvm.
