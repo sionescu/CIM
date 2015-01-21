@@ -1,3 +1,4 @@
+  + `cim help` and `ql help` use man format.
 # 2015-01-08
   + `cim config` command is added.
   + CIM installer doesn't add CIM setup line automatically any more. Use `cim config` command.

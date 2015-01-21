@@ -23,3 +23,7 @@ EXSAMPLES
 ----
 $ cim version
 ----
+* show the release date
+----
+$ date -r $(cim version)
+----

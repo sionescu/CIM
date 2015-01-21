@@ -26,7 +26,7 @@ EXAMPLES
 cim install sbcl-1.1.14
 ----	
 
-* install the latest sbcl with all the feature enabled
+* install the latest sbcl with all the features enabled
 ----
 flags='--fancy' cim install sbcl
 ----	
