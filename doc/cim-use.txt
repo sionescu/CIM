@@ -5,7 +5,7 @@ keen(@blackenedgold) 3han5chou7@gmail.com
 
 NAME
 ----
-cim-use -  aaa
+cim-use -  Use specified impl as 'cl' command's backend.
 
 SYNOPSIS
 --------
