@@ -1,0 +1,27 @@
+cim-checkout(1)
+===============
+keen(@blackenedgold) 3han5chou7@gmail.com
+:man manual: CIM Manual
+
+NAME
+----
+cim-checkout -  An experimental command. Update source files fetched from VCS.
+
+SYNOPSIS
+--------
+[verse]
+'cim checkout' <impl>-head
+
+DESCRIPTION
+-----------
+Update source files fetched from VCS to head(trunk|master). This command is very experimental and likely changed or deprecated in future.
+If you want to install checked out impl, use `cim reinstall`.
+
+Only head version is supported.
+
+EXAMPLES
+--------
+* pull from git
+----
+$ cim checkout sbcl-head
+----
