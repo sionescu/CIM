@@ -1,3 +1,4 @@
+  + Experimental head install and `cim checkout` command is added.
   + `cim help` and `ql help` use man format.
 # 2015-01-08
   + `cim config` command is added.
