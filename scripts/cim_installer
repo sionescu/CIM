@@ -57,7 +57,7 @@ get_cim(){
 }
 
 expand_cim(){
-    rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res"
+    rm -rf "$CIM_HOME/scripts/" "$CIM_HOME/lib" "$CIM_HOME/res" "$CIM_HOME/doc"
     touch "$CIM_HOME/NEWS"
     mv "$CIM_HOME/NEWS" "$CIM_HOME/NEWS.old"
     cp -rf "$TMPDIR/CIM-${CIM_INSTALL_BRANCH}/"* "$CIM_HOME/"
