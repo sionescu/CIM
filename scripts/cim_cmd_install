@@ -1,8 +1,8 @@
 #!/bin/sh -
 set -e
 . "$CIM_HOME/scripts/cim_utils"
-# :FIXME: cim_split_impl_version is used to validate argument
-if ! cim_split_impl_version "$1" > /dev/null 2>&1 ; then
+target=`cim_normalize_imple_verison "$1"`
+if ! cim_validate_impl_version "$target"  > /dev/null 2>&1 ; then
     cim_error "Error: cim_cmd_install: invalid argument '$1'"
     exit 1
 fi
@@ -68,8 +68,6 @@ __link
 __config_cim
 __install_ql_if_need
 "
-
-target="$1"
 shift
 set -e
 set  --  `cim_split_impl_version "$target"` "$@"
