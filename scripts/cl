@@ -4,10 +4,11 @@ export CIM_HOME
 . "$CIM_HOME/scripts/cim_utils"
 if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
-    export LISP_IMPL
 else
     LISP_IMPL=`cim_normarize_impl_version "$LISP_IMPL"`
 fi
+
+export LISP_IMPL
 
 if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
     cim_set_sbcl_home_for "$LISP_IMPL"
@@ -75,6 +76,9 @@ case "$LISP_IMPL" in
         ;;
     alisp*)
         run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} --qq -L "$load_file" --kill -- "$@"
+        ;;
+    lisp*)
+        run_lisp ${use_core+-core} ${use_core+"$lisp_core_file"} -quiet -noinit -batch -load "$load_file" -eval '(quit)' -- "$@"
         ;;
     "")
         echo "\$LISP_IMPL is not set. Have you initialized cim?" >&2

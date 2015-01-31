@@ -80,6 +80,7 @@
                                        (declare (ignore hook))
                                        (error condition))))
                ,@body)
+       #+(or allegro ccl clisp ecl sbcl)
        (#.*interrupt-condition* (c)
          (handle-interrupt c))
        (condition (c)

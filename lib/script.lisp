@@ -21,17 +21,17 @@
   #+gcl (do*  ((var si::*command-args* (cdr list))
                (list var var))
               ((string= (car list) "--") (return (cdr list))))
-  #+cmu ext:*command-line-words*
+  #+cmu ext:*command-line-application-arguments*
   #+ccl ccl:*unprocessed-command-line-arguments*
   #+lispworks system:*line-arguments-list*)
 (defvar *argv*)
 
 (defun getenv (name &optional default)
-  #+CMU
+  #+cmu
   (let ((x (assoc name ext:*environment-list*
                   :test #'string=)))
     (if x (cdr x) default))
-  #-CMU
+  #-cmu
   (or
    #+abcl (java:jstatic "getenv" "java.lang.System" name)
    #+allegro (sys:getenv name)
@@ -43,6 +43,17 @@
    #+lispworks (lispworks:environment-variable name)
    default))
 
+(defun exit (&optional (status 0))
+ #+ccl (ccl:quit status)
+ ;; http://www.sbcl.org/manual/#Exit
+ #+sbcl (sb-ext:exit :code status)
+ ;; http://franz.com/support/documentation/9.0/doc/operators/excl/exit.htm
+ #+allegro (excl:exit status :quiet t)
+ #+clisp (ext:quit status)
+ #+cmu (unix:unix-exit status)
+ #+ecl (ext:quit status)
+ #-(or ccl sbcl allegro clisp cmu ecl) (cl-user::quit))
+
 (defun cim_home (path)
   (concatenate 'string (getenv "CIM_HOME") path))
 (defun ql_home (path)
@@ -51,14 +62,19 @@
 (defvar *help*)
 (defvar *options* (make-hash-table))
 
+#+(or allegro ccl clisp ecl sbcl)
 (defvar *interrupt-condition*
   ;; It seems abcl does not raise any conditions
   #+allegro 'excl:interrupt-signal
   #+ccl 'ccl:interrupt-signal-condition
   #+clisp 'system::simple-interrupt-condition
   #+ecl 'ext:interactive-interrupt
-  #+sbcl 'sb-sys:interactive-interrupt
-  #-(or allegro ccl clisp ecl sbcl) 'no-conditon-known)
+  #+sbcl 'sb-sys:interactive-interrupt)
+
+#+cmu
+(system:enable-interrupt Unix:sigint (lambda () (exit 1)))
+
+
 (setf *load-verbose* nil)
 
 (let ((v))
@@ -89,17 +105,6 @@
         :for bytes-read = (read-sequence buffer stream)
         :do (write-sequence buffer str :start 0 :end bytes-read)
         :while (= bytes-read buffer-size)))))
-
-(defun exit (&optional (status 0))
- #+ccl (ccl:quit status)
- ;; http://www.sbcl.org/manual/#Exit
- #+sbcl (sb-ext:exit :code status)
- ;; http://franz.com/support/documentation/9.0/doc/operators/excl/exit.htm
- #+allegro (excl:exit status :quiet t)
- #+clisp (ext:quit status)
- #+cmucl (unix:unix-exit status)
- #+ecl (ext:quit status)
- #-(or ccl sbcl allegro clisp cmucl ecl) (cl-user::quit))
 
 (defun canonicalize-path (path)
   (if (char= #\/ (aref path (1- (length path))))
@@ -183,9 +188,8 @@
                        (("-v" "--version") ()
                         "print the version" (setf (opt :version) t))))
 
-  (if (equal *default-pathname-defaults* #p"")
-      (setf *default-pathname-defaults*
-            (pathname (canonicalize-path (getenv "PWD")))))
+  (setf *default-pathname-defaults*
+        (pathname (canonicalize-path (getenv "PWD"))))
   (cond
     ((opt :version)
      (write-line (version)))
@@ -197,6 +201,7 @@
      (handler-case
          (dolist (sexp (nreverse cim::sexps)) 
            (eval sexp))
+       #+(or allegro ccl clisp ecl sbcl)
        (#.*interrupt-condition* () (exit))
        (error (e) 
          (write-line "An error occured while processing command line arguments")
@@ -213,8 +218,8 @@
                            (*package* (find-package :cl)))
                        (with-input-from-string (in (opt :sexp))
                          (loop :for sexp := (read in nil +eof+)
-                            :until (eq sexp +eof+) :do
-                            (eval sexp)))))
+                               :until (eq sexp +eof+) :do
+                                 (eval sexp)))))
                     ((car *argv*)
                      (let ((*load-print* nil)
                            (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
@@ -227,11 +232,13 @@
                      (let ((+eof+ (gensym "eof"))
                            (*package* (find-package :cl)))
                        (loop
-                          :for sexp := (read *standard-input* nil +eof+)
-                          :until (eq sexp +eof+) :do
-                          (eval sexp)))))
+                         :for sexp := (read *standard-input* nil +eof+)
+                         :until (eq sexp +eof+) :do
+                           (eval sexp)))))
+                #+(or allegro ccl clisp ecl sbcl)
                 (#.*interrupt-condition* () (exit))
-                (error (e) 
+                (error (e)
+                  (princ e)
                   (write-line "An error occured while processing command line arguments")
                   (princ e)
                   (exit 1)))))
