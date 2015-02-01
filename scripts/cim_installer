@@ -163,6 +163,8 @@ main(){
         cat <<EOF
 Usage:
 $0 [git-repo]
+
+Use CIM_INSTALL_BRANCH to control install branch
 EOF
         exit
     fi
