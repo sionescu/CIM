@@ -1,0 +1,14 @@
+#!/bin/sh -
+if [ -n "$LISP" ];then
+    if [ ! -L "$CIM_HOME/bin/$LISP" ];then
+	echo "$LISP is not installed"
+	exit 1
+    fi
+    if ! expr "$LISP" : 'lisp.*' > /dev/null 2>&1 ;then
+	echo "$LISP is not a lisp"
+    fi
+    lisp="$LISP"
+else
+    . "$CIM_HOME/config/current.$CIM_ID"
+fi
+exec "$lisp" "$@"
