@@ -1,9 +1,12 @@
 #!/bin/sh -
 set -e
 . "$CIM_HOME/scripts/cim_utils"
-target=`cim_normalize_imple_verison "$1"`
-if ! cim_validate_impl_version "$target"  > /dev/null 2>&1 ; then
-    cim_error "Error: cim_cmd_install: invalid argument '$1'"
+
+target=`cim_normalize_impl_version "$1"`
+shift
+set  --  `cim_split_impl_version "$target"` "$@"
+if ! cim_validate_impl_version "$1" "$2"  > /dev/null 2>&1 ; then
+    cim_error "Error: cim_cmd_install: invalid argument '$1-$2'"
     exit 1
 fi
 
@@ -68,24 +71,21 @@ __link
 __config_cim
 __install_ql_if_need
 "
-shift
-set -e
-set  --  `cim_split_impl_version "$target"` "$@"
 
-case "$target" in
-    clisp*|ecl*)
+case "$1" in
+    clisp|ecl)
 	processes="$cim_install_full"
 	;;
-    abcl*)
+    abcl)
 	processes="$cim_install_abcl_full"
 	;;
-    sbcl*)
+    sbcl)
 	processes="$cim_install_sbcl_full"
 	;;
-    ccl*)
+    ccl)
 	processes="$cim_install_ccl_full"
 	;;
-    alisp*)
+    alisp)
 	processes="$cim_install_alisp_full"
 	;;
     *)
