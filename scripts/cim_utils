@@ -100,8 +100,9 @@ cim_validate_impl_version(){
                 return 0
             fi
         done
+        return 1
     }
-    return 1
+    return $?
 
 }
 
