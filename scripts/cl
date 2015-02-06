@@ -5,7 +5,7 @@ export CIM_HOME
 if [ -z "$LISP_IMPL" ];then
     . "$CIM_HOME/config/current.$CIM_ID"
 else
-    LISP_IMPL=`cim_normarize_impl_version "$LISP_IMPL"`
+    LISP_IMPL=`cim_normalize_impl_version "$LISP_IMPL"`
 fi
 
 export LISP_IMPL

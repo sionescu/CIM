@@ -7,7 +7,7 @@ if [ $# -gt 0 ];then
 	    set -- `cim list resume rm | grep -v '\(Subcommand\|^#\)'`
 	    continue
 	fi
-	resume=`cim_normarize_impl_version "$1"`
+	resume=`cim_normalize_impl_version "$1"`
 
 	if [ -f "$CIM_HOME/res/resume-$resume" ];then
 	    rm "$CIM_HOME/res/resume-$resume"

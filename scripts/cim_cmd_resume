@@ -13,7 +13,7 @@ case "$1" in
 		continue
 	    else
 		. "$CIM_HOME/scripts/cim_utils"
-		target=`cim_normarize_impl_version "$1"`
+		target=`cim_normalize_impl_version "$1"`
 		if [ -s "$CIM_HOME/tmp/resume-$target" ]; then
 		    resume="$CIM_HOME/tmp/resume-$target"
 		    impl=${target%-*}

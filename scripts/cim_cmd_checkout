@@ -3,7 +3,7 @@
 . "$CIM_HOME/scripts/cim_utils"
 . "$CIM_HOME/scripts/cim_lib_install"
 
-target=`cim_normarize_impl_version "$1"`
+target=`cim_normalize_impl_version "$1"`
 if [ -z "$target" ] || ! cim_match "$target"  ".*-head"; then
     cim_error "Error: cim_cmd_checkout : Invalid argument '$1'"
     cim_error "'checkout' is valid only for '*-head's"

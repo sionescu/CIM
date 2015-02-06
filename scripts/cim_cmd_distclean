@@ -7,7 +7,7 @@ while [ $# -gt 0 ];do
 	set -- `cim list distclean| grep -v '\(Subcommand\|^#\)'`
 	continue
     fi
-    target=`cim_normarize_impl_version "$1"`
+    target=`cim_normalize_impl_version "$1"`
     if [ -z "$target" ]; then
         cim_error "Error: cim_cmd_distclean: invalid argument '$1'"
         exit 1

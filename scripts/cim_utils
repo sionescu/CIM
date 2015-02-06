@@ -74,7 +74,7 @@ cim_split_impl_version(){
     echo "$1" | tr - \  
 }
 
-cim_normarize_impl_version(){
+cim_normalize_impl_version(){
     if cim_match "$1" ".*-.*"; then
         echo "$1"
     else
@@ -137,7 +137,7 @@ cim_set_sbcl_home_for(){
     if [ "$1" = "sbcl-system" ];then
 	expr `ls -l "$CIM_HOME/bin/sbcl-system" | awk '{print $NF}'` : '\(.*\)/bin/sbcl' | { read sbcl_base; SBCL_HOME="${sbcl_base}/lib/sbcl";}
     else
-	SBCL_HOME="$CIM_HOME/impls/`cim_normarize_impl_version $1`/lib/sbcl"
+	SBCL_HOME="$CIM_HOME/impls/`cim_normalize_impl_version $1`/lib/sbcl"
     fi
 }
 
