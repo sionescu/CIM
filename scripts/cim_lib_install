@@ -139,7 +139,7 @@ __configure(){
     [ -n "$IN_RESUME" ] && rm -f "$CIM_HOME/src/$1-$2/src/confg.cache"
     [ "$1" = "ecl" ]    && flags="$flags --mandir=$CIM_HOME/share/man"
     [ "$1" = "clisp" ]  && flags="$flags --mandir=$CIM_HOME/share/man"
-    cim_message "Configueing $1-$2"
+    cim_message "Configuring $1-$2"
     (cd "$CIM_HOME/src/$1-$2" &&
      cim_with_output_control "$1-$2" "configure" ./configure $flags --prefix="$CIM_HOME/impls/$1-$2")
     if [ "$?" != "0" ]; then
