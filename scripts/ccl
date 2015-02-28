@@ -10,6 +10,10 @@ if [ -n "$CCL" ];then
     fi
     ccl="$CCL"
 else
-    . "$CIM_HOME/config/current.$CIM_ID"
+    if [ -z "$CIM_ID" ]; then
+        . "$CIM_HOME/config/default"
+    else
+        . "$CIM_HOME/config/current.$CIM_ID"
+    fi
 fi
 exec "$ccl" "$@"

@@ -2,15 +2,19 @@
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 export CIM_HOME
 . "$CIM_HOME/scripts/cim_utils"
-if [ -z "$LISP_IMPL" ];then
-    . "$CIM_HOME/config/current.$CIM_ID"
+if [ -z "$LISP_IMPL" ]; then
+    if [ -z "$CIM_ID" ]; then
+        . "$CIM_HOME/config/default"
+    else
+        . "$CIM_HOME/config/current.$CIM_ID"
+    fi
 else
     LISP_IMPL=`cim_normalize_impl_version "$LISP_IMPL"`
 fi
 
 export LISP_IMPL
 
-if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1 ;then
+if expr "$LISP_IMPL" : 'sbcl.*' > /dev/null 2>&1; then
     cim_set_sbcl_home_for "$LISP_IMPL"
     export SBCL_HOME
 fi
@@ -22,7 +26,7 @@ fi
 
 for ARG;do
     # if `use_core` is set
-    if ${use_core+:} false && ${lisp_core_file+false} true;then
+    if ${use_core+:} false && ${lisp_core_file+false} true; then
         lisp_core_file="$ARG"
         continue
     fi
@@ -44,7 +48,7 @@ for ARG;do
 	    
     esac
 done
-if ${use_core+:} false && ${lisp_core_file+false} true;then
+if ${use_core+:} false && ${lisp_core_file+false} true; then
     cim_error "You must specify core file"
     exit 1
 fi
