@@ -6,6 +6,7 @@ if [ -n "$LISP" ];then
     fi
     if ! expr "$LISP" : 'lisp.*' > /dev/null 2>&1 ;then
 	echo "$LISP is not a lisp"
+	exit 1
     fi
     lisp="$LISP"
 else

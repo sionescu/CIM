@@ -6,6 +6,7 @@ if [ -n "$ECL" ];then
     fi
     if ! expr "$ECL" : 'ecl.*' > /dev/null 2>&1 ;then
 	echo "$ECL is not a ecl"
+	exit 1
     fi
     ecl="$ECL"
 else
