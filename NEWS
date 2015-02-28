@@ -1,6 +1,10 @@
   + add one shot use of `cl` command
   + Experimental head install and `cim checkout` command is added.
   + `cim help` and `ql help` use man format.
+# 2015-02-28
+  + Now the latest sbcl is 1.2.9
+# 2015-02-23
+  + Now the latest ecl is 15.2.22
 # 2015-02-01
   + Now the latest sbcl is 1.2.8
 # 2015-01-08
