@@ -1,4 +1,5 @@
 #!/bin/sh -
+: ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ABCL" ];then
     if [ ! -L "$CIM_HOME/bin/$ABCL" ];then
 	echo "$ABCL is not installed"
@@ -12,4 +13,4 @@ if [ -n "$ABCL" ];then
 else
     . "$CIM_HOME/config/current.$CIM_ID"
 fi
-exec "$abcl" "$@"
+exec "$CIM_HOME/bin/$abcl" "$@"
