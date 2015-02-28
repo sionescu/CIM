@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$CCL" ];then
-    if ! expr "$CCL" : 'ccl.*' > /dev/null 2>&1;then
+    if [ "$CCL" = ccl ]; then
+        CCL=ccl-`grep ccl "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$CCL" : 'ccl.*' > /dev/null 2>&1;then
 	echo "$CCL is not a ccl"
 	exit 1
     fi

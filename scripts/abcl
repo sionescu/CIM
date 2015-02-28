@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ABCL" ];then
-    if ! expr "$ABCL" : 'abcl.*' > /dev/null 2>&1;then
+    if [ "$ABCL" = abcl ]; then
+        ABCL=abcl-`grep abcl "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$ABCL" : 'abcl.*' > /dev/null 2>&1;then
 	echo "$ABCL is not a abcl"
 	exit 1
     fi

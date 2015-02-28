@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$SBCL" ] ;then
-    if ! expr "$SBCL" : 'sbcl.*' > /dev/null 2>&1 ;then
+    if [ "$SBCL" = sbcl ]; then
+        SBCL=sbcl-`grep sbcl "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$SBCL" : 'sbcl.*' > /dev/null 2>&1 ;then
 	echo "$SBCL is not a sbcl"
 	exit 1
     fi

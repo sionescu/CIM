@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ECL" ];then
-    if ! expr "$ECL" : 'ecl.*' > /dev/null 2>&1 ;then
+    if [ "$ECL" = ecl ]; then
+        ECL=ecl-`grep ecl "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$ECL" : 'ecl.*' > /dev/null 2>&1 ;then
 	echo "$ECL is not a ecl"
 	exit 1
     fi

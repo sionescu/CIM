@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$CLISP" ];then
-    if ! expr "$CLISP" : 'clisp.*' > /dev/null 2>&1 ;then
+    if [ "$CLISP" = clisp ]; then
+        CLISP=clisp-`grep clisp "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$CLISP" : 'clisp.*' > /dev/null 2>&1 ;then
 	echo "$CLISP is not a clisp"
 	exit 1
     fi

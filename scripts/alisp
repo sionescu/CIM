@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ALISP" ];then
-    if ! expr "$ALISP" : 'alisp.*' > /dev/null 2>&1 ;then
+    if [ "$ALISP" = alisp ]; then
+        ALISP=alisp-`grep alisp "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$ALISP" : 'alisp.*' > /dev/null 2>&1 ;then
 	echo "$ALISP is not a alisp"
 	exit 1
     fi

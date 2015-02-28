@@ -1,7 +1,9 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$LISP" ];then
-    if ! expr "$LISP" : 'lisp.*' > /dev/null 2>&1 ;then
+    if [ "$LISP" = lisp ]; then
+        LISP=lisp-`grep lisp "$CIM_HOME/res/known" | grep latest | cut -d\	 -f3`
+    elif ! expr "$LISP" : 'lisp.*' > /dev/null 2>&1 ;then
 	echo "$LISP is not a lisp"
 	exit 1
     fi
