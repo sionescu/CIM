@@ -1,12 +1,12 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$CCL" ];then
-    if [ ! -L "$CIM_HOME/bin/$CCL" ];then
-	echo "$CCL is not installed"
-	exit 1
-    fi
     if ! expr "$CCL" : 'ccl.*' > /dev/null 2>&1;then
 	echo "$CCL is not a ccl"
+	exit 1
+    fi
+    if [ ! -L "$CIM_HOME/bin/$CCL" ];then
+	echo "$CCL is not installed"
 	exit 1
     fi
     ccl="$CCL"

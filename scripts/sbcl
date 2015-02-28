@@ -1,12 +1,12 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$SBCL" ] ;then
-    if [ ! -L "$CIM_HOME/bin/$SBCL" ];then
-	echo "$SBCL is not installed"
-	exit 1
-    fi
     if ! expr "$SBCL" : 'sbcl.*' > /dev/null 2>&1 ;then
 	echo "$SBCL is not a sbcl"
+	exit 1
+    fi
+    if [ ! -L "$CIM_HOME/bin/$SBCL" ];then
+	echo "$SBCL is not installed"
 	exit 1
     fi
     sbcl="$SBCL"

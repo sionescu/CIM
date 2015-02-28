@@ -1,12 +1,12 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ALISP" ];then
-    if [ ! -L "$CIM_HOME/bin/$ALISP" ];then
-	echo "$ALISP is not installed"
-	exit 1
-    fi
     if ! expr "$ALISP" : 'alisp.*' > /dev/null 2>&1 ;then
 	echo "$ALISP is not a alisp"
+	exit 1
+    fi
+    if [ ! -L "$CIM_HOME/bin/$ALISP" ];then
+	echo "$ALISP is not installed"
 	exit 1
     fi
     alisp="$ALISP"

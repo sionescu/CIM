@@ -1,12 +1,12 @@
 #!/bin/sh -
 : ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ -n "$ECL" ];then
-    if [ ! -L "$CIM_HOME/bin/$ECL" ];then
-	echo "$ECL is not installed"
-	exit 1
-    fi
     if ! expr "$ECL" : 'ecl.*' > /dev/null 2>&1 ;then
 	echo "$ECL is not a ecl"
+	exit 1
+    fi
+    if [ ! -L "$CIM_HOME/bin/$ECL" ];then
+	echo "$ECL is not installed"
 	exit 1
     fi
     ecl="$ECL"
