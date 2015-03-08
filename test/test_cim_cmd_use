@@ -1,0 +1,67 @@
+#!/bin/sh
+. "$CIM_HOME/scripts/cim_utils"
+. "$CIM_HOME/test/cim_test_utils"
+
+test_cim_use__sbcl(){
+    cim use sbcl-${SBCL_DUMMY_VERSION}
+    status=$?
+    assertEquals "cim use sbcl-${SBCL_DUMMY_VERSION} returned exit status $status" \
+                $status 0
+    assertEquals `cl -qe '(write-line (lisp-implementation-type))'` SBCL
+    assertEquals `cl -qe '(write-line (lisp-implementation-version))'` ${SBCL_DUMMY_VERSION}
+    assertEquals "`sbcl --noinform --non-interactive --eval '(write-line (lisp-implementation-version))'`" ${SBCL_DUMMY_VERSION}
+}
+
+test_cim_use__sbcl_latest(){
+    cim use sbcl
+    status=$?
+    assertEquals "cim use sbcl returned exit status $status" \
+                $status 0
+    assertEquals `cl -qe '(write-line (lisp-implementation-type))'` SBCL
+    assertEquals `cl -qe '(write-line (lisp-implementation-version))'` ${SBCL_LATEST}
+    assertEquals "`sbcl --noinform --non-interactive --eval '(write-line (lisp-implementation-version))'`" ${SBCL_LATEST}
+}
+
+test_cim_use__invalid(){
+    cim use aaa  > "${stdoutF}" 2> "${stderrF}"
+    status=$?
+    assertNotEquals "cim use aaa exited normally with invalid argument" \
+                    $status 0
+    assertNull "`cat "${stdoutF}"`"
+    assertNotNull "`cat "${stderrF}"`"
+}
+
+test_cim_use__sbcl_default(){
+    default="`cim info | grep -o "default lisp = \\(.*\\)"`"
+    if [ "$default" = "sbcl-${SBCL_LATEST}" ]; then
+        switch_to="sbcl-${SBCL_DUMMY_VERSION}"
+        other="sbcl-${SBCL_LATEST}"
+    else
+        switch_to="sbcl-${SBCL_LATEST}"
+        other="sbcl-${SBCL_DUMMY_VERSION}"
+    fi
+    cim use "$switch_to" --default
+    cim use "$other"
+    cim use default
+    assertEquals $? 0
+    assertEquals `cl -qe '(write-line (lisp-implementation-type))'` SBCL
+    assertEquals `cl -qe '(write-line (lisp-implementation-version))'` ${switch_to#sbcl-}
+    assertEquals "`sbcl --noinform --non-interactive --eval '(write-line (lisp-implementation-version))'`" ${switch_to#sbcl-}
+
+    cim use "$default" --default
+}
+
+oneTimeSetUp()
+{
+    cim list use | grep "sbcl-${SBCL_LATEST}" > /dev/null 2>&1 ||
+        cim install "sbcl-${SBCL_LATEST}"
+    cim list use | grep "sbcl-${SBCL_DUMMY_VERSION}" > /dev/null 2>&1  ||
+        cim install "sbcl-${SBCL_DUMMY_VERSION}"
+    outputDir="${SHUNIT_TMPDIR}/test_cim_utils"
+    mkdir "${outputDir}"
+    stdoutF="${outputDir}/stdout"
+    stderrF="${outputDir}/stderr"
+
+}
+
+run_tests
