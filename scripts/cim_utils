@@ -79,7 +79,7 @@ cim_normalize_impl_version(){
         echo "$1"
     else
         cat "$CIM_HOME/res/known" |
-            grep -F "$impl" | 
+            grep -F "$1" | 
             grep -F "latest" |
             cut -s -f2,3 | {
             read impl version;
@@ -133,7 +133,7 @@ cim_register_all_impls(){
         fi
     done
 }
-                         
+
 cim_set_sbcl_home_for(){
     if [ "$1" = "sbcl-system" ];then
 	expr `ls -l "$CIM_HOME/bin/sbcl-system" | awk '{print $NF}'` : '\(.*\)/bin/sbcl' | { read sbcl_base; SBCL_HOME="${sbcl_base}/lib/sbcl";}
@@ -231,7 +231,7 @@ cim_distribution_archive_type(){
         sbcl|alisp) echo bz2;;
         abcl|ccl|clisp|ecl) echo gz;;
     esac
-   [ "$1" = "sbcl" ] || [ "$1" = "alisp" ]
+    [ "$1" = "sbcl" ] || [ "$1" = "alisp" ]
 }
 
 
