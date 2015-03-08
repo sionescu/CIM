@@ -1,6 +1,7 @@
 #!/bin/sh
 
-SBCL_LATEST=1.2.2
+SBCL_LATEST=1.2.9
+SBCL_DUMMY_VERSION=1.2.8
 
 run_tests(){
     . shunit2/src/shunit2 
