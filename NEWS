@@ -3,6 +3,8 @@
   + Experimental head install and `cim checkout` command is added.
   + Experimental execution only CMU CL support is added
   + `cim help` and `ql help` use man format.
+# 2015-03-08
+  + Now the latest ecl is 15.3.7
 # 2015-02-28
   + Now the latest sbcl is 1.2.9
 # 2015-02-23
