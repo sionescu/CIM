@@ -5,69 +5,82 @@
 test_cim_wget__file(){
     if cim_test_full_p;then
         cim_wget "https://github.com/KeenS/CIM/README.md" "${outputDir}/README.md1" 2> /dev/null
-        assertEquals 0 $?
-        assertTrue '[ -s "${outputDir}/README.md1" ]'
+        assertEquals "cim_wget didn't work" 0 $?
+        assertTrue "cim_wget didn't work" '[ -s "${outputDir}/README.md1" ]'
     fi
 }
 
 test_cim_wget__output(){
     if cim_test_full_p;then
         cim_wget "https://github.com/KeenS/CIM/README.md" - > "${outputDir}/README.md2" 2> /dev/null
-        assertEquals 0 $?
-        assertTrue '[ -s "${outputDir}/README.md2" ]'
+        assertEquals "cim_wget to stdouw didn't work" \
+                     0 $?
+        assertTrue "cim_wget to stdouw didn't work" \
+                   '[ -s "${outputDir}/README.md2" ]'
     fi
 }
 
 test_cim_wget__content(){
     if cim_test_full_p;then
-        assertEquals "`cat "${outputDir}/README.md1"`" "`cat "${outputDir}/README.md2"`"
+        assertEquals "content got by previouse tests was different" \
+        "`cat "${outputDir}/README.md1"`" "`cat "${outputDir}/README.md2"`"
     fi
 }
 
 test_cim_split_impl_version__normal(){
-    result=`cim_split_impl_version sbcl-1.1.18 2>"${stderrF}"`
-    expected="sbcl 1.1.18"
-    assertEquals "$expected" "$result"
+    result=`cim_split_impl_version sbcl-${SBCL_DUMMY_VERSION} 2>"${stderrF}"`
+    expected="sbcl ${SBCL_DUMMY_VERSION}"
+    assertEquals "cim_split_impl_version didn't work: `cat "${stderrF}"`" \
+                 "$expected" "$result"
     assertNull "`cat "${stderrF}"`"
 }
 
-test_cim_split_impl_version__latest(){
-    result=`cim_split_impl_version sbcl 2>"${stderrF}"`
-    expected="sbcl ${SBCL_LATEST}"
-    assertEquals "$expected" "$result"
-    assertNull "`cat "${stderrF}"`"
+test_cim_normalize_impl_version__latest(){
+    result=`cim_normalize_impl_version sbcl 2>"${stderrF}"`
+    expected="sbcl-${SBCL_LATEST}"
+    assertEquals "cim_normalize_impl_version without version number didn't work" \
+                 "$expected" "$result"
+    assertNull "cim_normalize_impl_version echoed to stderr" \
+               "`cat "${stderrF}"`"
 }
 
-test_cim_split_impl_version__error_invalid(){
-    cim_split_impl_version aaa  >"${stdoutF}" 2>"${stderrF}"
+test_cim_normalize_impl_version__error_invalid(){
+    cim_normalize_impl_version aaa  >"${stdoutF}" 2>"${stderrF}"
     assertNotEquals 0 $?
-    assertNull "`cat "${stdoutF}"`"
-    assertNotNull "`cat "${stderrF}"`"
+    assertNull "cim_normarize_impl_version with invalid argument should not output but got `cat "${stdoutF}"`" \
+               "`cat "${stdoutF}"`"
+    assertNotNull "cim_normalize_impl_version with invalid argument should output to error" \
+                  "`cat "${stderrF}"`"
 }
 
-test_cim_split_impl_version__error_null(){
-    cim_split_impl_version  >"${stdoutF}" 2>"${stderrF}"
+test_cim_normalize_impl_version__error_null(){
+    cim_normalize_impl_version  >"${stdoutF}" 2>"${stderrF}"
     assertNotEquals 0 $?
-    assertNull "`cat "${stdoutF}"`"
-    assertNotNull "`cat "${stderrF}"`" "`cat "${stderrF}"`"
+    assertNull "cim_normalize_impl_version with null argument should not output" \
+               "`cat "${stdoutF}"`"
+    assertNotNull "cim_normalize_impl_version with invalid argument should output to error" \
+                  "`cat "${stderrF}"`"
 }
 
 test_cim_set_sbcl_home_for__normal(){
     SBCL_HOME=""
-    cim_set_sbcl_home_for sbcl-1.1.18
-    assertEquals "$CIM_HOME/impls/sbcl-1.1.18/lib/sbcl" "$SBCL_HOME"
+    cim_set_sbcl_home_for sbcl-${SBCL_DUMMY_VERSION}
+    assertEquals "cim_sbcl_home_for" \
+                 "$CIM_HOME/impls/sbcl-${SBCL_DUMMY_VERSION}/lib/sbcl" "$SBCL_HOME"
 }
 
 test_cim_set_sbcl_home_for__latest(){
     SBCL_HOME=""
     cim_set_sbcl_home_for sbcl
-    assertEquals "$CIM_HOME/impls/sbcl-${SBCL_LATEST}/lib/sbcl" "$SBCL_HOME"
+    assertEquals "cim_sbcl_home_for" \
+                 "$CIM_HOME/impls/sbcl-${SBCL_LATEST}/lib/sbcl" "$SBCL_HOME"
 }
 
 test_cim_set_sbcl_home_for__system(){
     SBCL_HOME=""
     cim_set_sbcl_home_for sbcl-system
-    assertNotNull  "$SBCL_HOME"
+    assertNotNull "cim_sbcl_home_for sbcl-system" \
+                  "$SBCL_HOME"
 }
 
 test__sed_i(){
@@ -78,7 +91,8 @@ bar
 baz
 EOF
     __sed_i 's/foo/FOO/' "$tmpfile"
-    assertEquals "FOO
+    assertEquals "cim_sed_i" \
+                 "FOO
 bar
 baz" "`cat "$tmpfile"`"
 }
@@ -86,7 +100,7 @@ baz" "`cat "$tmpfile"`"
 test__which(){
     assertEquals "/bin/sh" `__which sh`
     __which no_such_executable > "${stdoutF}" 2> "${stderrF}"
-    assertNotEquals 0 $?
+    assertNotEquals "__which" 0 $?
     assertNull "`cat "${stdoutF}"`"
     assertNull "`cat "${stderrF}"`"
 }
@@ -100,11 +114,3 @@ oneTimeSetUp()
 }
 
 run_tests
-
-# echo "cim_choose_one_version"
-# cim_choose_one_version sbcl "sbcl-1.1.17
-# sbcl-1.1.18"
-# echo cim_register_all_impls
-# cim_register_all_impls
-# echo normarize_impl_version
-# cim_normarize_impl_version sbcl
