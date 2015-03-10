@@ -112,10 +112,10 @@
       (concatenate 'string path "/")))
 
 (defun ensure-quicklisp ()
-  #-quicklisp
-  (let ((quicklisp-init (ql_home "/setup.lisp")))
-    (when (probe-file quicklisp-init)
-      (load quicklisp-init :verbose nil))))
+  (unless (member :quicklisp *features*)
+    (let ((quicklisp-init (ql_home "/setup.lisp")))
+      (when (probe-file quicklisp-init)
+        (load quicklisp-init :verbose nil)))))
 
 (load (cim_home "/lib/option-parser.lisp")  :verbose nil :print nil)
 
