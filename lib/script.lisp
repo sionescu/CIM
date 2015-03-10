@@ -116,7 +116,7 @@
                         (push `(compile-file ,file) sexps))
                        (("-C") (dir)
                         "set *default-pathname-defaults* DIR."
-                        (let ((dir (if (char= #\/ (elt dir 1 ))
+                        (let ((dir (if (char= #\/ (char dir 0))
                                        (pathname dir)
                                        (merge-pathnames (pathname dir)))))
                           (push `(setf *default-pathname-defaults* ,dir) sexps)))
