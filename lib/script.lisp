@@ -44,15 +44,15 @@
    default))
 
 (defun exit (&optional (status 0))
- #+ccl (ccl:quit status)
- ;; http://www.sbcl.org/manual/#Exit
- #+sbcl (sb-ext:exit :code status)
- ;; http://franz.com/support/documentation/9.0/doc/operators/excl/exit.htm
- #+allegro (excl:exit status :quiet t)
- #+clisp (ext:quit status)
- #+cmu (unix:unix-exit status)
- #+ecl (ext:quit status)
- #-(or ccl sbcl allegro clisp cmu ecl) (cl-user::quit))
+  #+ccl (ccl:quit status)
+  ;; http://www.sbcl.org/manual/#Exit
+  #+sbcl (sb-ext:exit :code status)
+  ;; http://franz.com/support/documentation/9.0/doc/operators/excl/exit.htm
+  #+allegro (excl:exit status :quiet t)
+  #+clisp (ext:quit status)
+  #+cmu (unix:unix-exit status)
+  #+ecl (ext:quit status)
+  #-(or ccl sbcl allegro clisp cmu ecl) (cl-user::quit))
 
 (defun cim_home (path)
   (concatenate 'string (getenv "CIM_HOME") path))
@@ -101,10 +101,10 @@
   (let* ((buffer-size 4096)
          (buffer (make-array buffer-size :element-type 'character)))
     (with-output-to-string (str)
-     (loop
-        :for bytes-read = (read-sequence buffer stream)
-        :do (write-sequence buffer str :start 0 :end bytes-read)
-        :while (= bytes-read buffer-size)))))
+      (loop
+         :for bytes-read = (read-sequence buffer stream)
+         :do (write-sequence buffer str :start 0 :end bytes-read)
+         :while (= bytes-read buffer-size)))))
 
 (defun canonicalize-path (path)
   (if (char= #\/ (aref path (1- (length path))))
@@ -219,8 +219,8 @@
                            (*package* (find-package :cl)))
                        (with-input-from-string (in (opt :sexp))
                          (loop :for sexp := (read in nil +eof+)
-                               :until (eq sexp +eof+) :do
-                                 (eval sexp)))))
+                            :until (eq sexp +eof+) :do
+                            (eval sexp)))))
                     ((car *argv*)
                      (let ((*load-print* nil)
                            (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
@@ -233,9 +233,9 @@
                      (let ((+eof+ (gensym "eof"))
                            (*package* (find-package :cl)))
                        (loop
-                         :for sexp := (read *standard-input* nil +eof+)
-                         :until (eq sexp +eof+) :do
-                           (eval sexp)))))
+                          :for sexp := (read *standard-input* nil +eof+)
+                          :until (eq sexp +eof+) :do
+                          (eval sexp)))))
                 #+(or allegro ccl clisp ecl sbcl)
                 (#.*interrupt-condition* () (exit))
                 (error (e)
