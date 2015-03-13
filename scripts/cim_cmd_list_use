@@ -1,5 +1,6 @@
 #!/bin/sh
 . "$CIM_HOME/scripts/cim_utils"
 cim_aware_system_lisp
+cim_make_symlinks
 current=$LISP_IMPL
 find "$CIM_HOME/bin/" -mindepth 1 -exec basename '{}' ';' | grep -F '-' | sort

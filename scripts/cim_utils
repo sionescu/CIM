@@ -120,6 +120,14 @@ cim_aware_system_lisp(){
     done
 }
 
+cim_make_symlinks(){
+    for impl in $impls; do
+        if [ -n "`find "$CIM_HOME/bin/" -name "$impl*" 2> /dev/null`" ] && [ ! -e "$CIM_HOME/bin/$impl" ]; then
+            ln -s "$CIM_HOME/scripts/$impl" 
+        fi
+    done
+}
+
 cim_choose_one_version(){
     # FIXME: select more preferer version
     echo "$2" | sort -rn | head -n 1

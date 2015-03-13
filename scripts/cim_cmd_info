@@ -11,6 +11,7 @@ current="$LISP_IMPL"
 
 . "$CIM_HOME/scripts/cim_utils"
 cim_aware_system_lisp
+cim_make_symlinks
 cat <<EOF
 PATH = $PATH
 
