@@ -4,6 +4,8 @@
   + Experimental execution only CMU CL support is added
   + `cim help` and `ql help` use man format.
   + bug fixes (#54, #55)
+# 2015-03-29
+  + Now the latest sbcl is 1.2.10
 # 2015-03-08
   + Now the latest ecl is 15.3.7
 # 2015-02-28
