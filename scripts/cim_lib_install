@@ -338,8 +338,13 @@ __sbcl_ensure_impl(){
 }
 __sbcl_make(){
     cim_message "Building $1-$2"
-    sh=`__which bash`
-    [ -z "$sh" ] && sh=/bin/sh
+    if __which zsh > /dev/null; then
+        sh=`__which zsh`
+    elif __which bash > /dev/null; then
+        sh=`__which bash`
+    else
+        sh=/bin/sh
+    fi
     (cd "$CIM_HOME/src/$1-$2" &&
      cim_with_output_control "$1-$2" "build" "$sh" make.sh "`cat .cim_available_impl`" --prefix="$CIM_HOME/impls/$1-$2" $flags )
     if [ "$?" != "0" ]; then
