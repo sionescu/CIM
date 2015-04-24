@@ -2,6 +2,7 @@
 
 . "$CIM_HOME/scripts/cim_utils"
 cim_aware_system_lisp
+cim_make_symlinks
 cim_register_all_impls
 if [ "$1" = "default" ];then
     if [ -s "$CIM_HOME/config/default" ];then
