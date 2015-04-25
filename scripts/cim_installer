@@ -137,7 +137,7 @@ show_config_message(){
 
 To setup CIM, run this command (if haven't)
 \`\`\`
-cim config "$conf" >> "$rcfile"
+$CIM_HOME/bin/cim config "$conf" >> "$rcfile"
 \`\`\`
 
 EOM

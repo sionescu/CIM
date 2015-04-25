@@ -1,5 +1,6 @@
 #!/bin/sh -
 # This file is for execute
+: ${CIM_HOME:=`cd \`dirname "$0"\`/../; pwd`}
 if [ $# -gt 0 ];then
     command="$1"
     shift

@@ -1,3 +1,6 @@
+# 2015-04-25
+  + Fix bootstrap problem. `cim config` can be used even if CIM isn't configured.
+    Thanks sin_clav for reporting.
 # 2015-04-20
   + add one shot use of `cl` command
   + add one shot use of impl launcher (`sbcl`, `ccl`, etc)
