@@ -89,13 +89,15 @@
 (defsetf opt (key) (obj)
   `(setf (gethash ,key *options*) ,obj))
 
-(defun remove-shebang (in)
-  (let ((line (read-line in nil "#!")))
+(defun open-removing-shebang (&rest args)
+  (let* ((in (apply #'open args))
+         (line (read-line in nil "#!")))
     (cond
       ((and (> (length line) 1) (string= line "#!" :end1 2))
        in)
       (t
-       (make-concatenated-stream (make-string-input-stream (format nil "~A~%" line)) in)))))
+       (close in)
+       (apply #'open args)))))
 
 (defun read-stream-into-string (stream)
   (let* ((buffer-size 4096)
@@ -223,7 +225,7 @@
                             (eval sexp)))))
                     ((car *argv*)
                      (let ((*load-print* nil)
-                           (stream (remove-shebang (open (pop *argv*) :if-does-not-exist :error))))
+                           (stream (open-removing-shebang (pop *argv*) :if-does-not-exist :error)))
                        #-ccl (load stream
                                    :verbose nil :print nil)
                        #+ccl(let ((str (read-stream-into-string stream)))
