@@ -1,3 +1,5 @@
+# 2015-08-01
+  + Now the latest sbcl is 1.2.14
 # 2015-05-05
   + Fix the bug reported by DalekBaldwin and luismbo. See https://github.com/luismbo/cl-travis/issues/12.
 # 2015-04-28
