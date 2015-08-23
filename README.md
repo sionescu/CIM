@@ -5,13 +5,13 @@
 ## DESCRIPTION
 
 CIM aims to be a tool which allows you to easily install, manage,
-run REPL with, and execute with multiple Common Lisp implementation and systems.
+run a REPL with, and execute with multiple Common Lisp implementation and systems.
 
 I hope CIM could be to Lisp what RVM is to ruby.
 
 ## INSTALL
 
-CIM has installer. Run command below and you will get cim installed to ~/.cim.
+CIM has an installer. Run command below and you will get cim installed to ~/.cim.
 ```
 $ curl -L https://raw.github.com/KeenS/CIM/master/scripts/cim_installer | /bin/sh
 ```
@@ -32,7 +32,7 @@ $ fetch -o - https://raw.github.com/KeenS/CIM/master/scripts/cim_installer |  /b
 ```
 .
 
-Notice1:  
+Notice:  
 To setup CIM, you need to run following command (or something like it) and reload the init file (the installer will guide you).
 ```
 cim config sh >> ~/.bashrc
@@ -67,12 +67,12 @@ Or to use it as default,
 ```
 $ cim use ccl --default
 ```
-Of cause, you can use system installed lisp.
+Of course, you can use a system installed lisp.
 ```
 $ cim use clisp-system
 ```
 
-This also affects bare lisp command.
+This also affects a bare lisp command.
 ```
 $ sbcl --version
 SBCL 1.1.14
@@ -120,7 +120,7 @@ Usage: cl [switchs] [--] [programfile] [argumensts]
 If neither programfile, -e (--eval) nor -r (--repl) are specified, cl reads scripts from the standard input and then eval them.
 ```
 
-### Running REPL
+### Running a REPL
 Use `cl` with `--repl` or `-r` in short.
 
 ```
@@ -130,7 +130,7 @@ Hi
 ;=> NIL
 ```
 
-If `rlwrap` (a readline wrapper) is installed, `cl` use it.
+If `rlwrap` (a readline wrapper) is installed, `cl` uses it.
 
 ### Executing one liner
 Use `cl` with `-e`.
@@ -168,7 +168,7 @@ Evaluation took:
 ```
 
 
-### Managing lisp systems
+### Managing Lisp systems
 Use `ql`.
 
 ```
