@@ -35,8 +35,13 @@ if [ "$1" != do ];then
 fi
 shift
 
+exit_code=0
+
 for impl in $impls;do
     cim_green ">>>$impl $@"
     LISP_IMPL="$impl" cl "$@"
+    exit_code=`expr $exit_code + $?`
     cim_green "<<<"
 done
+
+exit $exit_code
