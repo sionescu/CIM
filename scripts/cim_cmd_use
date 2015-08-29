@@ -27,7 +27,7 @@ for var in $impls;do
     if [ "${var%-*}" = "$impl" ];then
 	echo "${var%-*}=$lisp_full_name"
     elif [ -n "$var" ]; then
-	echo "${var%-*}=$var"
+	echo "${var%-*}=`cim_normalize_impl_version $var`"
     fi
 done >> "$CIM_HOME/config/current.$CIM_ID"
 
