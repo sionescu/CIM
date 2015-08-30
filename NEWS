@@ -1,3 +1,7 @@
+# 2015-08-30
+  + Fix bug the bug reported by  mjhd-devlion. See #59
+  + Now the lastest ecl is 16.0.0. And download source is now common-lisp.net
+  + Add simple capture of exit codes of commands run by verdammelt.
 # 2015-08-01
   + Now the latest sbcl is 1.2.14
 # 2015-05-05
