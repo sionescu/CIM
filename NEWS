@@ -1,3 +1,5 @@
+# 2015-09-01
+  + Now the latest sbcl is 1.2.15.
 # 2015-08-30
   + Fix bug the bug reported by  mjhd-devlion. See #59
   + Now the lastest ecl is 16.0.0. And download source is now common-lisp.net
