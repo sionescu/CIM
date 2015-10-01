@@ -1,3 +1,6 @@
+# 2015-10-01
+  + Now the latest sbcl is 1.2.16.
+  + `cl` evaluates command line arguments in cl-user package because some of implementations locks cl package.
 # 2015-09-01
   + Now the latest sbcl is 1.2.15.
 # 2015-08-30
