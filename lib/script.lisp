@@ -200,7 +200,7 @@
      (write-line *help* ))
     (t
      (unless (opt :no-init) (load (cim_home "/init.lisp") :verbose nil :print nil))
-     (in-package :cl)
+     (in-package :cl-user)
      (handler-case
          (dolist (sexp (nreverse cim::sexps)) 
            (eval sexp))
