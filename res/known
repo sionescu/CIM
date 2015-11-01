@@ -9,11 +9,11 @@
 1	ecl	15.3.7
 2	ecl	16.0.0	latest
 -1	sbcl	head
-0	sbcl	1.2.12
-1	sbcl	1.2.13
-2	sbcl	1.2.14
-3	sbcl	1.2.15
-4	sbcl	1.2.16	latest
+0	sbcl	1.2.13
+1	sbcl	1.2.14
+2	sbcl	1.2.15
+3	sbcl	1.2.16
+4	sbcl	1.3.0	latest
 0	ccl	1.6
 1	ccl	1.7
 2	ccl	1.8
