@@ -6,7 +6,7 @@
 __get_download_path(){
     case "$1" in
         clisp) echo "http://ftp.gnu.org/pub/gnu/clisp/release/$2/clisp-$2.tar.gz" ;;
-        ecl) echo "https://common-lisp.net/project/ecl/files/ecl-${2}.tgz" ;;
+        ecl) echo "https://common-lisp.net/project/ecl/files/release/${2}/ecl-${2}.tgz" ;;
         abcl) echo "http://abcl.org/releases/$2/abcl-bin-$2.tar.gz" ;;
         sbcl) echo "http://downloads.sourceforge.net/project/sbcl/sbcl/$2/sbcl-$2-source.tar.bz2" ;;
         sbcl-bin)

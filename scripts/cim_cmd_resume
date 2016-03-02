@@ -16,10 +16,11 @@ case "$1" in
 		target=`cim_normalize_impl_version "$1"`
 		if [ -s "$CIM_HOME/tmp/resume-$target" ]; then
 		    resume="$CIM_HOME/tmp/resume-$target"
-		    impl=${target%-*}
-		    version=${target#*-}
 		    for proc in `cat "$resume"`; do
 			{
+                            # setting variable each time to work around variable overwritten problem
+		            impl=${target%-*}
+		            version=${target#*-}
 			    $proc "$impl" "$version" &&
 			    [ -s "$resume" ] &&
 			    sed -e "/$proc/d" "$resume" > "$resume.tmp" &&
