@@ -339,9 +339,10 @@ __sbcl_ensure_impl(){
 }
 __sbcl_make(){
     cim_message "Building $1-$2"
-    if __which zsh > /dev/null; then
-        sh=`__which zsh`
-    elif __which bash > /dev/null; then
+    # if __which zsh > /dev/null; then
+    #     sh=`__which zsh`
+    # el
+    if __which bash > /dev/null; then
         sh=`__which bash`
     else
         sh=/bin/sh
