@@ -1,3 +1,6 @@
+# 2017-01-29
+  + the latest sbcl is 1.3.14
+  + This is the last update of CIM. see [my blog post](http://keens.github.io/blog/2017/01/29/deprecating_cim/)
 # 2016-11-1
   + the latest sbcl is 1.3.11
 # 2016-10-09
