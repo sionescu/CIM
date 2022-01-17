@@ -79,7 +79,7 @@ case "$LISP_IMPL" in
         run_lisp --noinform --noinit --nosystem --batch --load "$load_file" -- "$@"
         ;;
     alisp*)
-        run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} --qq -L "$load_file" --kill -- "$@"
+        run_lisp ${use_core+-I} ${use_core+"$lisp_core_file"} ${debug+--debug-startup} --batch --qq -L "$load_file" --kill -- "$@"
         ;;
     lisp*)
         run_lisp ${use_core+-core} ${use_core+"$lisp_core_file"} -quiet -noinit -batch -load "$load_file" -eval '(quit)' -- "$@"
