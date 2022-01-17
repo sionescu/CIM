@@ -188,7 +188,7 @@ EOF
     # prepare bins like `cim` `cl` `ql`
     prepare_bins
 
-    ## CIM installaiton is done
+    ## CIM installation is done
 
     show_messages
 }
